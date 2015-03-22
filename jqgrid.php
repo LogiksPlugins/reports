@@ -7,7 +7,9 @@ function getWhere($searchOn) {
 	if($searchOn=='true') {
 		$sarr = Strip($_REQUEST);
 		if(isset($sarr['filters']) && strlen($sarr['filters'])>0) {
-			$filter=json_decode(Strip($sarr['filters']),true);
+			$sarr['filters']=Strip($sarr['filters']);
+			//$sarr['filters']=str_replace('"op":"eq"','"op":"bw"', $sarr['filters']);
+			$filter=json_decode($sarr['filters'],true);
 			$wh="(".getGroup($filter).")";			
 		} elseif(isset($sarr['searchField']) && strlen($sarr['searchField'])>0) {
 			if($sarr["searchOper"]=="nu" || $sarr["searchOper"]=="nn") {

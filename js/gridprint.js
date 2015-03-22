@@ -87,17 +87,10 @@ function getCSVForGrid(id) {
 	html=html+"\n";                    // Output header with end of line
 	for(i=0;i<mya.length;i++) {
 		data=$(id).getRowData(mya[i]); // get each row
-		str="";
 		for(j=0;j<colNames.length;j++) {
-			//html=html+data[colNames[j]]+delim; // output each column as tab delimited
-			xxx=data[colNames[j]];
-			xxx=xxx.replace(/\"/g,"`");
-			//xxx=xxx.replace(/\n/g,"XXX");
-			str=str+'"'+xxx+'"'+delim; // output each column as tab delimited
+			html=html+data[colNames[j]]+delim; // output each column as tab delimited
 		}
-		if(str.length>0) {
-			html+=str+'\n';  // output each row with end of line
-		}
+		html=html+"\n";  // output each row with end of line
 	}
 	html=html+"\n";  // end of line at the end
 	return html;

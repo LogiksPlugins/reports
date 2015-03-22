@@ -1,6 +1,6 @@
 <?php
 if(!defined('ROOT')) exit('No direct script access allowed');
-
+//$_REQUEST['ui']="table";
 include_once "api.php";
 ?>
 <div class='reportholder' style='width:100%;height:100%;'>

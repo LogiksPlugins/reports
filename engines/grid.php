@@ -1,5 +1,5 @@
 <?php
-global $js,$css;
+if(!defined('ROOT')) exit('No direct script access allowed');
 
 $GLOBALS['RPTDATA']['dataType']="json";
 
@@ -7,7 +7,8 @@ _js(array("jquery.ui.multiselect","jquery.jqGrid-locale-en","jquery.jqGrid"));
 _css(array("jquery.ui.jqgrid","jquery.ui.multiselect"));
 
 $webPath=getWebPath(dirname(__FILE__));
-echo "<script src='".$webPath."js/grid.js' type='text/javascript' language='javascript'></script>";
+echo "<script src='".$webPath."js/lgksJQGrid.js' type='text/javascript' language='javascript'></script>";
+echo "<script src='".$webPath."js/gridFuncs.js' type='text/javascript' language='javascript'></script>";
 echo "<script src='".$webPath."js/gridprint.js' type='text/javascript' language='javascript'></script>";
 
 $dataSource=$GLOBALS['RPTDATA'];
@@ -20,18 +21,30 @@ $css=str_replace("\n","",$css);
 $css=str_replace("	"," ",$css);
 $css=str_replace("  "," ",$css);
 
-$dn=$dataSource["datatable_colnames"];
-$d=$dataSource["datatable_cols"];
+if(isset($dataSource['datatable_model']) && strlen($dataSource['datatable_model'])>2) {
+	$modelArr=json_decode($dataSource["datatable_model"],true);
+}
+
+if(isset($modelArr["modelData"]["alinks"])) {
+	$dn=$dataSource["datatable_colnames"].",";
+	$d=$dataSource["datatable_cols"].",act2";
+} else {
+	$dn=$dataSource["datatable_colnames"];
+	$d=$dataSource["datatable_cols"];
+}
 if(strlen(trim($dn))<=0) $dn=$d;
-
 //$d=explode(",",$d);
-$reg = '/[^(,]*(?:\([^)]+\))?[^),]*/';
-preg_match_all($reg, $d, $matches);
-$d = array_filter($matches[0]);
-
 $dn=explode(",",$dn);
+
+//$reg = '/[^(,]*(?:\([^)]+\))?[^),]*/';
+//preg_match_all($reg, $d, $matches);
+//$d = array_filter($matches[0]);
+$d = preg_split("/,(?![^()]*+\\))/", $d);
+//printArray($d);printArray($dn);exit();
+
 $cols="[";
 foreach($dn as $x) {
+	$x=_ling($x);
 	$x=str_replace("_"," ",trim($x));
 	if(strpos($x,".")>0) {
 		$x=explode(".",$x);
@@ -44,100 +57,147 @@ foreach($dn as $x) {
 $cols.="]";
 
 $n=0;
-$maxCols=25;
-$idField=getSiteSettings("ID Column Width",50,"DataTable","int");
+$maxCols=$rptData['params']["visibleCols"];
+$idField=$rptData['params']["idColWidth"];
 
 $hiddenCols=array();
 $searchCols=$d;
 $sortCols=$d;
 $classes=array();
+$colTypes=array();
+$alinks=array();
+$groupableCols=null;
+$notviewableCols=null;
 
 if(isset($dataSource['datatable_hiddenCols'])) {
 	$hiddenCols=explode(",",$dataSource['datatable_hiddenCols']);
 }
 
-if(isset($dataSource['datatable_model']) && strlen($dataSource['datatable_model'])>2) {
-	$modelArr=json_decode($dataSource["datatable_model"],true);
-
-	if($modelArr!=null) {
-		$modelEngine=$modelArr["modelEngine"];
-		if($modelEngine=="DataControls1") {
-			$hiddenCols=explode(",",$modelArr["modelData"]["hiddenCols"]);
-			$searchCols=explode(",",$modelArr["modelData"]["searchCols"]);
-			$sortCols=explode(",",$modelArr["modelData"]["sortCols"]);
-			$classes=explode(",",$modelArr["modelData"]["classes"]);
-		} else {
-			dispErrMessage("DataModel Not Found Requested Report.","Report Model Error",
-					404,"media/images/notfound/database.png");
-			exit();
-		}
-	}
+if($modelArr!=null) {
+	$modelEngine=$modelArr["modelEngine"];
+	if(isset($modelArr["modelData"]["hiddenCols"])) 
+		$hiddenCols=explode(",",$modelArr["modelData"]["hiddenCols"]);
+	if(isset($modelArr["modelData"]["searchCols"])) 
+		$searchCols=explode(",",$modelArr["modelData"]["searchCols"]);
+	if(isset($modelArr["modelData"]["sortCols"])) 
+		$sortCols=explode(",",$modelArr["modelData"]["sortCols"]);
+	if(isset($modelArr["modelData"]["classes"])) 
+		$classes=explode(",",$modelArr["modelData"]["classes"]);
+	if(isset($modelArr["modelData"]["groupable"])) 
+		$groupableCols=explode(",",$modelArr["modelData"]["groupable"]);
+	if(isset($modelArr["modelData"]["notviewable"])) 
+		$notviewableCols=explode(",",$modelArr["modelData"]["notviewable"]);
+	if(isset($modelArr["modelData"]["alinks"])) 
+		$alinks=$modelArr["modelData"]["alinks"];
 }
+//$alinks=array("Edit"=>"testform.php?id=");
 
 $model="[";
 foreach($d as $x) {
-	$y=explode(".",$x);
-	$y=$y[count($y)-1];
-
-	$x=trim(end(explode("as",strtolower($x))));
-	
-	$model.="{";
-	$model.="name:'$x'";
-	$model.=",index:'$x'";
-
-	if(in_array($x,$searchCols)) {
-		$model.=",search:true";
-	} else {
+	if($x=="act1") {
+		$model.="{";
+		$model.="name:'action1'";
+		$model.=",index:'$x'";
 		$model.=",search:false";
-	}
-	if(in_array($x,$sortCols)) {
-		$model.=",sortable:true";
-	} else {
 		$model.=",sortable:false";
-	}
-	if(isset($classes[$n]) && strlen($classes[$n])>0) {
-		$model.=",classes:'{$classes[$n]}'";
-	}
+		$model.=",hidden:false";
+		$model.=",formatter:'actions'";
+		$model.=",width:110";
 
-	if($n==0) {
-		$model.=",key:true,width:$idField";
+		$model.="},";
+	} elseif($x=="act2") {
+		$model.="{";
+		$model.="name:'action2'";
+		$model.=",index:'$x'";
+		$model.=",search:false";
+		$model.=",sortable:false";
+		$model.=",hidden:false";
+		$model.=",formatter:function() {return '<select onchange=\"gridAction(this)\" class=\"gridActionSelector\">".getActionsSelector($alinks)."</select>';}";
+		$model.=",width:110";
+
+		$model.="},";
+	} else {
+		$y=explode(".",$x);
+		$y=$y[count($y)-1];
+
+		$x=trim(end(explode(" as ",strtolower($x))));
+		$x=str_replace("'", '"', $x);
+		
+		$model.="{";			
+		$model.="name:'$x'";
+		$model.=",index:'$x'";
+		
+		if(in_array($x,$searchCols)) {
+			$model.=",search:true";
+		} else {
+			$model.=",search:false";
+		}
+		if(in_array($x,$sortCols)) {
+			$model.=",sortable:true";
+		} else {
+			$model.=",sortable:false";
+		}
+		if(isset($classes[$n]) && strlen($classes[$n])>0) {
+			$model.=",classes:'{$classes[$n]}'";
+		}
+		
+		if($n==0) {
+			$model.=",key:true,width:$idField";
+		}
+		if(in_array($x,$hiddenCols) || $n>$maxCols) {
+			$model.=",hidden:true";
+		}
+		if(in_array($x,$groupableCols) || $groupableCols==null) {
+			$model.=",groupable:true";
+		}
+		if($notviewableCols==null) {
+			$model.=",viewable:true,editrules:{ edithidden: true }";
+		} elseif(in_array($x,$notviewableCols)) {
+			$model.=",viewable:false";
+		}
+		$model.=",sorttype:'string'";//, searchoptions:{sopt:['bw','eq','bn','cn','nc','ew','en']}
+		$model.="},";
 	}
-	if(in_array($x,$hiddenCols) || $n>$maxCols) {
-		$model.=",hidden:true";
-	}
-	$model.="},";
 	$n++;
 }
 $model.="]";
 
+//printArray($dataSource);exit();
 //echo strlen($dataSource["datatable_model"]);
 //exit($model);
+if(!$rptData['params']["notoolbar"]) {
 ?>
-<?php
-	if(!isset($_REQUEST['toolbar']) || $_REQUEST['toolbar']=="true") {
-?>
-<div id=hd1 class='ui-widget-header' style='width:100%;height:25px;overflow:hidden;'>
-	<h3 style='margin:0px;margin-top:4px;margin-left:15px;float:left;'><?=$dataSource['header']?></h3>
+<div id=hd1 rel='<?=$dataSource["divid"]?>_grid_table' class='gridbar ui-widget-header' style='width:100%;height:25px;overflow:hidden;'>
+	<h3 style='margin:0px;margin-top:4px;margin-left:15px;float:left;'><?=_ling(_replace($dataSource['header']))?></h3>
 	<div style='float:right;margin-right:2px;'>
 		<?=printGridButtons($dataSource["toolbtns"],$dataSource["divid"]);?>
 	</div>
 </div>
 <?php
-	}
+}
 ?>
 <div class=reportDataTable>
-	<table id='<?=$dataSource["divid"]?>_grid_table'>
+	<table width=100% id='<?=$dataSource["divid"]?>_grid_table'>				
 	</table>
 	<div id='<?=$dataSource["divid"]?>_grid_pager' class="pager"></div>
 </div>
 <script type="text/javascript">
-jqColumns={
-		"colNames":<?=$cols?>,
-		"colModel": <?=$model?>,
-	};
-<?=$dataSource["datatable_params"]?>
 exportCSS="<?=$css?>";
-function loadData() {
-	loadDataGrid("#<?=$divId?>");
-}
+$(function() {
+	setTimeout(function() {
+			var jqColumns={
+				"colNames":<?=$cols?>,
+				"colModel": <?=$model?>,
+				};
+			var rptSearchOpts={};
+			var rptOptions={};
+
+			<?=$dataSource["datatable_params"]?>
+			
+			rptSearchOptsMaster['<?=$dataSource["divid"]?>']=$.extend({}, rptSearchOptsDefaults, rptSearchOpts);
+			rptOptsMaster['<?=$dataSource["divid"]?>']=$.extend({}, rptOptionsDefaults, rptOptions);
+			gridID='#<?=$dataSource["divid"]?>';
+			$.lgksJQGrid(gridID,rptSearchOpts,rptOptions,jqColumns,'<?=$dataSource['dataSource']?>');
+		},100);
+});
 </script>

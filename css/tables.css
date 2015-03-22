@@ -1,16 +1,62 @@
 .reportDataTable {
-	padding-top:5px;padding-bottom:5px;overflow:auto;
+	padding-top:0px;padding-bottom:0px;overflow:auto;
 }
-.reportDataTable table {
-	border:1px solid #aaa;
-}
-.reportDataTable table td {
+.reportDataTable table.rptTable {
 	border:0px;
-	border-right:1px solid #aaa;
-	border-bottom:1px solid #aaa;
+}
+.reportDataTable table.rptTable thead th {
+	padding:4px;
+	border-right: 1px solid #CCC;
+}
+.reportDataTable table.rptTable thead th:last-child {
+	border-right:0px;	
+}
+.reportDataTable table.rptTable td {
+	border:0px;
+	border-right:1px solid #CCC;
+	border-bottom:1px solid #CCC;
 	height:23px;
 }
-.reportDataTable table tr:hover {
+.reportDataTable table.rptTable tbody tr:hover {
 	cursor:pointer;
 	background:#DCF7EB;
+}
+
+.navBar .navBtn {
+	margin-top: 5px;margin-right: 5px;
+	padding:7px;
+	display: inline-block;
+	cursor: pointer;
+}
+.navBar .navBtn:hover {
+	opacity: 0.5;
+}
+.navBar .navBtn.goFirst {
+	background: url(images/nav/first.png) no-repeat center center;
+	float: left;
+}
+.navBar .navBtn.goBack {
+	background: url(images/nav/back.png) no-repeat center center;
+	float: left;
+}
+.navBar .navBtn.goNext {
+	background: url(images/nav/next.png) no-repeat center center;
+	float: right;
+}
+.navBar .navBtn.goLast {
+	background: url(images/nav/last.png) no-repeat center center;
+	float: right;
+}
+.navBar .infoBar {
+	width:150px;height:20px;
+	float: left;
+	position: relative;
+	left: 50%;
+	margin-left:-95px;
+	vertical-align: center;
+	padding-top:2px;
+}
+.navBar .infoBar .rowsInPage {
+	height: 100%;width:80px;
+	outline:none;
 }

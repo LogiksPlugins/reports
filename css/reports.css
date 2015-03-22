@@ -3,6 +3,7 @@ img {
 }
 .LGKSRPTTABLE {
 	overflow:hidden;width:100%;height:100%;padding:0px;margin:0px;
+	font: 12px arial, sans-serif;
 }
 .LGKSRPTTABLE button {
 	width: 115px;
@@ -91,7 +92,22 @@ div.searchFilter table.group {
 div.searchFilter td.columns select,div.searchFilter td.operators select {
 	width:100%;
 }
+select.gridActionSelector {
+	width:100%;height:100%;
+}
 
+/*JQGrid CSS Optimization*/
+.ui-jqgrid tr.ui-row-ltr td {
+	/*padding:2px !important;
+	line-height: 26px !important;
+	font-family: times !important;*/
+}
+.ui-jqgrid tr.ui-row-ltr td:last-child {
+	padding:0px !important;
+}
+#trv_action2 {
+	display: none !important;
+}
 /*Special Cell Classes*/
 .email {
 	color:darkblue;
