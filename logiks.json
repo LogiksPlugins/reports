@@ -1,0 +1,31 @@
+{
+    "name": "reports",
+    "version": "1.0.0",
+    "status": "",
+    "package":"reports",
+    "type": "module",
+    "app": "*",
+    "privilege": "*",
+    "description": "A auto reporting module that has a drag n drop interface for creating reports and embeded tools like export, mail etc for users prebuilt.",
+    "keywords": "logiks,modules,reports",
+    "license": "MIT",
+    "marketid": "",
+    "homepage": "https://github.com/LogiksPlugins/reports",
+    "bugs": "https://github.com/LogiksPlugins/reports/issues",
+    "private": false,
+    "permissions": "",
+    "dependencies": {
+        "core": "*",
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LogiksPlugins/reports.git"
+    },
+    "authors": [
+        {
+            "name": "OpenLogiks Team",
+            "email": "admin@openlogiks.org",
+            "authorid":"olgksadmin"
+        }
+    ]
+}

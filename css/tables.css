@@ -1,0 +1,16 @@
+.reportDataTable {
+	padding-top:5px;padding-bottom:5px;overflow:auto;
+}
+.reportDataTable table {
+	border:1px solid #aaa;
+}
+.reportDataTable table td {
+	border:0px;
+	border-right:1px solid #aaa;
+	border-bottom:1px solid #aaa;
+	height:23px;
+}
+.reportDataTable table tr:hover {
+	cursor:pointer;
+	background:#DCF7EB;
+}

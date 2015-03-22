@@ -1,0 +1,110 @@
+img {
+	border:0px;
+}
+.LGKSRPTTABLE {
+	overflow:hidden;width:100%;height:100%;padding:0px;margin:0px;
+}
+.LGKSRPTTABLE button {
+	width: 115px;
+	height: 35px;
+	text-align:center;
+	margin-top:10px;
+	margin-left:10px;
+	font: bold 12px arial, sans-serif;
+}
+.LGKSRPTTABLE button.mini {
+	width:35px;
+	height:25px;
+	text-align:center;
+	margin-top:10px;
+	margin-left:10px;
+	font: bold 12px arial, sans-serif;
+	padding:0px;
+}
+
+.ui-jqgrid-view .ui-jqgrid-hbox table.ui-jqgrid-htable thead input {border:1px solid #aaa;}
+
+/*DataForm Buttons*/
+.btn_reload {
+	background:transparent url(images/buttons/reload.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_search {
+	background:transparent url(images/buttons/search.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_column {
+	background:transparent url(images/buttons/cols.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_edit {
+	background:transparent url(images/buttons/edit.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_view {
+	background:transparent url(images/buttons/view.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_print {
+	background:transparent url(images/buttons/print.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_mail {
+	background:transparent url(images/buttons/mail.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_actionlink {
+	background:transparent url(images/buttons/actionlink.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_filters {
+	background:transparent url(images/buttons/filter.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_xls {
+	background:transparent url(images/export/xls.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_html {
+	background:transparent url(images/export/html.png) no-repeat center center; width:25px; height:25px;
+	cursor:pointer;
+}
+.btn_reload:hover, .btn_search:hover, .btn_column:hover,.btn_edit:hover,.btn_view:hover,.btn_print:hover
+.btn_mail:hover, .btn_xls:hover, .btn_html:hover {
+	opacity:0.7;
+}
+.noscreen {
+	display:none;
+}
+
+/*JQGrid CSS Fix*/
+input[type=text].input-elm {
+	border:1px solid #aaa;
+	width:100%;
+}
+input[type=text].ui-pg-input {
+	border:1px solid #aaa;
+}
+div.searchFilter table.group {
+	width:100%;
+}
+div.searchFilter td.columns select,div.searchFilter td.operators select {
+	width:100%;
+}
+
+/*Special Cell Classes*/
+.email {
+	color:darkblue;
+	background:transparent url(images/table/mail.png) no-repeat center right;
+	cursor:pointer;
+}
+.url {
+	color:darkgreen;
+	background:transparent url(images/table/link.png) no-repeat center right;
+	cursor:pointer;
+}
+.attachment {
+	color:maroon;
+	background:transparent url(images/table/attach.png) no-repeat center right;
+	cursor:pointer;
+}

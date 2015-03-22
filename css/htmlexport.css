@@ -1,0 +1,63 @@
+table.exportdatatable {
+	border:2px solid #aaa;
+	padding:0px;
+		
+	-moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;    
+}
+table.exportdatatable thead tr td {
+	border-bottom:2px solid #aaa;
+	text-align:center;
+	font-weight:bold;
+	font-family:Georgia,Verdana,Seriff;
+	background:#7EBDF7;
+	cursor:default;
+}
+table.exportdatatable tbody tr td {
+	border-bottom:1px solid #aaa;
+	border-right:1px solid #aaa;
+	padding:1px;
+}
+table.exportdatatable tbody tr:last-child td {
+	border-bottom:0px;
+}
+table.exportdatatable tbody tr td:last-child {
+	border-right:0px;
+}
+table.exportdatatable tbody tr td:first-child {
+	text-align:center;
+}
+table.exportdatatable tbody tr:hover {
+	background:#F7EDD2;
+	cursor:pointer;
+}
+table.exportdatatable caption {
+	font:1.2em bold Georgia,Verdana;
+	font-size:1.2em;
+	font-weight:bold;
+	text-align:center;
+	color:#287DDE;
+}
+table.exportdatatable tfoot {
+	margin-top:10px;
+	font:1.2em bold Georgia,Verdana;
+	font-size:0.7em;
+	font-weight:bold;
+	text-align:center;
+	color:#888;
+}
+table.exportdatatable tfoot tr td {
+	border-top:2px solid #777;
+}
+.noscreen {
+	display:none;
+}
+@media print {
+	.noprint {
+		display:none;
+	}
+	.noscreen {
+		display:block;
+	}
+}
