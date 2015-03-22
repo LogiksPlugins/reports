@@ -17,6 +17,9 @@
     "dependencies": {
         "core": "*",
     },
+    "directoryMap": {
+        "installer": ".install"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/LogiksPlugins/reports.git"
