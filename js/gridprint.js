@@ -82,13 +82,13 @@ function getCSVForGrid(id) {
 	var html="";
 	var delim=",";
 	for(k=0;k<colNames.length;k++) {
-		html=html+colTitles[k]+delim;     // output each Column as tab delimited
+		html=html+'"'+colTitles[k]+'"'+delim;     // output each Column as tab delimited
 	}
 	html=html+"\n";                    // Output header with end of line
 	for(i=0;i<mya.length;i++) {
 		data=$(id).getRowData(mya[i]); // get each row
 		for(j=0;j<colNames.length;j++) {
-			html=html+data[colNames[j]]+delim; // output each column as tab delimited
+			html=html+'"'+data[colNames[j]]+'"'+delim; // output each column as tab delimited
 		}
 		html=html+"\n";  // output each row with end of line
 	}
