@@ -1,0 +1,186 @@
+.reportTable {
+    width: 100%;height: 100%;
+}
+/*Toolbar*/
+.reportTable .table-tools {
+    margin:0px;margin-top: 15px;padding-right: 5px;
+    /*margin-bottom: 10px;*/
+}
+.reportTable .table-tools .control-primebar {
+	height: 35px;
+	max-height: 35px;
+	/*overflow: hidden;*/
+}
+.reportTable .table-tools .control-toolbar {
+	margin-top: 10px;
+	height: 35px;
+	max-height: 35px;
+	overflow: hidden;
+}
+.reportTable .table-tools .control-custombar {
+	margin-top: 10px;
+}
+.reportTable .table-tools .btn {
+	outline: none;
+}
+.reportTable .table-tools .btn .caret {
+    float: right;
+    margin-top: 25%;
+    margin-left: 5px;
+    margin-right: -5px;
+}
+.reportTable .table-tools h1.reportTitle {
+	margin: 0px;
+	padding: 0px;
+	padding-top: 10px;
+	font-size: 20px;
+}
+.reportTable .table-tools input.searchfield {
+	/*width: 150px;
+    display: inline-block;*/
+    height: 100%;
+    padding: 3px;
+}
+.reportTable .table-tools .open>.dropdown-menu {
+    left: auto;
+    right: 0px;
+}
+.reportTable .table-tools .dropdown-menu input[type=checkbox] {
+    margin-right: 5px;
+}
+.reportTable .table-tools .dropdown-menu label {
+    font-weight: normal;
+    font-size: 12px;
+    margin-bottom: 0px;
+    width: 100%;
+}
+/*Table Sections*/
+.reportTable thead.tableHead {
+    background: white;
+}
+
+.reportTable thead.tableFilter {
+    /*display: none;*/
+    transition: opacity 1s ease-out;
+    opacity: 1;
+}
+.reportTable thead.tableFilter.hidden {
+    opacity: 0; 
+    display: none;
+}
+
+.reportTable tbody.tableSummary {
+    /*display: none;*/
+    background: white;
+}
+
+.reportTable tfoot.tableFoot {
+	font-size: 10px;
+    background: white;
+}
+
+
+.reportTable thead.tableFilter th {
+    font-weight: normal;
+    background: transparent;
+}
+.reportTable thead.tableFilter th.filterCol {
+    background: white;
+}
+.reportTable thead.tableFilter th.filterBlank {
+    background: #F9F9F9;
+}
+.reportTable tfoot.tableFoot select {
+    width: 75px;height: 25px;
+    background: white;
+    outline: none;
+}
+.reportTable tfoot.tableFoot .displayCounter {
+    line-height: 26px;
+}
+
+/*Misc*/
+.reportTable tbody.tableBody .ajaxloading {
+	padding: 30px !important;
+}
+.reportTable hr {
+    margin: 7px;
+}
+
+/*DataTables*/
+table.dataTable {
+    font-weight: normal;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+table.dataTable>thead>tr>th {background: white;cursor: pointer;border-bottom:0px;border-right: 1px solid #AAA;}
+
+table.dataTable thead.tableFilter td, table.dataTable thead.tableFilter th {
+    padding: 2px !important;
+}
+
+table.dataTable td.rowSelector.action,table.dataTable th.rowSelector.action {
+    text-align:center;
+    vertical-align:center;
+}
+table.dataTable thead input, table.dataTable thead select {
+    width: 100%;height: 25px;
+    border: 0px;
+    background: transparent;
+    min-width: auto;
+    outline: 0px;
+    font-weight: normal;
+}
+table.dataTable thead input[type=checkbox],table.dataTable thead input[type=radio],
+    table.dataTable tbody input[type=checkbox],table.dataTable tbody input[type=radio] {
+    width: 15px;height: 15px;
+    border: 1px solid #E9E9E9;
+    margin:auto;
+}
+table.dataTable tfoot td {
+    background: #FFF;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc_disabled,
+table.dataTable thead .sorting_desc_disabled {
+    background: 0 0;
+}
+
+table.dataTable thead .sorting:after {
+    content: "\f0dc";
+    float: right;
+    font-family: fontawesome;
+    color: rgba(50,50,50,.5);
+}
+
+table.dataTable thead .sorting_asc:after {
+    content: "\f0de";
+    float: right;
+    font-family: fontawesome;
+    color: black;
+}
+
+table.dataTable thead .sorting_desc:after {
+    content: "\f0dd";
+    float: right;
+    font-family: fontawesome;
+    color: black;
+}
+
+table.dataTable th,table.dataTable td {padding:10px !important;}
+
+/*Column Formatter*/
+table.dataTable tbody td.currency,
+    table.dataTable tbody td.decimal {
+    text-align: right;
+}
+table.dataTable tbody td.number {
+    text-align: center;
+}
+table.dataTable tbody td.checkbox {
+    text-align: center;
+}
