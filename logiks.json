@@ -1,7 +1,8 @@
 {
-    "name": "Reports",
+    "name": "Logiks Reports",
     "version": "3.0.0",
     "status": "alpha",
+    "type": "module",
     "package":"reports",
     "type": "module",
     "description": "A auto reporting module that has a drag n drop interface for creating reports and embeded tools like export, mail etc for users prebuilt.",
