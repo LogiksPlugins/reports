@@ -29,7 +29,6 @@ if(!function_exists("findReport")) {
 
 	function printReport($reportConfig,$dbKey="app") {
 		//var_dump($reportConfig);
-
 		if(!is_array($reportConfig)) $reportConfig=findReport($reportConfig);
 
 		$reportConfig['dbkey']=$dbKey;
