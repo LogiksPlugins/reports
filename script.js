@@ -277,6 +277,127 @@ var LGKSReports = (function() {
 				rpt.getGrid().find("thead.tableFilter").toggleClass("hidden");
 				rpt.settings("filterbar",(!rpt.getGrid().find("thead.tableFilter").hasClass("hidden")));
 			break;
+			case "report:print":
+				window.print();
+			break;
+			case "report:exportcsv":
+				q=[];
+				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td",this).each(function(k,v) {
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
+						if($(v).find("input[type=checkbox]").length>0) {
+							if($(v).is(":checked")) z.push("\"true\""); 
+							else z.push("\"false\"");
+						} else {
+							z.push("\""+$(v).text().replace("\"","`")+"\"");
+						}
+					});
+					q.push(z.join(","));
+				});
+				blob = new Blob([q.join("\n\r")], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, "export.csv",true);
+			break;
+			case "report:exportcsvxls":
+				q=[];
+				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td",this).each(function(k,v) {
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
+						if($(v).find("input[type=checkbox]").length>0) {
+							if($(v).is(":checked")) z.push("\"true\""); 
+							else z.push("\"false\"");
+						} else {
+							z.push("\""+$(v).text().replace("\"","`")+"\"");
+						}
+					});
+					q.push(z.join(";"));
+				});
+				blob = new Blob([q.join("\n\r")], {type: "text/plain;charset=utf-8"});
+				saveAs(blob, "export.csv",true);
+			break;
+			case "report:exportxml":
+				q=['<?xml version="1.0" encoding="utf-8"?>\n\n','<table name="export">\n'];
+				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td",this).each(function(k,v) {
+						nm=$(v).data('key');
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
+						if($(v).find("input[type=checkbox]").length>0) {
+							if($(v).is(":checked")) z.push("\t\t<col name='"+nm+"'>true</col>\n"); 
+							else z.push("\t\t<col name='"+nm+"'>false</col>\n"); 
+						} else {
+							z.push("\t\t<col name='"+nm+"'>"+$(v).text().replace("\"","`")+"</col>\n"); 
+						}
+					});
+					q.push("\t<row name='"+$(this).data('hash')+"'>\n"+z.join("")+"\t</row>\n");
+				});
+				q.push('</table>');
+				blob = new Blob([q.join("")], {type: "application/xml;charset=utf-8"});
+				saveAs(blob, "export.xml",true);
+			break;
+			case "report:exporthtml":case "report:exporthtm":
+				q=[];
+				q.push("<style>");
+				q.push(".exportTable {margin:0px;padding:0px;width:100%;font-size:10px;font-family:Arial;font-weight:normal;color:#000000;}");
+				q.push(".exportTable td, .exportTable th {vertical-align:middle;border:1px solid #AAA;text-align:left;padding:7px;margin:0px;}");
+				q.push(".exportTable thead tr th {background:#F9F9F9;}");
+				q.push("</style>");
+
+				q.push('<table class="exportTable" cellspacing=0px>\n');
+				q.push("<thead>\n");
+				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("th",this).each(function(k,v) {
+						nm=$(v).data('key');
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
+						if($(v).find("input[type=checkbox]").length>0) {
+							if($(v).is(":checked")) z.push("\t\t<th name='"+nm+"'>true</th>\n"); 
+							else z.push("\t\t<th name='"+nm+"'>false</th>\n"); 
+						} else {
+							z.push("\t\t<th name='"+nm+"'>"+$(v).text().replace("\"","`")+"</th>\n"); 
+						}
+					});
+					q.push("\t<tr>\n"+z.join("")+"\t</tr>\n");
+				});
+				q.push("</thead>\n");
+				q.push("<tbody>\n");
+				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td",this).each(function(k,v) {
+						nm=$(v).data('key');
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
+						if($(v).find("input[type=checkbox]").length>0) {
+							if($(v).is(":checked")) z.push("\t\t<td name='"+nm+"'>true</td>\n"); 
+							else z.push("\t\t<td name='"+nm+"'>false</td>\n"); 
+						} else {
+							z.push("\t\t<td name='"+nm+"'>"+$(v).text().replace("\"","`")+"</td>\n"); 
+						}
+					});
+					q.push("\t<tr name='"+$(this).data('hash')+"'>\n"+z.join("")+"\t</tr>\n");
+				});
+				q.push("</tbody>\n");
+				q.push('</table>');
+				blob = new Blob([q.join("")], {type: "application/xml;charset=utf-8"});
+				saveAs(blob, "export.html",true);
+			break;
+			case "report:exportimg":
+				html2canvas(document.body, {
+					  onrendered: function(canvas) {
+							window.open().document.body.appendChild(canvas);
+							window.location.reload();
+					  }
+					});
+			break;
+			case "report:exportpdf":
+				window.open(_service("reports","export")+"&type=pdf&gridid="+this.gridID);
+			break;
+			case "report:exportxls":
+				window.open(_service("reports","export")+"&type=xlsgridid="+this.gridID);
+			break;
+			case "report:email":case "report:exportemail":
+				
+			break;
 			default:
 				if(typeof window[cmd]=="function") {
 					window[cmd](rpt);

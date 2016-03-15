@@ -30,6 +30,8 @@ if(!function_exists("findReport")) {
 	function printReport($reportConfig,$dbKey="app") {
 		//var_dump($reportConfig);
 		if(!is_array($reportConfig)) $reportConfig=findReport($reportConfig);
+		
+		if(!isset($reportConfig['reportkey'])) $reportConfig['reportkey']=md5(time());
 
 		$reportConfig['dbkey']=$dbKey;
 
@@ -54,6 +56,25 @@ if(!function_exists("findReport")) {
 			}
 		}
 
+		if(isset($reportConfig['toolbar']) && $reportConfig['toolbar']===false) {
+			$reportConfig['toolbar']['search']=false;
+			$reportConfig['toolbar']['print']=false;
+			$reportConfig['toolbar']['email']=false;
+			$reportConfig['toolbar']['export']=false;
+		}
+
+		if(!isset($reportConfig['export'])) $reportConfig['export']=[];
+
+		if(!isset($reportConfig['export']['pdf'])) {
+			$reportConfig['export']['pdf']=APPROOT.APPS_TEMPLATE_FOLDER.'print-report.tpl';
+		}
+
+		if(count($reportConfig['searchCols'])>0) {
+		  $reportConfig['toolbar']['search']=true;
+		} else {
+		  $reportConfig['toolbar']['search']=false;
+		}
+
 		$reportKey=$reportConfig['reportkey'];
 		$_SESSION['REPORT'][$reportKey]=$reportConfig;
 		
@@ -63,6 +84,20 @@ if(!function_exists("findReport")) {
 			];
 		foreach ($templateArr as $f) {
 			if(file_exists($f) && is_file($f)) {
+				if(isset($reportConfig['preload'])) {
+					if(isset($reportConfig['preload']['modules'])) {
+						loadModules($reportConfig['preload']['modules']);
+					}
+					if(isset($reportConfig['preload']['api'])) {
+						foreach ($reportConfig['preload']['api'] as $apiModule) {
+							loadModuleLib($apiModule,'api');
+						}
+					}
+					if(isset($reportConfig['preload']['helpers'])) {
+						loadHelpers($reportConfig['preload']['helpers']);
+					}
+				}
+				
 				_css('reports');
 				include $f;
 				_js('reports');
@@ -98,11 +133,15 @@ if(!function_exists("findReport")) {
 
 			case 'checkbox':
 				$value1=strtolower($value);
+				$html="<td class='{$clz} {$key} checkboxes' data-key='$key'>";
 				if($value===true || $value1=="true" || $value1=="on") {
-					return "<td class='{$clz} {$key} {$type}' data-key='$key'><input type='checkbox' disabled checked=true /></td>";
+					$html.="<input class='noprint' type='checkbox' disabled checked=true />";
 				} else {
-					return "<td class='{$clz} {$key} {$type}' data-key='$key'><input type='checkbox' disabled /></td>";
+					$html.="<input class='noprint' type='checkbox' disabled />";
 				}
+				$html.="<span class='onlyprint'>{$value1}</span>";
+				$html.="</td>";
+				return $html;
 				break;
 
 			default:
@@ -118,74 +157,15 @@ if(!function_exists("findReport")) {
 		$noFilter=_ling($filterConfig['nofilter']);
 
 		switch ($filterConfig['type']) {
-			case 'select':
-				if(!isset($filterConfig['options'])) $filterConfig['options']=[];
+			case 'dataMethod': case 'dataSelector': case 'dataSelectorFromUniques': case 'dataSelectorFromTable':
+			case 'select': case 'selectAJAX': 
+				$html="";
 
 				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
 				$html.="<option value=''>{$noFilter}</option>";
-				foreach ($filterConfig['options'] as $key => $value) {
-					if(is_array($value)) {
-						$cx=[];
-						if(isset($value['label'])) {
-							$vx=$value['label'];
-							unset($value['label']);
-							foreach ($value as $key => $value) {
-								$cx[]="$key='$value";
-							}
-						} else $vx="";
+				
+				$html.=generateSelectOptions($filterConfig,"",$dbKey);
 
-						$html.="<option value='$key' ".implode(" ", $cx).">"._ling($vx)."</option>";
-					} else {
-						$vx=$value;
-						$html.="<option value='$key'>"._ling($vx)."</option>";
-					}
-				}
-				$html.="</select>";
-
-				return $html;
-				break;
-
-			case 'selectAJAX':
-				$html="<select class='filterBarField autorefreshReport filterSelect ajaxSelector' name='$key'>";
-				$html.="<option value=''>Loading ...</option>";
-				$html.="</select>";
-
-				return $html;
-				break;
-
-			case "createDataSelector":
-				if(!isset($filterConfig['orderBy'])) $filterConfig['orderBy']=null;
-
-				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
-				$html.="<option value=''>{$noFilter}</option>";
-				$html.=createDataSelector($filterConfig['groupid'],$filterConfig['orderBy'],$dbKey);
-				$html.="</select>";
-
-				return $html;
-				break;
-
-			case "createDataSelectorFromUniques":
-				if(!isset($filterConfig['col2'])) $filterConfig['col2']=$filterConfig['col1'];
-				if(!isset($filterConfig['where'])) $filterConfig['where']=null;
-				if(!isset($filterConfig['orderBy'])) $filterConfig['orderBy']=null;
-
-				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
-				$html.="<option value=''>{$noFilter}</option>";
-				$html.=createDataSelectorFromUniques($filterConfig['table'],$filterConfig['col1'],$filterConfig['col2'],$filterConfig['where'],$filterConfig['orderBy'],$dbKey);
-				$html.="</select>";
-
-				return $html;
-				break;
-
-			case "createDataSelectorFromTable":
-				if(!isset($filterConfig['columns'])) $filterConfig['columns']=$filterConfig['col1'];
-				if(!isset($filterConfig['where'])) $filterConfig['where']=null;
-				if(!isset($filterConfig['groupBy'])) $filterConfig['groupBy']=null;
-				if(!isset($filterConfig['orderBy'])) $filterConfig['orderBy']=null;
-
-				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
-				$html.="<option value=''>{$noFilter}</option>";
-				$html.=createDataSelectorFromTable($filterConfig['table'],$filterConfig['columns'], $filterConfig['where'],$filterConfig['groupBy'],$filterConfig['orderBy'],$dbKey);
 				$html.="</select>";
 
 				return $html;

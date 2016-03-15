@@ -23,6 +23,12 @@
 			"icon":"<i class='fa fa-plus'></i>"
 		}
 	},
+	"toolbar":{
+		"search":false,
+		"print":false,
+		"export":{"csv":"Just CSV"},
+		"email":false
+	},
 	"datagrid":{
 		"id":{
 			"label":"ID",

@@ -1,39 +1,95 @@
 <?php
+if(!defined('ROOT')) exit('No direct script access allowed');
+
 //groupable
-//searchable
-//formatter
 
 //printArray($reportConfig);exit();
-$arrPager=[10,20,50,100,500,1000,5000];
+if(isset($reportConfig['pager'])) {
+  $arrPager=$reportConfig['pager'];
+} else {
+  $arrPager=[10,20,50,100,500,1000,5000];
+}
 ?>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' class="reportTable table-responsive">
-	<div class="row table-tools">
+	<div class="row table-tools noprint">
       <div class="control-primebar">
       	<div class="col-lg-6 col-xs-6 pull-left">
       		<h1 class='reportTitle'><?=$reportConfig['title']?></h1>
       	</div>
 
       	<div class="col-lg-6 col-xs-6 pull-right">
-            <div class="input-group">
-                <input name="q" placeholder="Search..." type="text" class="form-control searchfield searchicon">
+            <div class="input-group" style='text-align: right;'>
+                <?php
+                  if($reportConfig['toolbar']['search']) {
+                    echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon">';
+                  }
+                ?>
 
                 <div class="input-group-btn">
-                	<button type="button" cmd='refresh' class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>
+                	<button type="button" cmd='refresh' class="btn btn-default">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                  </button>
 
                 	<div class='btn-group'>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-print"></span><span class="caret"></span></button>
-                        <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
-                          <li><a href="#" cmd='report:print'>Print</a></li>
-                          <li><a href="#" cmd='report:exportcsv'>Export CSV</a></li>
-                          <li><a href="#" cmd='report:exportxls'>Export Excel</a></li>
-                          <li><a href="#" cmd='report:exportpdf'>Export PDF</a></li>
-                          <li><a href="#" cmd='report:exportimg'>Export Image</a></li>
-                          <li><a href="#" cmd='report:email'>Email Report</a></li>
-                        </ul>
+                            <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
+                              <?php
+                                if(!isset($reportConfig['toolbar']['print']) || $reportConfig['toolbar']['print']) {
+                                  echo "<li><a href='#' cmd='report:print'>"._ling("Print Report")."</a></li>";
+                                }
+
+                                if(isset($reportConfig['toolbar']['export'])) {
+                                  if($reportConfig['toolbar']['export']===true) {
+                                    $reportConfig['toolbar']['export']=[
+                                        "csv"=>"Export CSV",
+                                        "csvxls"=>"Export CSV For Excel",
+                                        //"xls"=>"Export For Excel",
+                                        "xml"=>"Export XML",
+                                        "htm"=>"Export HTML",
+                                        "img"=>"Export Image",
+                                        "pdf"=>"Export PDF",
+                                      ];
+                                  }
+                                } else {
+                                  $reportConfig['toolbar']['export']=[
+                                        "csv"=>"Export CSV",
+                                        "csvxls"=>"Export CSV For Excel",
+                                        //"xls"=>"Export For Excel",
+                                        "xml"=>"Export XML",
+                                        "htm"=>"Export HTML",
+                                        "img"=>"Export Image",
+                                        "pdf"=>"Export PDF",
+                                      ];
+                                }
+                                if(is_array($reportConfig['toolbar']['export'])) {
+                                  foreach ($reportConfig['toolbar']['export'] as $key => $text) {
+                                    switch ($key) {
+                                      case 'pdf':
+                                        if(checkVendor('mpdf')) {
+                                          echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                        }
+                                        break;
+                                      
+                                      default:
+                                        echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                        break;
+                                    }
+                                  }
+                                }
+
+                                if(!isset($reportConfig['toolbar']['email']) || $reportConfig['toolbar']['email']) {
+                                  if(checkModule('liteComposer')) {
+                                    echo "<li><a href='#' cmd='report:email'>"._ling("Email Report")."</a></li>";
+                                  }
+                                }
+                              ?>
+                            </ul>
                     </div>
 
-                    <button type="button" cmd='filterbar' class="btn btn-default"><span class="glyphicon glyphicon-filter"></span></button>
+                    <button type="button" cmd='filterbar' class="btn btn-default">
+                      <span class="glyphicon glyphicon-filter"></span>
+                    </button>
 
                     <div class='btn-group'>
                     	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,7 +102,6 @@ $arrPager=[10,20,50,100,500,1000,5000];
                     				} else {
                     					echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colID}' checked=true>"._ling($column['label'])."</label></a></li>";
                     				}
-                    				
                     			}
                     		?>
                         </ul>
@@ -78,7 +133,6 @@ $arrPager=[10,20,50,100,500,1000,5000];
       <?php
       	}
       ?>
-
       <?php
       	if(isset($reportConfig['custombar']) && $reportConfig['custombar'] && file_exists(APPROOT.$reportConfig['custombar'])) {
       ?>
@@ -122,7 +176,7 @@ $arrPager=[10,20,50,100,500,1000,5000];
 						echo "<th class='".trim($clz)."' data-key='{$key}' $style >";
 						echo _ling($row['label']);
 						if(isset($row['sortable']) && $row['sortable']) {
-							echo "<span class='colSort sorting'></span>";
+							echo "<span class='colSort sorting noprint'></span>";
 						}
 						echo "</th>";
 					}
@@ -164,7 +218,7 @@ $arrPager=[10,20,50,100,500,1000,5000];
 		<tbody class='tableSummary hidden'>
 
 		</tbody>
-		<tfoot class='tableFoot'>
+		<tfoot class='tableFoot noprint'>
 			<tr><td colspan=100000000>
 				<div class="col-lg-6 pull-left">
 		            <select class='perPageCounter autorefreshReport' name='limit'>

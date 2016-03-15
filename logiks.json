@@ -13,7 +13,11 @@
     "bugs": "https://github.com/LogiksPlugins/reports/issues",
     "private": false,
     "dependencies": {
-        "core": "+4.0.0",
+        "core": ">=4.0.0"
+    },
+    "suggest":{
+        "mpdf":">=6.0",
+        "emailComposer":"*"
     },
     "repository": {
         "type": "git",

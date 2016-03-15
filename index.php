@@ -18,7 +18,7 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 		//include_once "sample.php";
 		printReport($report,"core");
 		echo "</div>";
-		echo _js("reports");
+		echo _js(["FileSaver","html2canvas","reports"]);
 	} else {
 		trigger_logikserror("Sorry, report '{$_REQUEST['src']}' not found.",E_USER_NOTICE,404);
 	}

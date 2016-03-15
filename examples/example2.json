@@ -18,6 +18,12 @@
 			"icon":"<i class='fa fa-plus'></i>"
 		}
 	},
+	"toolbar":{
+		"search":false,
+		"print":false,
+		"export":false,
+		"email":false
+	},
 	"datagrid":{
 		"id":{
 			"label":"ID",

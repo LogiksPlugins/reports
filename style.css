@@ -181,6 +181,31 @@ table.dataTable tbody td.currency,
 table.dataTable tbody td.number {
     text-align: center;
 }
-table.dataTable tbody td.checkbox {
+table.dataTable tbody td.checkboxes {
     text-align: center;
+}
+
+
+.onlyprint {
+    display: none !important;
+}
+
+@media print
+{    
+    .noprint, .noprint *
+    {
+        display: none !important;
+    }
+    .onlyprint
+    {
+        display: inline !important;
+    }
+
+    table.dataTable {
+        border:1px solid #AAA;
+    }
+
+    table.dataTable tbody td {
+        border-right: 1px solid #AAA;
+    }
 }

@@ -17,10 +17,3 @@ Logiks Core 4.0.0 or higher
 - SQL
 - Custom PHP
 
-## ToDoS
-- Pagination
-- Export Buttons Actions
-- TableSummary
-- New Template : Calendar
-- New Template : Cards
-
