@@ -22,7 +22,7 @@ if(!function_exists("findReport")) {
 		$reportConfig=json_decode(file_get_contents($file),true);
 
 		$reportConfig['sourcefile']=$file;
-		$reportConfig['reportkey']=md5(session_id().$file);
+		$reportConfig['reportkey']=md5(session_id().time().$file);
 
 		return $reportConfig;
 	}
