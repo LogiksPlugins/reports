@@ -7,132 +7,14 @@ if(!defined('ROOT')) exit('No direct script access allowed');
 if(isset($reportConfig['pager'])) {
   $arrPager=$reportConfig['pager'];
 } else {
-  $arrPager=[10,20,50,100,500,1000,5000];
+  $arrPager=[5, 10,20,50,100,500,1000,5000];
 }
 ?>
-<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' class="reportTable table-responsive">
+<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive">
 	<div class="row table-tools noprint">
-      <div class="control-primebar">
-      	<div class="col-lg-6 col-xs-6 pull-left">
-      		<h1 class='reportTitle'><?=$reportConfig['title']?></h1>
-      	</div>
-
-      	<div class="col-lg-6 col-xs-6 pull-right">
-            <div class="input-group" style='text-align: right;'>
-                <?php
-                  if($reportConfig['toolbar']['search']) {
-                    echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon">';
-                  }
-                ?>
-
-                <div class="input-group-btn">
-                	<button type="button" cmd='refresh' class="btn btn-default">
-                    <span class="glyphicon glyphicon-refresh"></span>
-                  </button>
-
-                	<div class='btn-group'>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="glyphicon glyphicon-print"></span><span class="caret"></span></button>
-                            <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
-                              <?php
-                                if(!isset($reportConfig['toolbar']['print']) || $reportConfig['toolbar']['print']) {
-                                  echo "<li><a href='#' cmd='report:print'>"._ling("Print Report")."</a></li>";
-                                }
-
-                                if(isset($reportConfig['toolbar']['export'])) {
-                                  if($reportConfig['toolbar']['export']===true) {
-                                    $reportConfig['toolbar']['export']=[
-                                        "csv"=>"Export CSV",
-                                        "csvxls"=>"Export CSV For Excel",
-                                        //"xls"=>"Export For Excel",
-                                        "xml"=>"Export XML",
-                                        "htm"=>"Export HTML",
-                                        "img"=>"Export Image",
-                                        "pdf"=>"Export PDF",
-                                      ];
-                                  }
-                                } else {
-                                  $reportConfig['toolbar']['export']=[
-                                        "csv"=>"Export CSV",
-                                        "csvxls"=>"Export CSV For Excel",
-                                        //"xls"=>"Export For Excel",
-                                        "xml"=>"Export XML",
-                                        "htm"=>"Export HTML",
-                                        "img"=>"Export Image",
-                                        "pdf"=>"Export PDF",
-                                      ];
-                                }
-                                if(is_array($reportConfig['toolbar']['export'])) {
-                                  foreach ($reportConfig['toolbar']['export'] as $key => $text) {
-                                    switch ($key) {
-                                      case 'pdf':
-                                        if(checkVendor('mpdf')) {
-                                          echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
-                                        }
-                                        break;
-                                      
-                                      default:
-                                        echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
-                                        break;
-                                    }
-                                  }
-                                }
-
-                                if(!isset($reportConfig['toolbar']['email']) || $reportConfig['toolbar']['email']) {
-                                  if(checkModule('liteComposer')) {
-                                    echo "<li><a href='#' cmd='report:email'>"._ling("Email Report")."</a></li>";
-                                  }
-                                }
-                              ?>
-                            </ul>
-                    </div>
-
-                    <button type="button" cmd='filterbar' class="btn btn-default">
-                      <span class="glyphicon glyphicon-filter"></span>
-                    </button>
-
-                    <div class='btn-group'>
-                    	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    		<span class="glyphicon glyphicon-list-alt"></span><span class="caret"></span></button>
-                    	<ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
-                    		<?php
-                    			foreach ($reportConfig['datagrid'] as $colID => $column) {
-                    				if(isset($column['hidden']) && $column['hidden']) {
-                    					echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colID}'>"._ling($column['label'])."</label></a></li>";
-                    				} else {
-                    					echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colID}' checked=true>"._ling($column['label'])."</label></a></li>";
-                    				}
-                    			}
-                    		?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
       <?php
-      	if(isset($reportConfig['actions']) && is_array($reportConfig['actions']) && count($reportConfig['actions'])>0) {
-      ?>
-      <div class="control-toolbar">
-      	<div class="col-lg-12 col-xs-12">
-      	<?php
-      		foreach ($reportConfig['actions'] as $key => $button) {
-      			if(isset($button['label'])) $button['label']=_ling($button['label']);
-      			else $button['label']=_ling($key);
-      			
-      			if(!isset($button['class'])) $button['class']="btn btn-primary";
-      			echo "<a class='{$button['class']}' cmd='{$key}' >";
-      			if(isset($button['icon'])) {
-      				echo $button['icon'];
-      			}
-      			echo " {$button['label']}</a>";
-      		}
-      	?>
-      	</div>
-      </div>
-      <?php
-      	}
-      ?>
+				include_once __DIR__."/comps/topbar.php";
+			?>
       <?php
       	if(isset($reportConfig['custombar']) && $reportConfig['custombar'] && file_exists(APPROOT.$reportConfig['custombar'])) {
       ?>
@@ -146,9 +28,9 @@ if(isset($reportConfig['pager'])) {
       <?php
       	}
       ?>
-    </div>
+  </div>
 
-	<table class="dataTable table table-hover table-striped table-condensed">
+	<table class="dataTable table table-hover table-striped table-condensed reportContainer">
 		<thead class='tableHead'>
 			<tr>
 				<?php
@@ -178,8 +60,11 @@ if(isset($reportConfig['pager'])) {
 						if(isset($row['sortable']) && $row['sortable']) {
 							echo "<span class='colSort sorting noprint'></span>";
 						}
-						echo "</th>";
+            echo "</th>";
 					}
+          if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+            echo "<th class='actionCol hidden-print'></th>";
+          }
 				?>
 			</tr>
 		</thead>
@@ -232,6 +117,14 @@ if(isset($reportConfig['pager'])) {
 		            		}
 		            	?>
 		            </select>
+					
+								<button type="button" class="btn btn-default pull-right" cmd='stayPut' style='margin-left: 10px;' title='Toggle if records get appeneded at the end or not.'><i class='glyphicon glyphicon-record'></i></button>
+
+                <div class="btn-group pull-right" role="group" aria-label="pagination">
+                  <button type="button" class="btn btn-default" cmd='prevPage'><i class='glyphicon glyphicon-chevron-left'></i></button>
+                  <button type="button" class="btn btn-default" cmd='firstPage'><i class='glyphicon glyphicon-retweet'></i></button>
+                  <button type="button" class="btn btn-default" cmd='nextPage'><i class='glyphicon glyphicon-chevron-right'></i></button>
+                </div>
 		        </div>
 		        <div class="col-lg-6 pull-right">
 		            <citie class='displayCounter'>Displaying <span class='recordsIndex'>0</span>-<span class='recordsUpto'>0</span> of <span class='recordsMax'>0</span> records</citie>
@@ -242,6 +135,33 @@ if(isset($reportConfig['pager'])) {
 </div>
 <script>
 $(function() {
-	new LGKSReports().init("<?=$reportKey?>");
+	var rpt=new LGKSReports().init("<?=$reportKey?>");
+	rpt.addListener(updateGridUI,"postload");
+	rpt.loadDataGrid();
 });
+function updateGridUI(rkey){
+	rpt=LGKSReports.getInstance(rkey);
+	grid=LGKSReports.getInstance(rkey).getGrid();
+  gridBody=$(".kanbanBoard","#RPT-"+rkey);
+	
+	qCols=[];
+	$(".table-tools .columnFilter input.columnName",grid).each(function() {
+			name=$(this).attr("name");
+			if($(this).is(":checked")) {
+				qCols.push(name);
+				$(".reportTable .dataTable thead.tableHead tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
+				$(".reportTable .dataTable thead.tableFilter tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
+				$(".reportTable .dataTable tbody.tableBody tr td.tableColumn:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
+				$(".reportTable .dataTable thead.tableSummary tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
+				$(".reportTable .dataTable thead.tableFoot tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
+			} else {
+				$(".reportTable .dataTable thead.tableHead tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
+				$(".reportTable .dataTable thead.tableFilter tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
+				$(".reportTable .dataTable tbody.tableBody tr td.tableColumn:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
+				$(".reportTable .dataTable thead.tableSummary tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
+				$(".reportTable .dataTable thead.tableFoot tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
+			}
+		});
+	rpt.settings("columns-visible",qCols);
+}
 </script>

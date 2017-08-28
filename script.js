@@ -1,23 +1,45 @@
 var LGKSReportsInstances={};
 var LGKSReports = (function() {
 	var gridID=null;
-	var postLoad={};
+	var rptType="grid";
+	var gridGroupID=null;
+	var hooksPostLoad=[];
+	var reportUIRenderer={};
 	var reportOptions=null;
 	var rpt=this;
+	var appendRecord=false;
 
-	rpt.initPlain = function(gridid) {
+	rpt.initPlain = function(gridid, rpttype) {
+		if(rpttype==null || rpttype.length<=0) rpttype="grid";
+		
 		this.gridID=gridid;
+		this.rptType=rpttype;
+		this.hooksPostLoad=[];
+		this.reportUIRenderer={};
+		
 		LGKSReportsInstances[this.gridID]=this;
 
 		this.settings();
+		
+		return this;
 	};
-	rpt.init = function(gridid) {
+	rpt.init = function(gridid, rpttype) {
+		if(rpttype==null || rpttype.length<=0) rpttype="grid";
+		
 		this.gridID=gridid;
+		this.rptType=rpttype;
+		this.hooksPostLoad=[];
+		this.reportUIRenderer={};
+		
+		this.reportUIRenderer['grid']="rptGridUI";
+		
 		LGKSReportsInstances[this.gridID]=this;
+
+		this.gridGroupID=rpt.getGrid().data("gkey");
 
 		this.settings();
 		//console.log(rpt.getGrid());
-
+		
 		//Autorefresh fields : Call reload
 		rpt.getGrid().delegate("select.autorefreshReport[name],input.autorefreshReport[name][type=date]","change",function(e) {
 			e.preventDefault();
@@ -33,19 +55,19 @@ var LGKSReports = (function() {
 		});
 
 		//AutoConnect report fields from other parts of page : autoinitation
-		$("body").find("div.forReport.autoConnect[for='"+this.gridID+"']").delegate("select.autorefreshReport[name],input.autorefreshReport[name][type=date]","change",function(e) {
+		$("body").delegate("div.forReport.autoConnect[for='"+this.gridID+"'] select.autorefreshReport[name],input.autorefreshReport[name][type=date]","change",function(e) {
 			e.preventDefault();
 			gridID=$(this).closest("div.forReport").attr('for');
 			LGKSReports.getInstance(gridID).reloadDataGrid(this);
 		});
-		$("body").find("div.forReport.autoConnect[for='"+this.gridID+"']").delegate("input.autorefreshReport[name]","keyup",function(e) {
+		$("body").delegate("div.forReport.autoConnect[for='"+this.gridID+"'] input.autorefreshReport[name]","keyup",function(e) {
 			e.preventDefault();
 			if((e.keyCode==13 || e.keyCode==17)) {// && encodeURIComponent($(this).val())!=grid.data("q")
 				gridID=$(this).closest("div.forReport").attr('for');
 				LGKSReports.getInstance(gridID).reloadDataGrid(this);
 			}
 		});
-
+		
 		$(".table-tools",rpt.getGrid()).delegate("input.searchfield[name=q]","keyup",function(e) {
 			if((e.keyCode==13 || e.keyCode==17) && encodeURIComponent($(this).val())!=grid.data("q")) {
 				gridID=$(this).closest(".reportTable").data('rptkey');
@@ -58,7 +80,15 @@ var LGKSReports = (function() {
 			e.preventDefault();
 			cmd=$(this).attr('cmd');
 			gridID=$(this).closest(".reportTable").data('rptkey');
-			LGKSReports.getInstance(gridID).datagridAction(cmd,this);
+			row=$(this).closest("tr");
+			LGKSReports.getInstance(gridID).datagridAction(cmd,this,row);
+		});
+		$(".reportContainer",rpt.getGrid()).delegate("button[cmd],i[cmd],a[cmd]","click",function(e) {
+			e.preventDefault();
+			cmd=$(this).attr('cmd');
+			gridID=$(this).closest(".reportTable").data('rptkey');
+			row=$(this).closest("tr");
+			LGKSReports.getInstance(gridID).datagridAction(cmd,this,row);
 		});
 
 		//Checkbox RowSelector In DataTable
@@ -85,7 +115,7 @@ var LGKSReports = (function() {
 		}
 		$(".table-tools .columnFilter",rpt.getGrid()).delegate("input.columnName","change",function(e) {
 			gridID=$(this).closest(".reportTable").data('rptkey');
-			LGKSReports.getInstance(gridID).updateColumnsUI(this);
+			updateGridUI(gridID);
 		});
 
 		//Row Filters
@@ -139,6 +169,23 @@ var LGKSReports = (function() {
 				LGKSReports.getInstance(gridID).reloadDataGrid(this);
 			}
 		});
+		$(".dataTable tbody").delegate("td.moreContent","click",function() {
+			if($(this).find(".contentBox.hidden").length>0) {
+				lgksAlert($(this).find(".contentBox.hidden").html(),"Content Preview!");
+			}
+		});
+		
+		$(".dataTable tbody").delegate("td.imagebox img","click",function() {
+			if($(this).attr("src").length>1) {
+				lgksAlert("<img src='"+$(this).attr("src")+"' class='img-responsive' />","Picture Preview!");
+			}
+		});
+		
+		$(".dataTable tbody").delegate("td.embed","click",function() {
+			if($(this).find(".contentBox").length>0) {
+				lgksAlert($(this).find(".contentBox").html());
+			}
+		});
 
 		//Pagination setup
 		recordsPerPage=rpt.settings("RecordsPerPage");
@@ -148,7 +195,19 @@ var LGKSReports = (function() {
 			rpt.settings("RecordsPerPage",rpt.getGrid().find("select.perPageCounter").val());
 		}
 		
-		this.loadDataGrid();
+		recordAppend=rpt.settings("recordAppend");
+		if(recordAppend!=null && !isNaN(recordAppend)) {
+			rpt.appendRecord=recordAppend;
+		}
+		if(rpt.appendRecord) {
+			rpt.getGrid().find("button[cmd=stayPut]").addClass("btn-info");
+			rpt.getGrid().find("button[cmd=prevPage]").hide();
+			rpt.getGrid().find("button[cmd=firstPage]").hide();
+		}
+
+		//this.loadDataGrid();
+		
+		return this;
 	};
 
 	rpt.getGrid = function() {
@@ -157,13 +216,104 @@ var LGKSReports = (function() {
 	rpt.getGridTable = function() {
 		return $("tbody.tableBody","#RPT-"+this.gridID);
 	};
-
+	
 	rpt.loadDataGrid = function() {
+		if(this.reportUIRenderer[this.rptType]!=null && typeof this.reportUIRenderer[this.rptType]=="function") {
+			this.reportUIRenderer[this.rptType](this.gridID, this);
+		} else {
+			return this.loadGridTable();
+		}
+	};
+	
+	rpt.loadGridTable = function() {
 		grid=rpt.getGrid();
 		gridBody=rpt.getGridTable();
 		gridID=grid.data('rptkey');
-		gridBody.append('<tr><td class="ajaxloading" colspan=10000></td></tr>');
 
+		if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
+			return false;
+		}
+
+		if(rpt.appendRecord) {
+			gridBody.append('<tr><td class="ajaxloading" colspan=10000></td></tr>');
+		} else {
+			gridBody.html('<tr><td class="ajaxloading" colspan=10000></td></tr>');
+		}
+
+		rpt.fetchReportData("html",function(txt) {
+				grid=rpt.getGrid();
+				gridBody=rpt.getGridTable();
+
+				gridBody.find(".ajaxloading").closest("tr").detach();
+
+				if(rpt.appendRecord) {
+					gridBody.append(txt);
+				} else {
+					gridBody.html(txt);
+				}
+
+				info=gridBody.find(".gridDataInfo");
+				if(info.length>0) {
+					limit=parseInt(info.find("td.limit").text());
+					index=parseInt(info.find("td.index").text());
+					last=parseInt(info.find("td.last").text());
+					max=parseInt(info.find("td.max").text());
+					
+					rpt.updateReportMeta(limit, index, last, max);
+					
+					if(max>=0) {
+						grid.find(".displayCounter .recordsIndex").text(index);
+						grid.find(".displayCounter .recordsUpto").text(last);
+						grid.find(".displayCounter .recordsMax").text(max);
+					} else {
+						grid.find(".displayCounter").hide();
+					}
+				} else {
+					grid.find(".displayCounter").hide();
+				}
+
+				rpt.postDataPopulate(rpt.gridID);
+// 				rpt.updateColumnsUI(grid);
+
+				//grid.find('tfoot.tableFoot .displayCounter .recordsIndex').html("");
+				//grid.find('tfoot.tableFoot .displayCounter .recordsUpto').html("");
+				//grid.find('tfoot.tableFoot .displayCounter .recordsMax').html("");
+		});
+	};
+	
+	rpt.postDataPopulate = function(gridID) {
+		$(rpt.hooksPostLoad).each(function(kx,func) {
+					if(typeof func=="function") {
+						func(gridID);
+					}
+				});
+	};
+	
+	rpt.updateReportMeta = function(limit, index, last, max) {
+		if(last>max) {
+			last=max;
+			grid.data("max","YES");
+		} else {
+			grid.data("max",null);
+		}
+
+		if($(grid).data("page")!=null) {
+			page=$(grid).data("page");
+		} else {
+			page=0;
+		}
+		
+		grid.data("page",page);
+		grid.data("current",page);
+		
+		if($('*[cmd="showMoreRecords"]').length>0) {
+			$('*[cmd="showMoreRecords"]').attr("title","Showing "+last+" of "+max+" records");
+		}
+	};
+	
+	rpt.fetchReportData = function(format, callBack) {
+		grid=rpt.getGrid();
+		
 		q=[];
 		//For custom fields in : custom bar
 		grid.find(".filterfield[name]").each(function() {
@@ -176,7 +326,17 @@ var LGKSReports = (function() {
 					}
 				}
 			});
-
+		grid.find(".filterrule[name]").each(function() {
+				name=$(this).attr('name');
+				if(this.value!=null && this.value.length>0) {
+					if(typeof $(this).val()=="object") {
+						$.each($(this).val(),function(k,v) {q.push("filter["+name+"]["+k+"]"+"="+encodeURIComponent(v));});
+					} else {
+						q.push("filterrule["+name+"]"+"="+encodeURIComponent($(this).val()));
+					}
+				}
+			});
+		
 		//For fields in : Filter Bar
 		grid.find(".tableFilter:not(.hidden) .filterCol:not(.hidden) .filterBarField[name]").each(function() {
 				name=$(this).attr('name');
@@ -216,7 +376,10 @@ var LGKSReports = (function() {
 			}
 		}
 
-		lx=_service("reports","fetchGrid","html")+"&gridid="+this.gridID;
+		cols=[];
+		$("thead.tableHead tr th:visible[data-key]",grid).each(function() {cols.push($(this).data("key"));});
+
+		lx=_service("reports","fetchGrid",format)+"&gridid="+this.gridID;
 
 		//Page Counter and pagination
 		if($(grid).find("select.perPageCounter").length>0) {
@@ -224,51 +387,78 @@ var LGKSReports = (function() {
 			rpt.settings("RecordsPerPage",$(grid).find("select.perPageCounter").val());
 		}
 		if($(grid).data("page")!=null) {
-			lx+="&page="+(parseInt($(grid).data("page"))+1);
+			lx+="&page="+(parseInt($(grid).data("page")));
 		} else {
 			lx+="&page=0";
 		}
+		q.push("cols="+cols.join(","));
 
 		processAJAXPostQuery(lx,q.join("&"),function(txt) {
-			grid=rpt.getGrid();
-			gridBody=rpt.getGridTable();
-
-			gridBody.find(".ajaxloading").closest("tr").detach();
-			gridBody.append(txt);
-
-			rpt.updateColumnsUI(grid);
-
-			if($(grid).data("page")!=null) {
-				page=$(grid).data("page");
-			} else {
-				page=1;
-			}
-			grid.data("page",page);
-
-			//grid.find('tfoot.tableFoot .displayCounter .recordsIndex').html("");
-			//grid.find('tfoot.tableFoot .displayCounter .recordsUpto').html("");
-			//grid.find('tfoot.tableFoot .displayCounter .recordsMax').html("");
-
-			$(rpt.postLoad).each(function(kx,func) {
-				if(typeof func=="function") {
-					func(rpt.gridID);
-				}
-			});
+			callBack(txt);
 		});
 	};
 
 	rpt.reloadDataGrid = function() {
 		grid=rpt.getGrid();
-		gridBody=rpt.getGridTable();
+		gridBody1=rpt.getGridTable();
+		gridBody2=$(".kanbanBoard","#RPT-"+rpt.gridID);
 
-		gridBody.html("");
+		gridBody1.html("");
+		gridBody2.html("");
+		
 		grid.data("page",null);
 
 		rpt.loadDataGrid(true);
 	};
 
-	rpt.datagridAction = function(cmd, src) {
+	rpt.datagridAction = function(cmd, src, recordRow) {
+		cmdOriginal=cmd;
+		cmd=cmd.split("@");
+		cmd=cmd[0];
 		switch(cmd) {
+			case "stayPut":
+				$(src).toggleClass("btn-info");
+				rpt.appendRecord=$(src).hasClass("btn-info");
+				rpt.settings("recordAppend",rpt.appendRecord);
+
+				if(rpt.appendRecord) {
+					rpt.getGrid().find("button[cmd=prevPage]").hide();
+					rpt.getGrid().find("button[cmd=firstPage]").hide();
+				} else {
+					rpt.getGrid().find("button[cmd=prevPage]").show();
+					rpt.getGrid().find("button[cmd=firstPage]").show();
+				}
+			break;
+			case "nextPage":
+				grid=rpt.getGrid();
+
+				nx=$(grid).data("page");
+				max=$(grid).data("max");
+				if(nx==null) {
+					nx=0;
+				} else if(max==null) {
+					nx++;
+				}
+				$(grid).data("page",nx);
+				rpt.loadDataGrid();
+			break;
+			case "prevPage":
+				grid=rpt.getGrid();
+				
+				nx=$(grid).data("page");
+				if(nx==0) {
+					nx=0;
+				} else {
+					nx--;
+				}
+				$(grid).data("page",nx);
+				rpt.loadDataGrid();
+			break;
+			case "firstPage":
+				$(grid).data("page",0);
+				grid.data("max",null);
+				rpt.loadDataGrid();
+			break;
 			case "refresh":
 				rpt.reloadDataGrid();
 			break;
@@ -282,7 +472,15 @@ var LGKSReports = (function() {
 			break;
 			case "report:exportcsv":
 				q=[];
+				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td,th",this).each(function(k,v) {
+						z.push("\""+$(v).text().replace("\"","`")+"\"");
+					});
+					q.push(z.join(","));
+				});
 				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
 						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
@@ -295,12 +493,20 @@ var LGKSReports = (function() {
 					});
 					q.push(z.join(","));
 				});
-				blob = new Blob([q.join("\n\r")], {type: "text/plain;charset=utf-8"});
+				blob = new Blob([q.join("\n")], {type: "text/plain;charset=utf-8"});
 				saveAs(blob, "export.csv",true);
 			break;
 			case "report:exportcsvxls":
 				q=[];
+				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
+					z=[];
+					$("td,th",this).each(function(k,v) {
+						z.push("\""+$(v).text().replace("\"","`")+"\"");
+					});
+					q.push(z.join(","));
+				});
 				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
 						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
@@ -313,12 +519,13 @@ var LGKSReports = (function() {
 					});
 					q.push(z.join(";"));
 				});
-				blob = new Blob([q.join("\n\r")], {type: "text/plain;charset=utf-8"});
+				blob = new Blob([q.join("\n")], {type: "text/plain;charset=utf-8"});
 				saveAs(blob, "export.csv",true);
 			break;
 			case "report:exportxml":
 				q=['<?xml version="1.0" encoding="utf-8"?>\n\n','<table name="export">\n'];
 				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
 						nm=$(v).data('key');
@@ -363,6 +570,7 @@ var LGKSReports = (function() {
 				q.push("</thead>\n");
 				q.push("<tbody>\n");
 				$("table.dataTable tbody.tableBody",rpt.getGrid()).find('tr').each(function() {
+					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
 						nm=$(v).data('key');
@@ -382,6 +590,7 @@ var LGKSReports = (function() {
 				saveAs(blob, "export.html",true);
 			break;
 			case "report:exportimg":
+				$(".reportholder .reportActions").closest(".btn-group").removeClass("open").find(".btn.dropdown-toggle").removeClass("dropdown-toggle").removeAttr("data-toggle");
 				html2canvas(document.body, {
 					  onrendered: function(canvas) {
 							window.open().document.body.appendChild(canvas);
@@ -393,48 +602,105 @@ var LGKSReports = (function() {
 				window.open(_service("reports","export")+"&type=pdf&gridid="+this.gridID);
 			break;
 			case "report:exportxls":
-				window.open(_service("reports","export")+"&type=xlsgridid="+this.gridID);
+				window.open(_service("reports","export")+"&type=xls&gridid="+this.gridID);
 			break;
 			case "report:email":case "report:exportemail":
 				
 			break;
+			case "forms":case "reports":case "infoview":
+				hash=$(src).closest(".tableRow").data('hash');
+				gkey=$(src).closest(".reportTable").data('gkey');
+				if(gkey==null) return;
+				title=$(src).text();
+				if(title==null || title.length<=0) {
+					title=$(src).attr("title");
+				}
+				if(title==null || title.length<=0) {
+					title="Dialog";
+				}
+				
+				cmdX=cmdOriginal.split("@");
+				if(cmdX[1]!=null) {
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					
+					showLoader();
+					lgksOverlayURL(_link("popup/"+cmd+"/"+cmdX[1]),title,function() {
+							hideLoader();
+						});
+				}
+			break;
+			case "page":
+				hash=$(src).closest(".tableRow").data('hash');
+				gkey=$(src).closest(".reportTable").data('gkey');
+				if(gkey==null) return;
+				title=$(src).text();
+				if(title==null || title.length<=0) {
+					title=$(src).attr("title");
+				}
+				if(title==null || title.length<=0) {
+					title="Dialog";
+				}
+				
+				cmdX=cmdOriginal.split("@");
+				if(cmdX[1]!=null) {
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					window.location=_link("modules/"+cmdX[1]);
+				}
+				break;
+			case "module":case "popup":
+				hash=$(src).closest(".tableRow").data('hash');
+				gkey=$(src).closest(".reportTable").data('gkey');
+				if(gkey==null) return;
+				title=$(src).text();
+				if(title==null || title.length<=0) {
+					title=$(src).attr("title");
+				}
+				if(title==null || title.length<=0) {
+					title="Dialog";
+				}
+				
+				cmdX=cmdOriginal.split("@");
+				if(cmdX[1]!=null) {
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					
+					if(cmd=="module" || cmd=="modules") {
+						top.openLinkFrame(title,_link("modules/"+cmdX[1]),true);
+					} else {
+						showLoader();
+						lgksOverlayURL(_link("popup/"+cmdX[1]),title,function() {
+								hideLoader();
+							});
+					}
+				}
+			break;
+			case "ui":
+				cmdX=cmdOriginal.split("@");
+				if(cmdX[1]!=null) {
+					cmd=cmdX[1];
+					gkey=$(src).closest(".reportTable").data('gkey');
+					if(gkey==null) return;
+					$.cookie("RPTVIEW-"+gkey,cmd,{ path: '/' });
+					window.location.reload();
+				}
+			break;
 			default:
 				if(typeof window[cmd]=="function") {
-					window[cmd](rpt);
+					window[cmd](recordRow, rpt, src);
 				} else {
 					console.warn("Report CMD not found : "+cmd);
 				}
 		}
 	}
-
-	rpt.updateColumnsUI = function() {
-		grid=rpt.getGrid();
-		//console.log("RPT-"+this.gridID);
-
-		qCols=[];
-		$(".table-tools .columnFilter input.columnName",grid).each(function() {
-				name=$(this).attr("name");
-				if($(this).is(":checked")) {
-					qCols.push(name);
-					$(".reportTable .dataTable thead.tableHead tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
-					$(".reportTable .dataTable thead.tableFilter tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
-					$(".reportTable .dataTable tbody.tableBody tr td.tableColumn:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
-					$(".reportTable .dataTable thead.tableSummary tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
-					$(".reportTable .dataTable thead.tableFoot tr th:not(.rowSelector,.action)[data-key='"+name+"']").removeClass("hidden");
-				} else {
-					$(".reportTable .dataTable thead.tableHead tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
-					$(".reportTable .dataTable thead.tableFilter tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
-					$(".reportTable .dataTable tbody.tableBody tr td.tableColumn:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
-					$(".reportTable .dataTable thead.tableSummary tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
-					$(".reportTable .dataTable thead.tableFoot tr th:not(.rowSelector,.action)[data-key='"+name+"']").addClass("hidden");
-				}
-			});
-		rpt.settings("columns-visible",qCols);
-	};
-
+	
+	rpt.addRenderer = function(name,func) {
+		rpt.reportUIRenderer[name]=func;
+		return rpt;
+	}
+	
 	rpt.addListener = function(func,type) {
 		if(type==null || type=="postload") {
-			rpt.postLoad.push(func);
+			if(rpt.hooksPostLoad==null) rpt.hooksPostLoad=[];
+			rpt.hooksPostLoad.push(func);
 			return true;
 		}
 		return false;
@@ -442,14 +708,16 @@ var LGKSReports = (function() {
 
 	rpt.selectedRows = function() {
 		q=[];
-		$("table.dataTable tbody.tableBody .tableRow .tableColumn.rowSelector input[name=rowSelector]:checked",rpt.getGridTable()).each(function() {
+// 		$("table.dataTable tbody.tableBody .tableRow .tableColumn.rowSelector input[name=rowSelector]:checked",rpt.getGridTable()).each(function() {
+		$(".reportContainer input[name=rowSelector]:checked",rpt.getGridTable()).each(function() {
 				q.push($(this).closest("tr")[0]);
 			});
 		return q;
 	};
 
 	rpt.settings = function(keyName,value,defaultValue) {
-		settingsKey="RPT-"+this.gridID;
+		settingsKey="RPT-"+this.gridGroupID;//this.gridID;
+		//console.log(settingsKey+" "+keyName);
 		if(keyName==null) {
 			this.reportOptions=window.localStorage.getItem(settingsKey);
 			if(this.reportOptions!=null && this.reportOptions.length>2) {
@@ -476,3 +744,18 @@ var LGKSReports = (function() {
 LGKSReports.getInstance = function(gridTable) {
     return LGKSReportsInstances[gridTable];
 };
+
+
+function showMoreRecords(src,rpt) {
+	grid=rpt.getGrid();
+
+	nx=$(grid).data("page");
+	max=$(grid).data("max");
+	if(nx==null) {
+		nx=0;
+	} else if(max==null) {
+		nx++;
+	}
+	$(grid).data("page",nx);
+	rpt.loadDataGrid();
+}

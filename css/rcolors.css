@@ -1,0 +1,35 @@
+.rColor {
+    border-left: 6px solid #7f7f84;
+    border-color:#777;
+}
+.rColor.success {
+    border-color: #80D651;
+}
+.rColor.success>strong {
+    color: #80D651;
+}
+.rColor.info {
+    border-color: #45ABCD;
+}
+.rColor.info>strong {
+    color: #45ABCD;
+}
+.rColor.warning {
+    border-color: #FEAF20;
+}
+.rColor.warning>strong {
+    color: #FEAF20;
+}
+.rColor.danger {
+    border-color: #d73814;
+}
+.rColor.danger>strong {
+    color: #d73814;
+}
+
+.rColor.error {
+    border-color: #e87e66;
+}
+.rColor.error>strong {
+    color: #e87e66;
+}

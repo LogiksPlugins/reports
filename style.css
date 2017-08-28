@@ -1,10 +1,18 @@
+@import url("css/kanban.css");
+@import url("css/cards.css");
+@import url("css/rcolors.css");
+
 .reportTable {
     width: 100%;height: 100%;
 }
+.reportTable h1 {
+    border: 0px;
+}
 /*Toolbar*/
 .reportTable .table-tools {
-    margin:0px;margin-top: 15px;padding-right: 5px;
-    /*margin-bottom: 10px;*/
+    margin:0px;margin-top: 5px;
+		padding-right: 5px;
+    margin-bottom: 5px;
 }
 .reportTable .table-tools .control-primebar {
 	height: 35px;
@@ -12,7 +20,7 @@
 	/*overflow: hidden;*/
 }
 .reportTable .table-tools .control-toolbar {
-	margin-top: 10px;
+/* 	margin-top: 10px; */
 	height: 35px;
 	max-height: 35px;
 	overflow: hidden;
@@ -22,6 +30,18 @@
 }
 .reportTable .table-tools .btn {
 	outline: none;
+	margin-right: 10px;
+}
+.reportTable .table-tools .btn.btn-notext {
+	padding:9px;
+}
+.reportTable button {
+  outline: none;
+	border-radius:0px;
+}
+.reportTable .table-tools select {
+	height: 28px;
+  padding: 1px;
 }
 .reportTable .table-tools .btn .caret {
     float: right;
@@ -32,14 +52,13 @@
 .reportTable .table-tools h1.reportTitle {
 	margin: 0px;
 	padding: 0px;
-	padding-top: 10px;
 	font-size: 20px;
 }
 .reportTable .table-tools input.searchfield {
 	/*width: 150px;
     display: inline-block;*/
     height: 100%;
-    padding: 3px;
+    padding: 5px;
 }
 .reportTable .table-tools .open>.dropdown-menu {
     left: auto;
@@ -57,6 +76,7 @@
 /*Table Sections*/
 .reportTable thead.tableHead {
     background: white;
+    border-top: 1px solid #DDD;
 }
 
 .reportTable thead.tableFilter {
@@ -91,12 +111,14 @@
     background: #F9F9F9;
 }
 .reportTable tfoot.tableFoot select {
-    width: 75px;height: 25px;
+    width: 75px;height: 28px;
+    margin-right: 5px;
     background: white;
     outline: none;
 }
 .reportTable tfoot.tableFoot .displayCounter {
-    line-height: 26px;
+  line-height: 26px;
+	float:right;
 }
 
 /*Misc*/
@@ -114,7 +136,13 @@ table.dataTable {
     margin-top: 5px;
 }
 
-table.dataTable>thead>tr>th {background: white;cursor: pointer;border-bottom:0px;border-right: 1px solid #AAA;}
+table.dataTable>thead>tr>th {
+	background: white;
+	cursor: pointer;
+	border-bottom:0px;border-right: 1px solid #AAA;
+	white-space: nowrap;
+	padding-right: 25px !important;
+}
 
 table.dataTable thead.tableFilter td, table.dataTable thead.tableFilter th {
     padding: 2px !important;
@@ -123,6 +151,16 @@ table.dataTable thead.tableFilter td, table.dataTable thead.tableFilter th {
 table.dataTable td.rowSelector.action,table.dataTable th.rowSelector.action {
     text-align:center;
     vertical-align:center;
+}
+table.dataTable td.actionCol,table.dataTable th.actionCol {
+    text-align:right;
+    vertical-align:center;
+		min-width:100px;
+}
+table.dataTable td.actionCol i,table.dataTable th.actionCol i {
+    font-size: 15px;
+    margin-right: 5px;margin-left: 5px;
+    cursor: pointer;
 }
 table.dataTable thead input, table.dataTable thead select {
     width: 100%;height: 25px;
@@ -138,8 +176,14 @@ table.dataTable thead input[type=checkbox],table.dataTable thead input[type=radi
     border: 1px solid #E9E9E9;
     margin:auto;
 }
+table.dataTable tbody pre {
+	max-width: 300px;
+  max-height: 200px;
+}
 table.dataTable tfoot td {
     background: #FFF;
+    padding: 5px !important;
+    padding-bottom: 0px !important;
 }
 
 table.dataTable thead .sorting,
@@ -147,7 +191,9 @@ table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc,
 table.dataTable thead .sorting_asc_disabled,
 table.dataTable thead .sorting_desc_disabled {
-    background: 0 0;
+		background: 0 0;
+		float: right;
+		margin-right: -17px;
 }
 
 table.dataTable thead .sorting:after {
@@ -181,9 +227,55 @@ table.dataTable tbody td.currency,
 table.dataTable tbody td.number {
     text-align: center;
 }
+table.dataTable tbody td.date {
+	white-space: nowrap;
+}
+table.dataTable tbody td.moreContent,
+	table.dataTable tbody td.embed,
+	table.dataTable tbody td.pointerCursor {
+	cursor:pointer;
+}
 table.dataTable tbody td.checkboxes {
     text-align: center;
 }
+table.dataTable tbody td.imagebox {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+table.dataTable .image-inline {
+	max-width: 50px;
+	max-height: 50px;
+	text-align: center;
+	margin: 0px;
+	display: inline-block;
+	overflow: hidden;
+}
+table.dataTable .image-avatar {
+	width: 24px;
+	height: 24px;
+	text-align: center;
+	margin: 0px;
+	display: inline-table;
+}
+
+
+
+
+.grab {
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.grabbing {
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+
+
+
+
+
 
 
 .onlyprint {
