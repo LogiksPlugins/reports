@@ -199,7 +199,7 @@ if(isset($reportConfig['gmap'])) {
               <div class='btn-group'>
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <span class="glyphicon glyphicon-list-alt"></span><span class="caret"></span></button>
-                  <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
+                  <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
                   <?php
                     foreach ($reportConfig['datagrid'] as $colID => $column) {
                       $colIDS=$colID;//str_replace(".","_",$colID);

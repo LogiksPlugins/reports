@@ -281,15 +281,26 @@ if(!function_exists("findReport")) {
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No Content</td>";
 				} else {
+					$value=str_replace("\\r\\n","<br>",$value);
+					$value=str_replace("\\'s","'s",$value);
 					if(strlen($value)>40) {
 						$abstract=substr($value,0,35)." ...";
 						return "<td class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value='{$value}'>{$abstract}<div class='contentBox hidden'>{$value}</div></td>";
 					} else {
-						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$value}</td>";
+						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><pre>{$value}</pre></td>";
 					}
 				}
 				break;
-			
+			case 'json':
+				$value=json_decode(stripslashes($value),true);
+				$html="<ul>";
+				foreach($value as $aa=>$bb) {
+					$html.="<li class='list-group'><label>{$aa}</label>&nbsp;&nbsp;$bb</li>";
+				}
+				$html.="</ul>";
+				return "<td class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value=''>VIEW<div class='contentBox hidden'>{$html}</div></td>";
+				break;
+				
 			case 'checkbox':
 				$value1=strtolower($value);
 				$html="<td class='{$clz} {$keyS} checkboxes' data-key='$key' data-value='{$value}'>";
@@ -355,7 +366,8 @@ if(!function_exists("findReport")) {
 				break;
 		}
 	}
-	
+}
+if(!function_exists("searchMedia")) {
 	function searchMedia($media) {
 		if(strpos($media,"https://")===0 || strpos($media,"http://")===0) {
 			$ext=explode(".",current(explode("?",$media)));
@@ -411,6 +423,8 @@ if(!function_exists("findReport")) {
 			return false;
 		}
 	}
+}
+if(!function_exists("getFileIcon")) {
 	function getFileIcon($file) {
 		if($file==null || strlen($file)<=0) return "";
 	
