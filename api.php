@@ -287,7 +287,7 @@ if(!function_exists("findReport")) {
 						$abstract=substr($value,0,35)." ...";
 						return "<td class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value='{$value}'>{$abstract}<div class='contentBox hidden'>{$value}</div></td>";
 					} else {
-						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><pre>{$value}</pre></td>";
+						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$value}</td>";
 					}
 				}
 				break;
@@ -336,12 +336,12 @@ if(!function_exists("findReport")) {
 
 		switch ($filterConfig['type']) {
 			case 'dataMethod': case 'dataSelector': case 'dataSelectorFromUniques': case 'dataSelectorFromTable':
-			case 'select': case 'selectAJAX': 
+			case 'select': case 'selectAJAX':
 				$html="";
 
 				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
 				$html.="<option value=''>{$noFilter}</option>";
-				
+
 				$html.=generateSelectOptions($filterConfig,"",$dbKey);
 
 				$html.="</select>";
