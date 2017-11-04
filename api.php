@@ -172,7 +172,7 @@ if(!function_exists("findReport")) {
 	}
 
 
-	function formatReportColumn($key,$value,$type="text",$hidden=false) {
+	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[]) {
 		$clz="tableColumn";
 		if($hidden) $clz.=" hidden";
 		$keyS=str_replace(".","_",$key);
@@ -251,6 +251,17 @@ if(!function_exists("findReport")) {
 						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}' title='{$value}'>Not Found</td>";
 					}
 				}
+				break;
+			case 'method':
+					$keyFunc=explode(".",$key);
+					$keyFunc=end($keyFunc);
+					$keyFunc="get".ucwords($keyFunc);
+					if(function_exists($keyFunc)) {
+						$valueS=call_user_func($keyFunc,$value,$record);
+					} else {
+						$valueS="--";
+					}
+					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$valueS}</td>";
 				break;
 			
 			case "embed":

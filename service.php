@@ -115,6 +115,30 @@ switch($_REQUEST["action"]) {
 		
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
 
+		if(isset($reportConfig['onajax'])) {
+			if(isset($reportConfig['onajax']['modules'])) {
+				loadModules($reportConfig['onajax']['modules']);
+			}
+			if(isset($reportConfig['onajax']['api'])) {
+				foreach ($reportConfig['onajax']['api'] as $apiModule) {
+					loadModuleLib($apiModule,'api');
+				}
+			}
+			if(isset($reportConfig['onajax']['helpers'])) {
+				loadHelpers($reportConfig['onajax']['helpers']);
+			}
+			if(isset($reportConfig['onajax']['method'])) {
+				if(!is_array($reportConfig['onajax']['method'])) $reportConfig['onajax']['method']=explode(",",$reportConfig['onajax']['method']);
+				foreach($reportConfig['onajax']['method'] as $m) call_user_func($m,$reportConfig);
+			}
+			if(isset($reportConfig['onajax']['file'])) {
+				if(!is_array($reportConfig['onajax']['file'])) $reportConfig['onajax']['file']=explode(",",$reportConfig['onajax']['file']);
+				foreach($reportConfig['onajax']['file'] as $m) {
+					if(file_exists($m)) include $m;
+					elseif(file_exists(APPROOT.$m)) include APPROOT.$m;
+				}
+			}
+		}
 		$data=getGridData($reportKey,$reportConfig);
 		$maxRecords=getGridDataMax($reportKey,$reportConfig);
 		//printArray($data);exit();
@@ -164,11 +188,11 @@ switch($_REQUEST["action"]) {
 							if(!isset($column['hidden'])) $column['hidden']=false;
 							
 							if(isset($record[$key])) {
-								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden']);
+								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record);
 							} elseif(isset($record[$keyx])) {
-								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden']);
+								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden'],$record);
 							} else {
-								echo formatReportColumn($key,"",$column['formatter'],$column['hidden']);
+								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record);
 							}
 						}
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
