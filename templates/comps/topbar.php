@@ -52,7 +52,7 @@ if(isset($reportConfig['gmap'])) {
               echo "<i class='{$button['icon']}'></i> ";
             }
           }
-          echo " {$button['label']}</a>";
+          echo " <span class='btn-label'>{$button['label']}</span></a>";
         }
       ?>
     <?php
