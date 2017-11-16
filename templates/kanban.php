@@ -21,7 +21,7 @@ $topbar['settings']=[
 					]
 			];
 
-$topbar['XtraHtmlToolButton']="<select name='kanbanPivot' class='autorefreshReport form-control pull-right' style='width:25%;'>";
+$topbar['XtraHtmlToolButton']="<select name='kanbanPivot' class='autorefreshReport pivotDropdown form-control pull-right'>";
 foreach($reportConfig['kanban']['colkeys'] as $k=>$v) {
 	if(!isset($v['label'])) $v['label']=toTitle($k);
 	$topbar['XtraHtmlToolButton'].="<option value='{$k}'>{$v['label']}</option>";
