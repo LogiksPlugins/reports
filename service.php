@@ -19,13 +19,13 @@ switch($_REQUEST["action"]) {
 		if(!isset($_SESSION['REPORT'][$reportKey])) {
 			trigger_error("Sorry, grid report key not found.");
 		}
-		
+
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
-		
+
 		if(isset($reportConfig['updatableColumns'])) {
 			if(in_array($_POST['dataField'],$reportConfig['updatableColumns'])) {
 				if(strtolower($reportConfig['source']['type'])=="sql") {
-					
+
 					if(isset($reportConfig['source']['table'])) {
 						$tables=explode(",",$reportConfig['source']['table']);
 						$colID="md5({$tables[0]}.id)";
@@ -34,8 +34,9 @@ switch($_REQUEST["action"]) {
 					}
 					$sql=_db()->_updateQ($reportConfig['source']['table'],[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
 					$sql=$sql->_RUN();
-					
+
 					if($sql) {
+						executeReportHook("fieldupdate",$reportConfig);
 						printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
 					} else {
 						printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
@@ -58,28 +59,28 @@ switch($_REQUEST["action"]) {
 		if(!isset($_SESSION['REPORT'][$reportKey])) {
 			trigger_error("Sorry, grid report key not found.");
 		}
-		
+
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
 // 		printArray($reportConfig);
 		try {
 			if(isset($reportConfig['kanban']) && isset($reportConfig['kanban']['colkeys']) && isset($reportConfig['kanban']['colkeys'][$_REQUEST['colKey']])) {
 				$src=$reportConfig['kanban']['colkeys'][$_REQUEST['colKey']];
-				
+
 				if(!isset($src['where'])) $src['where']=[];
-				
+
 				if(is_array($src['where'])) {
 					foreach($src['where'] as $k=>$v) {
 						$src['where'][$k]=_replace($v);
 					}
 				}
 				$data=_db()->_selectQ($src['table'],$src['columns'],$src['where']);
-				
+
 				if(isset($src['orderby'])) {
 					$data=$data->_orderby($src['orderby']);
 				} elseif(isset($src['sortby'])) {
 					$data=$data->_orderby($src['sortby']);
 				}
-				
+
 				if(isset($src['groupby'])) {
 					$data=$data->_groupby($src['groupby']);
 				} else {
@@ -92,7 +93,7 @@ switch($_REQUEST["action"]) {
 					$data=$data->_groupby($gCols[0][0]);
 				}
 				$data=$data->_limit(20,0)->_GET();
-				
+
 				if($data) {
 					printServiceMsg($data);
 				} else {
@@ -110,9 +111,9 @@ switch($_REQUEST["action"]) {
 		if(!isset($_SESSION['REPORT'][$reportKey])) {
 			trigger_error("Sorry, grid report key not found.");
 		}
-		
+
 		$_SESSION['REPORT'][$reportKey]['LASTVIEW-REQUEST']=$_POST;
-		
+
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
 
 		if(isset($reportConfig['onajax'])) {
@@ -139,6 +140,7 @@ switch($_REQUEST["action"]) {
 				}
 			}
 		}
+
 		$data=getGridData($reportKey,$reportConfig);
 		$maxRecords=getGridDataMax($reportKey,$reportConfig);
 		//printArray($data);exit();
@@ -154,7 +156,7 @@ switch($_REQUEST["action"]) {
 					} else {
 						$firstColumn="";
 					}
-					
+
 					$dataKey=array_keys($reportConfig['datagrid'])[0];
 					$otherKey=array_keys($data[0])[0];
 					//printArray($data);
@@ -166,18 +168,23 @@ switch($_REQUEST["action"]) {
 						} else {
 							$hashid=md5($record[$otherKey]);
 						}
-						
+
 						if($reportConfig['secure']) {
 							echo "<tr class='tableRow' data-hash='".md5($hashid)."'>";
 						} else {
 							echo "<tr class='tableRow' data-hash='{$hashid}'>";
 						}
-						
+
 						echo $firstColumn;
 						foreach ($reportConfig['datagrid'] as $key => $column) {
 							$keyx=explode(".",$key);
 							$keyx=end($keyx);
 							
+							if(isset($column['policy']) && strlen($column['policy'])>0) {
+								$allow=checkUserPolicy($column['policy']);
+								if(!$allow) continue;
+							}
+
 							if(!isset($column['formatter'])) {
 								if(isset($column['type'])) {
 									$column['formatter']=$column['type'];
@@ -186,7 +193,7 @@ switch($_REQUEST["action"]) {
 								}
 							}
 							if(!isset($column['hidden'])) $column['hidden']=false;
-							
+
 							if(isset($record[$key])) {
 								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record);
 							} elseif(isset($record[$keyx])) {
@@ -198,11 +205,8 @@ switch($_REQUEST["action"]) {
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
 							echo "<td class='actionCol hidden-print'>";
 							foreach ($reportConfig['buttons'] as $cmd => $button) {
-								if(!isset($button['icon'])) continue;
-								if(!isset($button['label'])) $button['label']="";
-								if(!isset($button['class'])) $button['class']="";
-								
-								echo "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' title='{$button['label']}'></i>";
+								$button['cmd']=$cmd;
+								echo createReportRecordAction($button, $record);
 							}
 							echo "</td>";
 						}
@@ -220,9 +224,9 @@ switch($_REQUEST["action"]) {
 						echo "<tr class='norecords'><td colspan=1000000 align=center>No Record Found</td></tr>";
 					}
 				}
-				
+
 				break;
-			
+
 			default:
 				$limit=$_REQUEST['limit'];
 				$index=$_REQUEST['page']*$limit;
@@ -248,7 +252,7 @@ switch($_REQUEST["action"]) {
 		if(!isset($_SESSION['REPORT'][$reportKey])) {
 			trigger_error("Sorry, grid report key not found.");
 		}
-		
+
 		if(isset($_SESSION['REPORT'][$reportKey]['LASTVIEW-REQUEST']) && is_array($_SESSION['REPORT'][$reportKey]['LASTVIEW-REQUEST'])) {
 			foreach($_SESSION['REPORT'][$reportKey]['LASTVIEW-REQUEST'] as $a=>$b) {
 				if(!isset($_POST[$a])) {
@@ -258,18 +262,18 @@ switch($_REQUEST["action"]) {
 		}
 
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
-		
+
 		$data=getGridData($reportKey,$reportConfig);
 
 		$headers=[];
 		foreach ($reportConfig['datagrid'] as $colID => $column) {
 			if(isset($column['hidden']) && $column['hidden']) {
-				
+
 			} else {
 				$headers[$colID]=_ling($column['label']);
 			}
 		}
-		
+
 		switch (strtolower($_REQUEST['type'])) {
 			case 'pdf':
 				$htmlData=getHTMLData($data,$headers);
@@ -287,9 +291,9 @@ switch($_REQUEST["action"]) {
 
 				loadVendor("mpdf");
 
-				$mpdf=new mPDF('c'); 
+				$mpdf=new mPDF('c');
 				$mpdf->useAdobeCJK = true;
-				
+
 				//$password="bkm";
 				//$mpdf->SetProtection(array('copy','print'), $password, $password);
 
@@ -317,15 +321,15 @@ function getGridDataMax($reportKey,$reportConfig) {
 			$sql=QueryBuilder::fromArray($source,_db($dbKey));
 			$sql=processReportWhere($sql,$reportConfig);
 			//exit($sql->_SQL()." ".$dbKey);
-			
+
 			$res=_dbQuery($sql,$dbKey);
 			$data=_dbData($res,$dbKey);
 			_dbFree($res,$dbKey);
-			
+
 			if(isset($data[0]) && isset($data[0]['max'])) $data=$data[0]['max'];
 			else $data=0;
 			//trigger_logikserror("Wrong SQL Statement");
-			
+
 			break;
 
 		case 'php':
@@ -345,8 +349,8 @@ function getGridDataMax($reportKey,$reportConfig) {
 			} else {
 				$data="-1";
 			}
-			break;		
-		
+			break;
+
 		case 'model':
 
 		default:
@@ -379,14 +383,14 @@ function getGridData($reportKey,$reportConfig) {
 		case 'sql':
 			$sql=QueryBuilder::fromArray($source,_db($dbKey));
 			$sql=processReportWhere($sql,$reportConfig);
-			
+
 			if(isset($_POST['orderby']) && count($_POST['orderby'])>0) {
 				$sql->_orderby(getColAlias($_POST['orderby'],$reportConfig));
 			}
 			if(isset($reportConfig['DEBUG']) && $reportConfig['DEBUG']==true) {
 				exit($sql->_SQL());
 			}
- 			//exit($sql->_SQL());
+//  			exit($sql->_SQL());
 			$res=_dbQuery($sql,$dbKey);
 			if($res) {
 				$data=_dbData($res,$dbKey);
@@ -408,8 +412,8 @@ function getGridData($reportKey,$reportConfig) {
 			} else {
 				trigger_error("Report Source File Not Found");
 			}
-			break;		
-		
+			break;
+
 		case 'model':
 
 		default:
@@ -471,7 +475,7 @@ function processReportWhere($sql,$reportConfig) {
 				$sql->_whereMulti($searchArr,"AND","OR");
 			}
 		}
-	
+
 	return $sql;
 }
 function getColAlias($col,$reportConfig) {

@@ -45,6 +45,11 @@ if(isset($reportConfig['pager'])) {
 						}
 					}
 					foreach ($reportConfig['datagrid'] as $key => $row) {
+						if(isset($row['policy']) && strlen($row['policy'])>0) {
+							$allow=checkUserPolicy($row['policy']);
+							if(!$allow) continue;
+						}
+
 						$clz="$key";$style="";
 						if(isset($row['classes'])) {
 							$clz.=" {$row['classes']}";

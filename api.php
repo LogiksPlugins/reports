@@ -7,7 +7,7 @@ if(!function_exists("findReport")) {
 		if(!file_exists($file)) {
 			$file=str_replace(".","/",$file);
 		}
-		
+
 		$fsArr=[
 				$file,
 				APPROOT.APPS_MISC_FOLDER."reports/{$file}.json",
@@ -15,7 +15,7 @@ if(!function_exists("findReport")) {
 		if(isset($_REQUEST['forSite']) && defined("CMS_SITENAME")) {
 			$fsArr[]=ROOT."apps/".CMS_SITENAME."/".APPS_MISC_FOLDER."reports/{$file}.json";
 		}
-		
+
 		$file=false;
 		foreach ($fsArr as $fs) {
 			if(file_exists($fs)) {
@@ -52,10 +52,10 @@ if(!function_exists("findReport")) {
 			trigger_logikserror("Corrupt report defination");
 			return false;
 		}
-		
+
 		if($params==null) $params=[];
 		$reportConfig=array_merge($reportConfig,$params);
-		
+
 		if(!isset($reportConfig['reportkey'])) $reportConfig['reportkey']=md5(session_id().time());
 
 		$reportConfig['dbkey']=$dbKey;
@@ -64,7 +64,7 @@ if(!function_exists("findReport")) {
 			$reportConfig['template']="grid";
 		}
 		setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/");
-		
+
 		if(!isset($reportConfig['source']['cols'])) {
 			$reportConfig['source']['cols']="*";//array_keys($reportConfig['datagrid'])
 		}
@@ -74,14 +74,14 @@ if(!function_exists("findReport")) {
 		if(!isset($reportConfig['showExtraColumn'])) {
 			$reportConfig['showExtraColumn']=false;
 		}
-		
+
 		if(!isset($reportConfig['secure'])) {
 			$reportConfig['secure']=true;
 		}
 		if(!isset($reportConfig['uiswitcher'])) {
 			$reportConfig['uiswitcher']=false;
 		}
-		
+
 		$reportConfig['searchCols']=[];
 		foreach ($reportConfig['datagrid'] as $key => $col) {
 			if(isset($col['searchable']) && $col['searchable']) {
@@ -127,10 +127,10 @@ if(!function_exists("findReport")) {
 // 			}
 		}
 		//printArray($reportConfig);return;
-		
+
 		$reportKey=$reportConfig['reportkey'];
 		$_SESSION['REPORT'][$reportKey]=$reportConfig;
-		
+
 		$templateArr=[
 				$reportConfig['template'],
 				__DIR__."/templates/{$reportConfig['template']}.php"
@@ -161,7 +161,7 @@ if(!function_exists("findReport")) {
 						}
 					}
 				}
-				
+
 				_css('reports');
 				include $f;
 				_js('reports');
@@ -187,7 +187,7 @@ if(!function_exists("findReport")) {
 				$value=end($value);
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._time($value)."</td>";
 				break;
-			
+
 			case 'datetime':
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._pDate($value)."</td>";
 				break;
@@ -195,11 +195,11 @@ if(!function_exists("findReport")) {
 			case 'currency':
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>".number_format($value,2)."</td>";
 				break;
-			
+
 			case 'num':case 'number':
 				return "<td class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'>".$value."</td>";
 				break;
-				
+
 			case 'url':
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
 				break;
@@ -209,15 +209,15 @@ if(!function_exists("findReport")) {
 			case 'tel':case 'mob':case 'phone':case 'mobile':
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='tel:{$value}'> CALL</a></td>";
 				break;
-			
+
 			case 'geoloc':case 'geolocation':case 'geoaddress':
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='https://www.google.co.in/maps/place/{$value}' target=_blank> MAP</a></td>";
 				break;
-			
+
 			case 'color':
 				return "<td class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'><span style='background:{$value};'></span></td>";
 				break;
-			
+
 			case "avatar":
 				if($value==null || strlen($value)<=0) $value=loadMedia("images/user.png");
 				$fname=basename($value);
@@ -232,7 +232,7 @@ if(!function_exists("findReport")) {
 				$fname=basename($value);
 				return "<td class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-inline'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
 				break;
-			
+
 			case "file":case "attachment":
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No File</td>";
@@ -263,7 +263,7 @@ if(!function_exists("findReport")) {
 					}
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$valueS}</td>";
 				break;
-			
+
 			case "embed":
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
@@ -278,7 +278,7 @@ if(!function_exists("findReport")) {
 					return "<td class='{$clz} {$keyS} {$type} embed' data-key='$key' data-value='###'><i class='fa fa-youtube-play'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
 				}
 				break;
-			
+
 			case "iframe":
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
@@ -287,7 +287,7 @@ if(!function_exists("findReport")) {
 					return "<td class='{$clz} {$keyS} {$type} embed' data-key='$key' data-value='###'><i class='fa fa-arrows-alt'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
 				}
 				break;
-				
+
 			case 'content':
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No Content</td>";
@@ -311,7 +311,7 @@ if(!function_exists("findReport")) {
 				$html.="</ul>";
 				return "<td class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value=''>VIEW<div class='contentBox hidden'>{$html}</div></td>";
 				break;
-				
+
 			case 'checkbox':
 				$value1=strtolower($value);
 				$html="<td class='{$clz} {$keyS} checkboxes' data-key='$key' data-value='{$value}'>";
@@ -373,8 +373,76 @@ if(!function_exists("findReport")) {
 				break;
 
 			default:
-				
+				return "";
 				break;
+		}
+	}
+	function createReportRecordAction($button, $record) {
+		if(isset($button['policy']) && strlen($button['policy'])>0) {
+			$allow=checkUserPolicy($button['policy']);
+			if(!$allow) return "";
+		}
+		
+		$cmd=$button['cmd'];
+		
+		if(!isset($button['icon'])) continue;
+		if(!isset($button['label'])) $button['label']="";
+		if(!isset($button['class'])) $button['class']="";
+		
+		$button['label']=_ling($button['label']);
+		
+		$_ENV['REPORTRECORD']=$record;
+		$_ENV['REPORTRECORD']['hashid']="";
+		
+		if(!empty($record)) {
+			if(isset($record['hashid'])) $_ENV['REPORTRECORD']['hashid']=$record['hashid'];
+			elseif(isset($record['id'])) $_ENV['REPORTRECORD']['hashid']=md5($record['id']);
+			else {
+				$_ENV['REPORTRECORD']['hashid']=md5($record[array_keys($record)[0]]);
+			}
+		}
+		$cmd=preg_replace_callback('/{(.*?)}/', function($matches) {
+			$colName=substr($matches[0],1,strlen($matches[0])-2);
+			if(isset($_ENV['REPORTRECORD'][$colName])) {
+				if(is_numeric($_ENV['REPORTRECORD'][$colName])) return md5($_ENV['REPORTRECORD'][$colName]);
+				return $_ENV['REPORTRECORD'][$colName];
+			}
+			return "";
+		}, $cmd);
+		if(isset($_ENV['REPORTRECORD'])) unset($_ENV['REPORTRECORD']);
+
+		return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' title='{$button['label']}'></i>";
+	}
+	function executeReportHook($state,$reportConfig) {
+		if(!isset($reportConfig['hooks']) || !is_array($reportConfig['hooks'])) return false;
+		$state=strtolower($state);
+
+		if(isset($reportConfig['hooks'][$state]) && is_array($reportConfig['hooks'][$state])) {
+			$postCFG=$reportConfig['hooks'][$state];
+
+			if(isset($postCFG['modules'])) {
+				loadModules($postCFG['modules']);
+			}
+			if(isset($postCFG['api'])) {
+				if(!is_array($postCFG['api'])) $postCFG['api']=explode(",",$postCFG['api']);
+				foreach ($postCFG['api'] as $apiModule) {
+					loadModuleLib($apiModule,'api');
+				}
+			}
+			if(isset($postCFG['helpers'])) {
+				loadHelpers($postCFG['helpers']);
+			}
+			if(isset($postCFG['method'])) {
+				if(!is_array($postCFG['method'])) $postCFG['method']=explode(",",$postCFG['method']);
+				foreach($postCFG['method'] as $m) call_user_func($m,$_ENV['FORM-HOOK-PARAMS']);
+			}
+			if(isset($postCFG['file'])) {
+				if(!is_array($postCFG['file'])) $postCFG['file']=explode(",",$postCFG['file']);
+				foreach($postCFG['file'] as $m) {
+					if(file_exists($m)) include $m;
+					elseif(file_exists(APPROOT.$m)) include APPROOT.$m;
+				}
+			}
 		}
 	}
 }
@@ -383,7 +451,7 @@ if(!function_exists("searchMedia")) {
 		if(strpos($media,"https://")===0 || strpos($media,"http://")===0) {
 			$ext=explode(".",current(explode("?",$media)));
 			$ext=strtolower(end($ext));
-			
+
 			return [
 				"name"=>basename($media),
 				"raw"=>$media,
@@ -403,7 +471,7 @@ if(!function_exists("searchMedia")) {
 			$fs->cd(APPS_USERDATA_FOLDER);
 		}
 		$mediaDir=$fs->pwd();
-		
+
 		if(file_exists($media)) {
 			$ext=explode(".",$media);
 			$mediaName=explode("_",basename($media));
@@ -438,7 +506,7 @@ if(!function_exists("searchMedia")) {
 if(!function_exists("getFileIcon")) {
 	function getFileIcon($file) {
 		if($file==null || strlen($file)<=0) return "";
-	
+
 		$ext=explode(".",$file);
 		$ext=strtolower(end($ext));
 

@@ -37,6 +37,11 @@ if(isset($reportConfig['gmap'])) {
     ?>
       <?php
         foreach ($reportConfig['actions'] as $key => $button) {
+          if(isset($button['policy']) && strlen($button['policy'])>0) {
+            $allow=checkUserPolicy($button['policy']);
+            if(!$allow) continue;
+          }
+//           printArray($button);printArray();checkUserRoles($reportConfig['srckey'],);
           if(isset($button['label'])) $button['label']=_ling($button['label']);
           else $button['label']=_ling($key);
           

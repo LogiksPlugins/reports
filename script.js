@@ -207,6 +207,10 @@ var LGKSReports = (function() {
 
 		//this.loadDataGrid();
 		
+		$(document).on("hidden.bs.modal", ".bootbox.modal", function (e) {
+					rpt.reloadDataGrid();
+			});
+		
 		return this;
 	};
 
