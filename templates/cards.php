@@ -21,6 +21,8 @@ foreach ($reportConfig['buttons'] as $cmd => $button) {
 	if(!isset($button['icon'])) continue;
 	if(!isset($button['label'])) $button['label']="";
 	if(!isset($button['class'])) $button['class']="";
+	
+	$cmd=str_replace("{","{{",str_replace("}","}}",$cmd));
 
 	$htmlButtons.="<i class='kicon {$button['icon']} {$button['class']} pull-right' cmd='{$cmd}' title='{$button['label']}'></i>";
 }
@@ -39,6 +41,7 @@ $colMap=array_merge([
 				
 			 "tags"=>"tags",
 			 "counter"=>"counter",
+			 "flag"=>"flag",
 
 			 "color"=>"color",//Depends on ColorMap for Logic Based On Column Selected by this field
 			 "icons"=>"icons",
@@ -101,7 +104,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     </div>
    
 		<div class='cardsContainer reportContainer'>
-      <div class='cardsBoard'>
+      <div class='cardsBoard reportBoard'>
       </div>
     </div>
   
@@ -186,6 +189,9 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			//rpt.addListener(updateCardsUI,"postload");
 			rpt.loadDataGrid();
     });
+		function resetCardsUI(gridID, rpt) {
+			gridBody.html('<div class="ajaxloading ajaxloading3"></div>');
+		}
 		function renderCardsUI(gridID, rpt) {
 			grid=rpt.getGrid();
 			gridBody=$(".cardsContainer .cardsBoard","#RPT-"+this.gridID);
@@ -194,7 +200,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
 				return false;
 			}
-
+			
 			gridBody.append('<div class="ajaxloading ajaxloading3"></div>');
 
 			rpt.fetchReportData("json",function(txt) {

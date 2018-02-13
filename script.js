@@ -405,7 +405,7 @@ var LGKSReports = (function() {
 	rpt.reloadDataGrid = function() {
 		grid=rpt.getGrid();
 		gridBody1=rpt.getGridTable();
-		gridBody2=$(".kanbanBoard","#RPT-"+rpt.gridID);
+		gridBody2=$(".reportBoard","#RPT-"+rpt.gridID);
 
 		gridBody1.html("");
 		gridBody2.html("");

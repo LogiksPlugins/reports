@@ -35,7 +35,7 @@ foreach ($reportConfig['buttons'] as $cmd => $button) {
 	if(!isset($button['class'])) $button['class']="";
 	
 	$cmd=str_replace("{","{{",str_replace("}","}}",$cmd));
-
+	
 	$htmlButtons.="<i class='kicon {$button['icon']} {$button['class']} pull-right' cmd='{$cmd}' title='{$button['label']}'></i>";
 }
 
@@ -55,6 +55,7 @@ $colMap=array_merge([
 
 			 "color"=>"color",//Depends on ColorMap for Logic Based On Column Selected by this field
 			 "icons"=>"icons",
+			 "flag"=>"flag",
 			 //logic: Icons, color
 		 ],$reportConfig['kanban']['colmap']);
 
@@ -126,7 +127,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
        } else {
     ?>
     <div class='kanbanBoardContainer reportContainer'>
-      <div class='kanbanBoard'>
+      <div class='kanbanBoard reportBoard'>
       </div>
     </div>
   
