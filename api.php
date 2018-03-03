@@ -161,10 +161,19 @@ if(!function_exists("findReport")) {
 						}
 					}
 				}
-
+				
+// 				printArray($reportConfig);return;
 				_css('reports');
+				if(isset($reportConfig['style']) && strlen($reportConfig['style'])>0) {
+					echo _css(["reports/{$reportConfig['style']}"]);
+				}
+				
 				include $f;
+				
 				_js('reports');
+				if(isset($reportConfig['script']) && strlen($reportConfig['script'])>0) {
+					echo _js(["reports/{$reportConfig['script']}"]);
+				}
 				return true;
 			}
 		}
