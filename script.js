@@ -208,7 +208,9 @@ var LGKSReports = (function() {
 		//this.loadDataGrid();
 		
 		$(document).on("hidden.bs.modal", ".bootbox.modal", function (e) {
-					rpt.reloadDataGrid();
+					if($(e.currentTarget).hasClass("reportPopup")) {
+						rpt.refetchCurrentDataGrid();
+					}
 			});
 		
 		return this;
@@ -400,6 +402,11 @@ var LGKSReports = (function() {
 		processAJAXPostQuery(lx,q.join("&"),function(txt) {
 			callBack(txt);
 		});
+	};
+	
+	rpt.refetchCurrentDataGrid = function() {
+		grid.data("current",null);
+		rpt.loadDataGrid(true);
 	};
 
 	rpt.reloadDataGrid = function() {
@@ -630,7 +637,7 @@ var LGKSReports = (function() {
 					showLoader();
 					lgksOverlayURL(_link("popup/"+cmd+"/"+cmdX[1]),title,function() {
 							hideLoader();
-						});
+						},{"className":"overlayBox reportPopup"});
 				}
 			break;
 			case "page":
@@ -673,7 +680,7 @@ var LGKSReports = (function() {
 						showLoader();
 						lgksOverlayURL(_link("popup/"+cmdX[1]),title,function() {
 								hideLoader();
-							});
+							},{"className":"overlayBox reportPopup"});
 					}
 				}
 			break;

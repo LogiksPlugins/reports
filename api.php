@@ -299,7 +299,7 @@ if(!function_exists("findReport")) {
 
 			case 'content':
 				if($value==null || strlen($value)<=0) {
-					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No Content</td>";
+					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._ling("No Content")."</td>";
 				} else {
 					$value=str_replace("\\r\\n","<br>",$value);
 					$value=str_replace("\\'s","'s",$value);

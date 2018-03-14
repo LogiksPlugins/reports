@@ -231,6 +231,19 @@ switch($_REQUEST["action"]) {
 				$limit=$_REQUEST['limit'];
 				$index=$_REQUEST['page']*$limit;
 				$last=$index+$limit;
+				
+				$specialFormatter=["date","time","datetime","currency","content"];
+				
+				$finalGrid=[];
+				foreach($reportConfig['datagrid'] as $col=>$config) {
+					$col=explode(".",$col);
+					$col=end($col);
+					
+					if(isset($config['formatter']) && in_array($config['formatter'],$specialFormatter)) {
+						$finalGrid[$col]=$config;
+					}
+				}
+				
 				foreach($data as $a=>$record) {
 					if(isset($record['hashid'])) {
 						$hashid=$record['hashid'];
@@ -239,7 +252,35 @@ switch($_REQUEST["action"]) {
 						$hashid=md5($record['id']);
 						$data[$a]['hashid']=$hashid;
 					}
+					foreach($data[$a] as $col=>$value) {
+						if(isset($finalGrid[$col])) {
+							switch(strtolower($finalGrid[$col]['formatter'])) {
+								case "date":
+									$data[$a][$col]=_pDate($value);
+									break;
+								case "time":
+									$data[$a][$col]=_time($value);
+									break;
+								case "datetime":
+									$data[$a][$col]=_pDate($value);
+									break;
+								case "currency":
+									$data[$a][$col]=number_format($value,2);
+									break;
+								case "content":
+									if($value==null || strlen($value)<=0) {
+										$data[$a][$col]=_ling("No Content");
+									} else {
+										$value=str_replace("\\r\\n","<br>",$value);
+										$value=str_replace("\\'s","'s",$value);
+										$data[$a][$col]=$value;
+									}
+									break;
+							}
+						}
+					}
 				}
+				
 				printServiceMsg(['RECORDS'=>$data,'INFO'=>["limit"=>$limit,"index"=>$index,"last"=>$last,"max"=>$maxRecords]]);
 				break;
 		}
