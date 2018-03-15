@@ -146,7 +146,7 @@ switch($_REQUEST["action"]) {
 		//printArray($data);exit();
 		switch ($_REQUEST['format']) {
 			case 'html':
-				if(count($data)>0) {
+				if(is_array($data) && count($data)>0) {
 					if($reportConfig['showExtraColumn']) {
 						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
 							$firstColumn="<td class='tableColumn rowSelector'>{$reportConfig['showExtraColumn']}</td>";
