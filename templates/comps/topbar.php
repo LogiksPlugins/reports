@@ -208,6 +208,9 @@ if(isset($reportConfig['gmap'])) {
                   <?php
                     foreach ($reportConfig['datagrid'] as $colID => $column) {
                       $colIDS=$colID;//str_replace(".","_",$colID);
+                      if(isset($column['noshow']) && $column['noshow']) {
+                        continue;
+                      }
                       if(isset($column['hidden']) && $column['hidden']) {
                         echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}'>"._ling($column['label'])."</label></a></li>";
                       } else {
