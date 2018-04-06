@@ -91,6 +91,9 @@ if(!function_exists("findReport")) {
 					$reportConfig['searchCols'][]=current(explode(" ",$key));
 				}
 			}
+			if(isset($col['noshow']) && $col['noshow']) {
+				$reportConfig['datagrid'][$key]['hidden']=true;
+			}
 		}
 
 		if(!isset($reportConfig['toolbar'])) {
