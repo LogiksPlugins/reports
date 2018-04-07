@@ -340,7 +340,12 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
 						if(v[pivotColumn]!=null && gridBody.find(".kanban-col[data-colkey='"+v[pivotColumn]+"'] .panel-body").length>0) {
-							gridBody.find(".kanban-col[data-colkey='"+v[pivotColumn]+"'] .panel-body").append(gridCardGen(v));
+							cardHTML=gridCardGen(v);
+							if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
+								gridBody.find(".kanban-col[data-colkey='"+v[pivotColumn]+"'] .panel-body").append(cardHTML);
+							}	else {
+								$(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+							}
 						} else {
 		// 					console.log(v);
 						}
@@ -394,3 +399,4 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     }
     ?>
 </div>
+
