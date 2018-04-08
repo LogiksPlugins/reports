@@ -224,7 +224,12 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
-						gridBody.append(gridCardGen(v));
+						cardHTML=gridCardGen(v);
+						if(gridBody.find(".cards-entry[data-hash='"+v.hashid+"']").length<=0) {
+							gridBody.append(cardHTML);
+						}	else {
+							$(gridBody.find(".cards-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+						}
 					});
 
 					limit=jsonData.INFO.limit;

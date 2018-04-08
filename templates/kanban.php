@@ -399,4 +399,3 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     }
     ?>
 </div>
-
