@@ -33,7 +33,7 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 		//include_once "sample.php";
 		printReport($report,$report['dbkey']);
 		echo "</div>";
-		echo _js(["FileSaver","html2canvas",'jquery.cookie',"reports"]);
+		echo _js(["filesaver","html2canvas",'jquery.cookie',"reports"]);
 	} else {
 // 		trigger_logikserror("Sorry, report '{$_REQUEST['src']}' not found.",E_USER_NOTICE,404);
 		echo "<h1 class='errormsg'>Sorry, report '{$_REQUEST['src']}' not found.</h1>";
