@@ -90,12 +90,45 @@ switch($_REQUEST["action"]) {
 						$gCols=$src['columns'];
 					}
 					$gCols[0]=explode(" ",$gCols[0]);
+					$src['groupby']=$gCols[0][0];
 					$data=$data->_groupby($gCols[0][0]);
 				}
+        //exit($data->_SQL());
 				$data=$data->_limit(20,0)->_GET();
 
 				if($data) {
-					printServiceMsg($data);
+          $fData=[
+//             ["title"=>"","value"=>""]
+          ];
+          if(!isset($src['type'])) $src['type']="";
+          switch(strtolower($src['type'])) {
+            case "csv":case "list":
+              foreach($data as $row) {
+                if($row['value']==null || strlen($row['value'])<=0) {
+                  continue;
+                }
+                $vArr=explode(",",$row['value']);
+                if(count($vArr)>1) {
+                  foreach($vArr as $x1=>$y1) {
+                    if($y1==null || strlen($y1)<=0) continue;
+                    $fData[$y1]=["title"=>toTitle($y1),"value"=>$y1];
+                  }
+                } else {
+                  $fData[$row['value']]=$row;
+                }
+              }
+              $fData=array_values($fData);
+              break;
+            default:
+              foreach($data as $row) {
+                if($row['title']==null || strlen($row['title'])<=0) {
+                  continue;
+                }
+                $fData[]=$row;
+              }
+          }
+          
+					printServiceMsg($fData);
 				} else {
 					printServiceMsg([]);
 				}

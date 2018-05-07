@@ -15,10 +15,15 @@ $reportConfig['toolbar']['columnselector']=false;
 
 $topbar['settings']=[
 				"showEmptyColumns"=>[
-							"name"=>"SHOWALLCOLS",
-							"label"=>"Show Columns With Cards",
-							"type"=>"checkbox",
-					]
+            "name"=>"SHOWALLCOLS",
+            "label"=>"Show Columns with no Cards also",
+            "type"=>"checkbox",
+					],
+        "allowMultipleRecords"=>[
+            "name"=>"ALLOWMULTIPLERECORD",
+            "label"=>"Allow same block multiple times for different Columns",
+            "type"=>"checkbox",
+        ]
 			];
 
 $topbar['XtraHtmlToolButton']="<select name='kanbanPivot' class='autorefreshReport pivotDropdown form-control pull-right'>";
@@ -311,6 +316,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			gridID=grid.data('rptkey');
 
 			if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
+        if(typeof lgksToast=="function") lgksToast("All the records are loaded");
 				return false;
 			}
 
@@ -336,19 +342,44 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					gridCardGen=Handlebars.compile(gridTemplate);
 
 					pivotColumn=$("select[name=kanbanPivot]","#RPT-"+rpt.gridID).val();
+        
+          allowMULTIPLE=grid.find(".reportOpts input[name=ALLOWMULTIPLERECORD]").is(":checked");
 
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
-						if(v[pivotColumn]!=null && gridBody.find(".kanban-col[data-colkey='"+v[pivotColumn]+"'] .panel-body").length>0) {
-							cardHTML=gridCardGen(v);
-							if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
-								gridBody.find(".kanban-col[data-colkey='"+v[pivotColumn]+"'] .panel-body").append(cardHTML);
-							}	else {
-								$(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
-							}
-						} else {
-		// 					console.log(v);
-						}
+            rValue=v[pivotColumn];
+            if(rValue!=null && rValue.length>0) {
+              rValueArr=rValue.split(",");
+              if(rValueArr.length>1) {
+                $.each(rValueArr, function(k1, rValue1) {
+                  if(gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").length>0) {
+                    cardHTML=gridCardGen(v);
+                    if(allowMULTIPLE) {
+                      gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
+                    } else {
+                      if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
+                        gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
+                      }	else {
+                        $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+                      }
+                    }
+                  } else {
+          // 					console.log(v);
+                  }
+                });
+              } else {
+                if(gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").length>0) {
+                  cardHTML=gridCardGen(v);
+                  if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
+                    gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").append(cardHTML);
+                  }	else {
+                    $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+                  }
+                } else {
+        // 					console.log(v);
+                }
+              }
+            }
 					});
 
 					nx=gridBody.find(".kanban-col:not(.hidden)").length;
@@ -368,15 +399,24 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			gkey=$(btn).closest(".reportTable").data("rptkey");
 			updateKanbanUI(gkey);
 		}
+    function allowMultipleRecords(btn){
+      gkey=$(btn).closest(".reportTable").data("rptkey");
+			updateKanbanUI(gkey);
+      rpt.reloadDataGrid();
+    }
     function updateKanbanUI(rkey){
 			rpt=LGKSReports.getInstance(rkey);
       grid=LGKSReports.getInstance(rkey).getGrid();
       gridBody=$(".kanbanBoard","#RPT-"+rkey);
       
       clz="hidden";
+      allowMULTIPLE=false;
 			if(grid.find(".reportOpts input[name=SHOWALLCOLS]").is(":checked")) {
 				clz="hiddenx";
         gridBody.find(".kanban-col.hidden").removeClass("hidden");
+			}
+      if(grid.find(".reportOpts input[name=ALLOWMULTIPLERECORD]").is(":checked")) {
+				allowMULTIPLE=true;
 			}
 			gridBody.find(".kanban-col").each(function() {
 				cx=$(this).find(".panel-body").children().length;
@@ -393,6 +433,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			gridBody.css("width",((nx*q)+100)+'px');
 			
 			rpt.settings("kanban-empty-columns",grid.find(".reportOpts input[name=SHOWALLCOLS]").is(":checked"));
+      rpt.settings("kanban-multiple-cards",grid.find(".reportOpts input[name=ALLOWMULTIPLERECORD]").is(":checked"));
     }
     </script>
     <?php

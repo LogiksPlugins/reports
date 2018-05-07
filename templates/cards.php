@@ -198,6 +198,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			gridID=grid.data('rptkey');
 
 			if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
+				if(typeof lgksToast=="function") lgksToast("All the records are loaded");
 				return false;
 			}
 			
