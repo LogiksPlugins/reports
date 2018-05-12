@@ -531,6 +531,13 @@ function processReportWhere($sql,$reportConfig) {
 		if(isset($_POST['filter']) && count($_POST['filter'])>0) {
 			$whereFilters=[];
 			foreach ($_POST['filter'] as $key => $value) {
+		        if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter']) && isset($reportConfig['datagrid'][$key]['filter']['type'])) {
+		          $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
+		          if($valueArr) {
+		            $value=$valueArr[0];
+		            $_POST['filterrule'][$key]=$valueArr[1];
+		          }
+		        }
 				if(isset($_POST['filterrule'][$key])) {
 					$whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
 				} else {
@@ -560,5 +567,35 @@ function getColAlias($col,$reportConfig) {
 	} else {
 		return $col;
 	}
+}
+function processFilterType($value, $filterConfig) {
+  switch(strtolower($filterConfig['type'])) {
+    case "period":
+      if($value=="today") {
+        return [date("Y-m-d"),"EQ"];
+      } elseif($value=="overdue") {
+        return [date('Y-m-d'),"LT"];
+      } elseif($value=="yesterday") {
+        return [date('Y-m-d',strtotime("-1 days")),"EQ"];
+      } elseif($value=="tomorrow") {
+        return [date('Y-m-d',strtotime("+1 days")),"EQ"];
+      } elseif($value=="week") {
+        return [[date('Y-m-d',strtotime("this week")),date('Y-m-d')],"RANGE"];
+      } elseif($value=="thisweek") {
+        return [[date('Y-m-d',strtotime("next week")),date('Y-m-d')],"RANGE"];
+      } elseif($value=="nextweek") {
+        $monday = strtotime("next monday");
+        $sunday = strtotime(date("Y-m-d",$monday)." +6 days");
+        return [[date('Y-m-d',$monday),date('Y-m-d',$sunday)],"RANGE"];
+      } elseif($value=="month") {
+        return [[date('Y-m-1'),date('Y-m-d')],"RANGE"];
+      } elseif($value=="thismonth") {
+        return [[date('Y-m-d'),date('Y-m-d',strtotime("first day of next month"))],"RANGE"];
+      } elseif($value=="thisyear" || $value=="year") {
+        return [[date('Y-1-1'),date('Y-m-d')],"RANGE"];
+      }
+      break;
+  }
+  return [$value,"SW"];
 }
 ?>

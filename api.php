@@ -337,6 +337,21 @@ if(!function_exists("findReport")) {
 				return $html;
 				break;
 
+	      	case 'pretty':case 'uppercase':case 'lowercase':
+		        if(is_array($value)) {
+		          $value=implode(", ",$value);
+		        }
+		        switch(strtolower($type)) {
+		          case "pretty":
+		            $value=toTitle($value);
+		            break;
+		          case "uppercase":
+		            $value=strtoupper(str_replace("_"," ",$value));
+		            break;
+		          case "lowercase":
+		            $value=strtolower(str_replace("_"," ",$value));
+		            break;
+		        }
 			default:
 				if(is_array($value)) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
@@ -353,7 +368,15 @@ if(!function_exists("findReport")) {
 	function formatReportFilter($key,$filterConfig=array(),$dbKey="app") {
 		if(!isset($filterConfig['type'])) $filterConfig['type']="text";
 
-		if(!isset($filterConfig['nofilter'])) $filterConfig['nofilter']="No $key";
+	    if(!isset($filterConfig['nofilter'])) {
+	      if(strpos($key,".")>0) {
+	        $keyS=explode(".",$key);
+	        $keyS=end($keyS);
+	        $filterConfig['nofilter']="No $keyS";
+	      } else {
+	        $filterConfig['nofilter']="No $key";
+	      }
+	    }
 
 		$noFilter=_ling($filterConfig['nofilter']);
 
@@ -378,6 +401,34 @@ if(!function_exists("findReport")) {
 
 			case 'date':
 				return "<input type='date' class='filterBarField autorefreshReport filterDate' name='$key' />";
+				break;
+      
+      		case 'daterange':
+				return "<input type='date' class='filterBarField autorefreshReport filterDate' name='$key' />";
+				break;
+      
+      		case 'period':
+				$html="";
+
+				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
+				$html.="<option value=''>{$noFilter}</option>";
+        
+		        if(!isset($filterConfig['options'])) {
+		          $filterConfig['options']=[
+		            "today"=>"Today",
+		            "tomorrow"=>"Tomorrow",
+		            "thisweek"=> "This Week",
+		            "nextweek"=> "Next Week",
+		            "overdue"=> "Overdue"
+		          ];
+		        }
+		        $html.=generateSelectOptions(array_merge($filterConfig,[
+		              "type"=>"select"
+		            ]),"",$dbKey);
+
+				$html.="</select>";
+
+				return $html;
 				break;
 
 			case 'checkbox':
