@@ -63,7 +63,8 @@ if(!function_exists("findReport")) {
 		if(!isset($reportConfig['template']) || strlen($reportConfig['template'])<=0) {
 			$reportConfig['template']="grid";
 		}
-		setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/");
+		//setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/");
+		setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/",$_SERVER['SERVER_NAME'], isHTTPS());
 
 		if(!isset($reportConfig['source']['cols'])) {
 			$reportConfig['source']['cols']="*";//array_keys($reportConfig['datagrid'])
