@@ -6,6 +6,10 @@ The Reporting Module was designed to provide a feature-rich, user-friendly UI fo
 
 We encourage all Logiks users and developers to download the reporting module, use it frequently, create new tickets for bug fixes and feature requests, and provide feedback.
 
+# Assumptions and Constraints
++ If multiple tables are used, in Kanban mode during DnD, the drag effects the first table only.
+
+
 ## Requirements
 Logiks Core 4.0.0 or higher
 
