@@ -25,21 +25,30 @@ switch($_REQUEST["action"]) {
 		if(isset($reportConfig['updatableColumns'])) {
 			if(in_array($_POST['dataField'],$reportConfig['updatableColumns'])) {
 				if(strtolower($reportConfig['source']['type'])=="sql") {
-
+    
 					if(isset($reportConfig['source']['table'])) {
-						$tables=explode(",",$reportConfig['source']['table']);
-						$colID="md5({$tables[0]}.id)";
-					} else {
-						$colID="md5(id)";
-					}
-					$sql=_db()->_updateQ($reportConfig['source']['table'],[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
-					$sql=$sql->_RUN();
+						$colDefn=explode(",",$_POST['dataField']);
+            $tables=explode(",",$reportConfig['source']['table']);
+            
+            if(count($colDefn)>1) {
+              $srcTable=$colDefn[0];
+            } else {
+              $srcTable=$tables[0];
+            }
+            
+						$colID="md5({$srcTable}.id)";
+            
+            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+            $sql=$sql->_RUN();
 
-					if($sql) {
-						executeReportHook("fieldupdate",$reportConfig);
-						printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
+            if($sql) {
+              executeReportHook("fieldupdate",$reportConfig);
+              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
+            } else {
+              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
+            }
 					} else {
-						printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
+						printServiceMsg(["msg"=>"Source type not defined correctly","hash"=>$_POST['dataHash']]);
 					}
 				} else {
 					printServiceMsg(["msg"=>"Source type not supported","hash"=>$_POST['dataHash']]);
@@ -90,7 +99,7 @@ switch($_REQUEST["action"]) {
 						$gCols=$src['columns'];
 					}
 					$gCols[0]=explode(" ",$gCols[0]);
-					$src['groupby']=$gCols[0][0];
+          $src['groupby']=$gCols[0][0];
 					$data=$data->_groupby($gCols[0][0]);
 				}
         //exit($data->_SQL());
@@ -289,9 +298,12 @@ switch($_REQUEST["action"]) {
 						if(isset($finalGrid[$col])) {
 							switch(strtolower($finalGrid[$col]['formatter'])) {
 								case "date":
+                  $value=current(explode(" ", $value));
 									$data[$a][$col]=_pDate($value);
 									break;
 								case "time":
+                  $value=explode(" ", $value);
+				          $value=end($value);
 									$data[$a][$col]=_time($value);
 									break;
 								case "datetime":
@@ -531,21 +543,22 @@ function processReportWhere($sql,$reportConfig) {
 		if(isset($_POST['filter']) && count($_POST['filter'])>0) {
 			$whereFilters=[];
 			foreach ($_POST['filter'] as $key => $value) {
-		        if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter']) && isset($reportConfig['datagrid'][$key]['filter']['type'])) {
-		          $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
-		          if($valueArr) {
-		            $value=$valueArr[0];
-		            $_POST['filterrule'][$key]=$valueArr[1];
-		          }
-		        }
+        if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter']) && isset($reportConfig['datagrid'][$key]['filter']['type'])) {
+          $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
+          if($valueArr) {
+            $value=$valueArr[0];
+            $_POST['filterrule'][$key]=$valueArr[1];
+          }
+        }
 				if(isset($_POST['filterrule'][$key])) {
-					$whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
+          $whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
 				} else {
 					$whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>"SW")];
 				}
 			}
 			$sql->_whereMulti($whereFilters);
 		}
+    
 		if(isset($_POST['search']) && count($_POST['search'])>0) {
 			if(isset($_POST['search']['q']) && count($_POST['search']['q'])>0) {
 				$searchArr=[];
@@ -599,3 +612,4 @@ function processFilterType($value, $filterConfig) {
   return [$value,"SW"];
 }
 ?>
+
