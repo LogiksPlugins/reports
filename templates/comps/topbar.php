@@ -26,6 +26,7 @@ if(isset($reportConfig['gmap'])) {
 }
 // $templateViews[]="calendar";
 // $templateViews[]="gmap";
+//printArray($reportConfig);
 ?>
 <div class="control-primebar">
 <!--       	<div class="col-lg-6 col-xs-6 pull-left">
@@ -206,13 +207,14 @@ if(isset($reportConfig['gmap'])) {
                   <span class="glyphicon glyphicon-list-alt"></span><span class="caret"></span></button>
                   <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
                   <?php
+                    echo "<li class='bg-info text-white'><a href='#'><label><input class='allColumns' type='checkbox'>"._ling("Check All")."</label></a></li>";
                     foreach ($reportConfig['datagrid'] as $colID => $column) {
                       $colIDS=$colID;//str_replace(".","_",$colID);
                       if(isset($column['noshow']) && $column['noshow']===true) continue;
                       if(isset($column['hidden']) && $column['hidden']) {
-                        echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}'>"._ling($column['label'])."</label></a></li>";
+                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}'>"._ling($column['label'])."</label></a></li>";
                       } else {
-                        echo "<li><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}' checked=true>"._ling($column['label'])."</label></a></li>";
+                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}' checked=true>"._ling($column['label'])."</label></a></li>";
                       }
                     }
                   ?>

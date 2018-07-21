@@ -36,8 +36,12 @@
 	padding:9px;
 }
 .reportTable .table-tools select.pivotDropdown {
-	width:25%;
+	width:17%;
 	margin-top: 4px !important
+}
+.reportTable .table-tools .sortOpts {
+  margin-top: 4px;
+  float: right;
 }
 .reportTable button {
   outline: none;
@@ -68,7 +72,7 @@
     left: auto;
     right: 0px;
 }
-.reportTable .table-tools .dropdown-menu input[type=checkbox] {
+.reportTable .table-tools .dropdown-menu input[type=checkbox], .reportTable .table-tools .dropdown-menu input[type=radio] {
     margin-right: 5px;
 }
 .reportTable .table-tools .dropdown-menu label {
@@ -77,6 +81,19 @@
     margin-bottom: 0px;
     margin-right: 20px;
     width: 100%;
+}
+.reportTable .table-tools .dropdown-menu label.uicheckbox {
+  display: inline;
+  margin-right: 0px;
+  padding: 3px;
+  padding-right: 5px;
+  padding-left: 5px;
+  text-align: center;
+  border-radius: 100px !important;
+  cursor: pointer;
+}
+.reportTable .table-tools .dropdown-menu label.uicheckbox.active {
+  border: 1px solid #AAA;
 }
 /*Table Sections*/
 .reportTable thead.tableHead {
@@ -101,7 +118,7 @@
 
 .reportTable tfoot.tableFoot {
 	font-size: 10px;
-    background: white;
+  background: white;
 }
 
 
@@ -111,6 +128,7 @@
 }
 .reportTable thead.tableFilter th.filterCol {
     background: white;
+    vertical-align: top !important;
 }
 .reportTable thead.tableFilter th.filterBlank {
     background: #F9F9F9;
@@ -217,6 +235,20 @@ table.dataTable thead .sorting_asc:after {
 
 table.dataTable thead .sorting_desc:after {
     content: "\f0dd";
+    float: right;
+    font-family: fontawesome;
+    color: black;
+}
+
+table.dataTable thead th .ui-resizable-handle.ui-resizable-e {
+  font-size: 15px;
+  margin-right: 5px;
+  float: right;
+  margin-top: 0px;
+}
+
+table.dataTable thead th .ui-resizable-handle.ui-resizable-e:after {
+    content: "\f07e";
     float: right;
     font-family: fontawesome;
     color: black;

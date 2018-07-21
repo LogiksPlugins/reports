@@ -167,17 +167,22 @@ if(!function_exists("findReport")) {
 				}
 				
 // 				printArray($reportConfig);return;
-				_css('reports');
+        			$vendorPath=getWebPath(__DIR__)."/vendors/";
+        
+        			echo "<link href='{$vendorPath}daterangepicker/daterangepicker.css' rel='stylesheet' type='text/css' />";
+        
+				echo _css('reports');
 				if(isset($reportConfig['style']) && strlen($reportConfig['style'])>0) {
 					echo _css(["reports/{$reportConfig['style']}"]);
 				}
 				
 				include $f;
 				
-				_js('reports');
+				echo _js(['moment','reports']);
 				if(isset($reportConfig['script']) && strlen($reportConfig['script'])>0) {
 					echo _js(["reports/{$reportConfig['script']}"]);
 				}
+				echo "<script src='{$vendorPath}daterangepicker/daterangepicker.js' type='text/javascript' language='javascript'></script>";
 				return true;
 			}
 		}
@@ -405,7 +410,7 @@ if(!function_exists("findReport")) {
 				break;
       
       		case 'daterange':
-				return "<input type='date' class='filterBarField autorefreshReport filterDate' name='$key' />";
+				return "<input type='daterange' class='filterBarField autorefreshReport filterDate' name='{$key}' readonly /";
 				break;
       
       		case 'period':

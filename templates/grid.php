@@ -60,7 +60,10 @@ if(isset($reportConfig['pager'])) {
 						if(isset($row['style'])) {
 							$style="style='{$row['style']}'";
 						}
-						echo "<th class='".trim($clz)."' data-key='{$key}' $style >";
+						if(isset($row['resizable']) && $row['resizable']) {
+							$clz.=" resizable";
+						}
+						echo "<th id='".md5($key)."' class='".trim($clz)."' data-key='{$key}' $style >";
 						echo _ling($row['label']);
 						if(isset($row['sortable']) && $row['sortable']) {
 							echo "<span class='colSort sorting noprint'></span>";

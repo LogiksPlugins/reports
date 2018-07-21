@@ -60,6 +60,33 @@ var LGKSReports = (function() {
 			gridID=$(this).closest("div.forReport").attr('for');
 			LGKSReports.getInstance(gridID).reloadDataGrid(this);
 		});
+	    	$(".filterCol input[type=daterange]").each(function() {
+		  $(this).daterangepicker({
+		            opens: 'left',
+		            showDropdowns: true,
+		            autoUpdateInput: true,
+		            startDate: moment().subtract(365, 'days'), //moment().startOf('year'),
+		            endDate: moment(),
+		            locale: {
+		              format: 'DD/MM/YYYY'
+		            },
+		            minYear: 1901,
+		            maxYear: parseInt(moment().format('YYYY'),10),
+		            ranges: {
+		               'Today': [moment(), moment()],
+		               'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+		               'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+		               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+		               'This Month': [moment().startOf('month'), moment().endOf('month')],
+		               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		            }
+		          }, function(start, end, label) {
+		            //console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+		            //gridID=$(srcField).closest(".reportTable").data('rptkey');
+					      //LGKSReports.getInstance(gridID).reloadDataGrid(this);
+											rpt.reloadDataGrid();
+		          });
+		});
 		$("body").delegate("div.forReport.autoConnect[for='"+this.gridID+"'] input.autorefreshReport[name]","keyup",function(e) {
 			e.preventDefault();
 			if((e.keyCode==13 || e.keyCode==17)) {// && encodeURIComponent($(this).val())!=grid.data("q")
@@ -117,6 +144,29 @@ var LGKSReports = (function() {
 			gridID=$(this).closest(".reportTable").data('rptkey');
 			updateGridUI(gridID);
 		});
+		$(".table-tools .columnFilter",rpt.getGrid()).delegate(".allColumns","change",function() {
+			srcSelector=this;
+			UL=$(this).closest("ul");
+			UL.find("li.colcheckbox input").each(function() {
+			  this.checked=srcSelector.checked;
+			});
+			if(UL.find("li.colcheckbox input:checked").length<=0) {
+			  UL.find("li.colcheckbox input").slice(0,5).each(function() {
+			    this.checked=true;
+			  });
+			}
+			gridID=$(this).closest(".reportTable").data('rptkey');
+			  updateGridUI(gridID);
+		      });
+		    
+		$("thead.tableHead th:not(:first-child).resizable",rpt.getGrid()).resizable({
+			  handles: "e",
+			  resize: function (event, ui) {
+			    event.preventDefault();
+			    var sizerID = "#" + $(event.target).attr("id") + "-sizer";
+			    $(sizerID).width(ui.size.width);
+			  }
+		      });
 
 		//Row Filters
 		rowFilter=rpt.settings("filterbar");
@@ -378,9 +428,19 @@ var LGKSReports = (function() {
 			sortCol=$(".dataTable thead.tableHead tr th .colSort:not(.sorting)").closest("th").data("key");
 			if(sortBy.hasClass('sorting_desc')) {
 				q.push("orderby="+sortCol+" DESC");
+        rpt.settings("sort",sortCol+" DESC");
 			} else {
 				q.push("orderby="+sortCol+" ASC");
+        rpt.settings("sort",sortCol+" ASC");
 			}
+		} else if($(".table-tools input.colSort:checked").length>0) {
+		      sortCol=$(".table-tools input.colSort:checked").val();
+		      q.push("orderby="+sortCol);
+		      rpt.settings("sort",sortCol);
+		} else if($(".table-tools select.colSort").length>0) {
+		      sortCol=$(".table-tools select.colSort").val();
+		      q.push("orderby="+sortCol);
+		      rpt.settings("sort",sortCol);
 		}
 
 		cols=[];

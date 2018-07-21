@@ -120,7 +120,7 @@ switch($_REQUEST["action"]) {
                 if(count($vArr)>1) {
                   foreach($vArr as $x1=>$y1) {
                     if($y1==null || strlen($y1)<=0) continue;
-                    $fData[$y1]=["title"=>toTitle($y1),"value"=>$y1];
+                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
                   }
                 } else {
                   $fData[$row['value']]=$row;
@@ -133,6 +133,7 @@ switch($_REQUEST["action"]) {
                 if($row['title']==null || strlen($row['title'])<=0) {
                   continue;
                 }
+                $row['title']=_ling($row['title']);
                 $fData[]=$row;
               }
           }
@@ -607,6 +608,10 @@ function processFilterType($value, $filterConfig) {
       } elseif($value=="thisyear" || $value=="year") {
         return [[date('Y-1-1'),date('Y-m-d')],"RANGE"];
       }
+      break;
+    case "daterange":
+      $value=explode(" - ",$value);
+      return [[_date($value[0]),_date($value[1])],"RANGE"];
       break;
   }
   return [$value,"SW"];

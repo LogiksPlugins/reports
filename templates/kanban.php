@@ -25,13 +25,39 @@ $topbar['settings']=[
             "type"=>"checkbox",
         ]
 			];
+$topbar['XtraHtmlToolButton']="";
 
-$topbar['XtraHtmlToolButton']="<select name='kanbanPivot' class='autorefreshReport pivotDropdown form-control pull-right'>";
+$topbar['XtraHtmlToolButton'].="<select name='kanbanPivot' class='autorefreshReport pivotDropdown form-control pull-right'>";
 foreach($reportConfig['kanban']['colkeys'] as $k=>$v) {
 	if(!isset($v['label'])) $v['label']=toTitle($k);
 	$topbar['XtraHtmlToolButton'].="<option value='{$k}'>{$v['label']}</option>";
 }
 $topbar['XtraHtmlToolButton'].="</select>";
+
+$topbar['XtraHtmlToolButton'].="<div class='btn-group sortOpts'>";
+$topbar['XtraHtmlToolButton'].="<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><span class='glyphicon glyphicon-sort'></span> <span class='caret'></span></button>";
+$topbar['XtraHtmlToolButton'].="<ul class='sortType dropdown-menu' aria-labelledby='dropdownMenu' role='menu'>";
+
+foreach($reportConfig['datagrid'] as $colKey=>$colDefn) {
+  if(!isset($colDefn['label'])) $colDefn['label']=toTitle(_ling($colKey));
+  if($colKey==array_keys($reportConfig['datagrid'])[0]) {
+    //$topbar['XtraHtmlToolButton'].="<li><a href='#'><label><input class='colSort' type='radio' name='orderby' value='{$colKey}' onchange='updateSortOrder(event, this)' checked>{$colDefn['label']}</label></a></li>";
+    $topbar['XtraHtmlToolButton'].="<li><a href='#'>
+        <label class='uicheckbox active'><input class='colSort hidden' type='radio' name='orderby' value='{$colKey} ASC' onchange='updateSortOrder(event, this)' checked>  <i class='fa fa-arrow-up'></i></label>
+        <label class='uicheckbox'><input class='colSort hidden' type='radio' name='orderby' value='{$colKey} DESC' onchange='updateSortOrder(event, this)'>  <i class='fa fa-arrow-down'></i></label>
+        {$colDefn['label']}</a></li>";
+  } else {
+    //$topbar['XtraHtmlToolButton'].="<li><a href='#'><label><input class='colSort' type='radio' name='orderby' value='{$colKey}' onchange='updateSortOrder(event, this)'>{$colDefn['label']}</label></a></li>";
+    $topbar['XtraHtmlToolButton'].="<li><a href='#'>
+        <label class='uicheckbox'><input class='colSort hidden' type='radio' name='orderby' value='{$colKey} ASC' onchange='updateSortOrder(event, this)'>  <i class='fa fa-arrow-up'></i></label>
+        <label class='uicheckbox'><input class='colSort hidden' type='radio' name='orderby' value='{$colKey} DESC' onchange='updateSortOrder(event, this)'>  <i class='fa fa-arrow-down'></i></label>
+        {$colDefn['label']}</a></li>";
+    
+  }
+}
+
+$topbar['XtraHtmlToolButton'].="</ul>";
+$topbar['XtraHtmlToolButton'].="</div>";
 
 $htmlButtons="";
 foreach ($reportConfig['buttons'] as $cmd => $button) {
@@ -45,7 +71,8 @@ foreach ($reportConfig['buttons'] as $cmd => $button) {
 }
 
 $colMap=array_merge([
-			 "title"=>"title",
+             "title"=>"title",
+             "tooltip"=>"tooltip",
 			 "category"=>"category",
 			 "descs"=>"descs",
 			 "msg"=>"msg",
@@ -154,7 +181,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 						<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
 					</figure>
 					{{/if}}
-          <div class="kanban-label">
+          <div class="kanban-label" title="{{<?=$colMap['tooltip']?>}}">
 						{{#if <?=$colMap['wallphoto']?>}}
 						<figure class='wallphoto'>
 							<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
@@ -230,6 +257,15 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					this.checked=true;
 				});
 			}
+      
+      sortKey=rpt.settings("sort");
+      if(sortKey!=null) {
+        if($(".sortOpts input[value='"+sortKey+"']").length>0) {
+          $(".sortOpts input[value='"+sortKey+"']")[0].checked=true;
+          $(".sortOpts label").removeClass("active");
+          $(".sortOpts input[value='"+sortKey+"']").closest("label").addClass("active");
+        }
+      }
 			
 			rpt.loadDataGrid();
     });
@@ -402,6 +438,12 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     function allowMultipleRecords(btn){
       gkey=$(btn).closest(".reportTable").data("rptkey");
 			updateKanbanUI(gkey);
+      rpt.reloadDataGrid();
+    }
+    function updateSortOrder(event, src) {
+      //event.stopPropagation();
+      $(src).closest("ul").find("label.active").removeClass("active");
+      $(src).closest("label").addClass("active");
       rpt.reloadDataGrid();
     }
     function updateKanbanUI(rkey){
