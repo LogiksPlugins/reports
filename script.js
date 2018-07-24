@@ -60,8 +60,11 @@ var LGKSReports = (function() {
 			gridID=$(this).closest("div.forReport").attr('for');
 			LGKSReports.getInstance(gridID).reloadDataGrid(this);
 		});
-	    	$(".filterCol input[type=daterange]").each(function() {
-		  $(this).daterangepicker({
+		$(".filterCol select[value]").each(function() {
+			$(this).val($(this).attr('value'));
+		});
+    	$(".filterCol input[type=daterange]").each(function() {
+		  	$(this).daterangepicker({
 		            opens: 'left',
 		            showDropdowns: true,
 		            autoUpdateInput: true,
@@ -547,6 +550,7 @@ var LGKSReports = (function() {
 				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
 					z=[];
 					$("td,th",this).each(function(k,v) {
+						if($(this).hasClass("hidden")) return;
 						z.push("\""+$(v).text().replace("\"","`")+"\"");
 					});
 					q.push(z.join(","));
@@ -573,6 +577,7 @@ var LGKSReports = (function() {
 				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
 					z=[];
 					$("td,th",this).each(function(k,v) {
+						if($(this).hasClass("hidden")) return;
 						z.push("\""+$(v).text().replace("\"","`")+"\"");
 					});
 					q.push(z.join(","));

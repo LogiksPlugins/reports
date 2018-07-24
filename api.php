@@ -383,6 +383,7 @@ if(!function_exists("findReport")) {
 	        $filterConfig['nofilter']="No $key";
 	      }
 	    }
+		if(!isset($filterConfig['value'])) $filterConfig['value']="";
 
 		$noFilter=_ling($filterConfig['nofilter']);
 
@@ -391,7 +392,7 @@ if(!function_exists("findReport")) {
 			case 'select': case 'selectAJAX':
 				$html="";
 
-				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
+				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key' value='{$filterConfig['value']}'>";
 				$html.="<option value=''>{$noFilter}</option>";
 
 				$html.=generateSelectOptions($filterConfig,"",$dbKey);
@@ -402,21 +403,21 @@ if(!function_exists("findReport")) {
 				break;
 
 			case 'text':
-				return "<input type='text' class='filterBarField autorefreshReport filterText' name='$key' />";
+				return "<input type='text' class='filterBarField autorefreshReport filterText' name='$key' value='{$filterConfig['value']}' />";
 				break;
 
 			case 'date':
-				return "<input type='date' class='filterBarField autorefreshReport filterDate' name='$key' />";
+				return "<input type='date' class='filterBarField autorefreshReport filterDate' name='$key' value='{$filterConfig['value']}' />";
 				break;
       
       		case 'daterange':
-				return "<input type='daterange' class='filterBarField autorefreshReport filterDate' name='{$key}' readonly /";
+				return "<input type='daterange' class='filterBarField autorefreshReport filterDate' name='{$key}' value='{$filterConfig['value']}' readonly /";
 				break;
       
       		case 'period':
 				$html="";
 
-				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key'>";
+				$html="<select class='filterBarField autorefreshReport filterSelect' name='$key' value='{$filterConfig['value']}'>";
 				$html.="<option value=''>{$noFilter}</option>";
         
 		        if(!isset($filterConfig['options'])) {
