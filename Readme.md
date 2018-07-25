@@ -16,8 +16,22 @@ Logiks Core 4.0.0 or higher
 
 ## Report Templates
 - grid
+- kanban
+- cards
 
 ## Report Source Types
 - SQL
 - Custom PHP
 
+
+
+## Upcoming Features
+
+- Inline Editing
+- TreeTable
+- TableSummary
+
+- Formatter :: better :: ability to pass function to format content
+
+- New Template : Calendar
+- New Template : GMap

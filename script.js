@@ -66,29 +66,37 @@ var LGKSReports = (function() {
     	$(".filterCol input[type=daterange]").each(function() {
 		  	$(this).daterangepicker({
 		            opens: 'left',
-		            showDropdowns: true,
+		            //showDropdowns: true,
 		            autoUpdateInput: true,
-		            startDate: moment().subtract(365, 'days'), //moment().startOf('year'),
+		            //startDate: moment().subtract(365, 'days'), //moment().startOf('year'),
+		            //endDate: moment(),
+		            startDate: moment().startOf('month').subtract(3, 'month').startOf('month'),//moment().subtract(365, 'days'), //moment().startOf('year'),
 		            endDate: moment(),
 		            locale: {
 		              format: 'DD/MM/YYYY'
 		            },
-		            minYear: 1901,
-		            maxYear: parseInt(moment().format('YYYY'),10),
+		            minYear: (parseInt(moment().format('YYYY'),10)-100),
+		            maxYear: (parseInt(moment().format('YYYY'),10)+10),
 		            ranges: {
 		               'Today': [moment(), moment()],
 		               'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
 		               'Last 7 Days': [moment().subtract(6, 'days'), moment()],
 		               'Last 30 Days': [moment().subtract(29, 'days'), moment()],
 		               'This Month': [moment().startOf('month'), moment().endOf('month')],
-		               'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+		               'Last Month': [moment().subtract(1, 'month').startOf('month'),moment().subtract(1, 'month').endOf('month')],
+		               'Last 3 Month': [moment().startOf('month').subtract(3, 'month').startOf('month'),moment().subtract(1, 'month').endOf('month')],
 		            }
-		          }, function(start, end, label) {
+		        }, function(start, end, label) {
 		            //console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
 		            //gridID=$(srcField).closest(".reportTable").data('rptkey');
-					      //LGKSReports.getInstance(gridID).reloadDataGrid(this);
-											rpt.reloadDataGrid();
-		          });
+			      	//LGKSReports.getInstance(gridID).reloadDataGrid(this);
+					rpt.reloadDataGrid();
+		        });
+
+		  	$(this).on('cancel.daterangepicker', function(ev, picker) {
+  					$(this).val('');
+  					rpt.reloadDataGrid();
+				});
 		});
 		$("body").delegate("div.forReport.autoConnect[for='"+this.gridID+"'] input.autorefreshReport[name]","keyup",function(e) {
 			e.preventDefault();
@@ -605,6 +613,7 @@ var LGKSReports = (function() {
 					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
+						if($(this).hasClass("hidden")) return;
 						nm=$(v).data('key');
 						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
 						if($(v).find("input[type=checkbox]").length>0) {

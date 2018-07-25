@@ -611,7 +611,12 @@ function processFilterType($value, $filterConfig) {
       break;
     case "daterange":
       $value=explode(" - ",$value);
-      return [[_date($value[0]),_date($value[1])],"RANGE"];
+      $dt1=_date($value[0],'d/m/Y','Y-m-d');
+      $dt2=_date($value[1],'d/m/Y','Y-m-d');
+      if($dt1==null || strlen($dt1)<=0 || $dt2==null || strlen($dt2)<=0) {
+      	return false;
+      }
+      return [[$dt1,$dt2],"RANGE"];
       break;
   }
   return [$value,"SW"];
