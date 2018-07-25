@@ -558,7 +558,7 @@ var LGKSReports = (function() {
 				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
 					z=[];
 					$("td,th",this).each(function(k,v) {
-						if($(this).hasClass("hidden")) return;
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
 						z.push("\""+$(v).text().replace("\"","`")+"\"");
 					});
 					q.push(z.join(","));
@@ -585,7 +585,7 @@ var LGKSReports = (function() {
 				$("table.dataTable thead.tableHead",rpt.getGrid()).find('tr').each(function() {
 					z=[];
 					$("td,th",this).each(function(k,v) {
-						if($(this).hasClass("hidden")) return;
+						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
 						z.push("\""+$(v).text().replace("\"","`")+"\"");
 					});
 					q.push(z.join(","));
@@ -613,7 +613,6 @@ var LGKSReports = (function() {
 					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
-						if($(this).hasClass("hidden")) return;
 						nm=$(v).data('key');
 						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
 						if($(v).find("input[type=checkbox]").length>0) {
