@@ -613,6 +613,7 @@ var LGKSReports = (function() {
 					if($(this).hasClass("hidden")) return;
 					z=[];
 					$("td",this).each(function(k,v) {
+						if($(this).hasClass("hidden")) return;
 						nm=$(v).data('key');
 						if($(v).hasClass('rowSelector') || $(v).hasClass('hidden') || $(v).hasClass('action') || $(v).hasClass('noprint')) return;
 						if($(v).find("input[type=checkbox]").length>0) {

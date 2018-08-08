@@ -455,7 +455,7 @@ if(!function_exists("findReport")) {
 		
 		$cmd=$button['cmd'];
 		
-		if(!isset($button['icon'])) continue;
+		if(!isset($button['icon'])) return;
 		if(!isset($button['label'])) $button['label']="";
 		if(!isset($button['class'])) $button['class']="";
 		
