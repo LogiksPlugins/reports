@@ -255,6 +255,10 @@ if(!function_exists("findReport")) {
 				if($value==null || strlen($value)<=0) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No File</td>";
 				} else {
+					if(!(substr($value,0,5)=="http:" || substr($value,0,6)=="https:" || substr($value,0,4)=="ftp:")) {
+			            $valueF = searchMedia($value);
+			            $value=$valueF['url'];
+		          	}
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$value}' target=_blank> FILE</a></td>";
 				}
 				break;
