@@ -70,7 +70,7 @@ var LGKSReports = (function() {
 		            autoUpdateInput: true,
 		            //startDate: moment().subtract(365, 'days'), //moment().startOf('year'),
 		            //endDate: moment(),
-		            startDate: moment().startOf('month').subtract(3, 'month').startOf('month'),//moment().subtract(365, 'days'), //moment().startOf('year'),
+		            startDate: moment().startOf('month').subtract(1, 'month').startOf('month'),//moment().subtract(365, 'days'), //moment().startOf('year'),
 		            endDate: moment(),
 		            locale: {
 		              format: 'DD/MM/YYYY'
@@ -90,7 +90,9 @@ var LGKSReports = (function() {
 		            //console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
 		            //gridID=$(srcField).closest(".reportTable").data('rptkey');
 			      	//LGKSReports.getInstance(gridID).reloadDataGrid(this);
-					rpt.reloadDataGrid();
+					setTimeout(function() {
+						rpt.reloadDataGrid();
+					},200);
 		        });
 
 		  	$(this).on('cancel.daterangepicker', function(ev, picker) {

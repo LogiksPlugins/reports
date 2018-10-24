@@ -167,20 +167,20 @@ if(!function_exists("findReport")) {
 				}
 				
 // 				printArray($reportConfig);return;
-        			$vendorPath=getWebPath(__DIR__)."/vendors/";
+				$vendorPath=getWebPath(__DIR__)."/vendors/";
         
-        			echo "<link href='{$vendorPath}daterangepicker/daterangepicker.css' rel='stylesheet' type='text/css' />";
-        
+				echo "<link href='{$vendorPath}daterangepicker/daterangepicker.css' rel='stylesheet' type='text/css' />";
+				
 				echo _css('reports');
 				if(isset($reportConfig['style']) && strlen($reportConfig['style'])>0) {
-					echo _css(["reports/{$reportConfig['style']}"]);
+					echo _css(["reports/{$reportConfig['style']}",$reportConfig['style']]);
 				}
 				
 				include $f;
 				
 				echo _js(['moment','reports']);
 				if(isset($reportConfig['script']) && strlen($reportConfig['script'])>0) {
-					echo _js(["reports/{$reportConfig['script']}"]);
+					echo _js(["reports/{$reportConfig['script']}",$reportConfig['script']]);
 				}
 				echo "<script src='{$vendorPath}daterangepicker/daterangepicker.js' type='text/javascript' language='javascript'></script>";
 				return true;
