@@ -546,17 +546,21 @@ function processReportWhere($sql,$reportConfig) {
 		if(isset($_POST['filter']) && count($_POST['filter'])>0) {
 			$whereFilters=[];
 			foreach ($_POST['filter'] as $key => $value) {
+        $colNameKey = getColAlias($key,$reportConfig);
         if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter']) && isset($reportConfig['datagrid'][$key]['filter']['type'])) {
           $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
           if($valueArr) {
             $value=$valueArr[0];
             $_POST['filterrule'][$key]=$valueArr[1];
+            if($reportConfig['datagrid'][$key]['filter']['type']=="daterange") {
+              $colNameKey = "date({$colNameKey})";
+            }
           }
         }
 				if(isset($_POST['filterrule'][$key])) {
-          $whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
+          $whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
 				} else {
-					$whereFilters[]=[getColAlias($key,$reportConfig)=>array("VALUE"=>$value,"OP"=>"SW")];
+					$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>"SW")];
 				}
 			}
 			$sql->_whereMulti($whereFilters);
