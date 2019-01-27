@@ -54,7 +54,12 @@ if(!function_exists("findReport")) {
 		}
 
 		if($params==null) $params=[];
-		$reportConfig=array_merge($reportConfig,$params);
+		$reportConfig=array_replace_recursive($reportConfig,$params);
+		
+		if(isset($_SESSION['REPORT_CONFIG']) && is_array($_SESSION['REPORT_CONFIG'])) {
+			$globalParams = $_SESSION['REPORT_CONFIG'];
+			$reportConfig=array_replace_recursive($reportConfig,$globalParams);
+		}
 
 		if(!isset($reportConfig['reportkey'])) $reportConfig['reportkey']=md5(session_id().time());
 
