@@ -60,7 +60,7 @@ var LGKSReports = (function() {
 			gridID=$(this).closest("div.forReport").attr('for');
 			LGKSReports.getInstance(gridID).reloadDataGrid(this);
 		});
-		$(".filterCol select[value]").each(function() {
+		$(".filterCol select[value], .filterCol input[value]").each(function() {
 			$(this).val($(this).attr('value'));
 		});
     	$(".filterCol input[type=daterange]").each(function() {
