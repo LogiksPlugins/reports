@@ -15,6 +15,15 @@ if(!function_exists("findReport")) {
 		if(isset($_REQUEST['forSite']) && defined("CMS_SITENAME")) {
 			$fsArr[]=ROOT."apps/".CMS_SITENAME."/".APPS_MISC_FOLDER."reports/{$file}.json";
 		}
+		
+		$fArr = explode("/",$file);
+		if(count($fArr)>1) {
+			$fPath = checkModule($fArr[0]);
+			if($fPath) {
+				unset($fArr[0]);
+				$fsArr[] = dirname($fPath)."/reports/".implode("/",$fArr).".json";
+			}
+		}
 
 		$file=false;
 		foreach ($fsArr as $fs) {
