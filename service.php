@@ -28,25 +28,25 @@ switch($_REQUEST["action"]) {
     
 					if(isset($reportConfig['source']['table'])) {
 						$colDefn=explode(",",$_POST['dataField']);
-            $tables=explode(",",$reportConfig['source']['table']);
-            
-            if(count($colDefn)>1) {
-              $srcTable=$colDefn[0];
-            } else {
-              $srcTable=$tables[0];
-            }
-            
+			            $tables=explode(",",$reportConfig['source']['table']);
+			            
+			            if(count($colDefn)>1) {
+			              $srcTable=$colDefn[0];
+			            } else {
+			              $srcTable=$tables[0];
+			            }
+			            
 						$colID="md5({$srcTable}.id)";
-            
-            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
-            $sql=$sql->_RUN();
+			            
+			            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+			            $sql=$sql->_RUN();
 
-            if($sql) {
-              executeReportHook("fieldupdate",$reportConfig);
-              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
-            } else {
-              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
-            }
+			            if($sql) {
+			              executeReportHook("fieldupdate",$reportConfig);
+			              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
+			            } else {
+			              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
+			            }
 					} else {
 						printServiceMsg(["msg"=>"Source type not defined correctly","hash"=>$_POST['dataHash']]);
 					}
