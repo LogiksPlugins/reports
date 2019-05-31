@@ -269,15 +269,15 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			
 			rpt.loadDataGrid();
     });
-		function renderKanbanUI(gridID, rptHandler) {
-			gridBody=$(".kanbanBoard","#RPT-"+gridID);
-			if(gridBody.find(".kanban-col").length<=0) {
-				return generateKanbanUI(rptHandler);
-			} else {
-				return loadKanban(rptHandler);
-			}
+	function renderKanbanUI(gridID, rptHandler) {
+		gridBody=$(".kanbanBoard","#RPT-"+gridID);
+		if(gridBody.find(".kanban-col").length<=0) {
+			return generateKanbanUI(rptHandler);
+		} else {
+			return loadKanban(rptHandler);
 		}
-		function generateKanbanUI(rpt) {
+	}
+	function generateKanbanUI(rpt) {
 			grid=rpt.getGrid();
 			gridBody=$(".kanbanBoard","#RPT-"+this.gridID);
 			gridID=grid.data('rptkey');
@@ -345,14 +345,14 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 
 				loadKanban(rpt);
 			});
-		}
-		function loadKanban(rpt) {
+	}
+	function loadKanban(rpt) {
 			grid=rpt.getGrid();
 			gridBody=$(".kanbanBoard","#RPT-"+this.gridID);
 			gridID=grid.data('rptkey');
 
 			if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
-        if(typeof lgksToast=="function") lgksToast("All the records are loaded");
+        		if(typeof lgksToast=="function") lgksToast("All the records are loaded");
 				return false;
 			}
 
@@ -379,43 +379,43 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 
 					pivotColumn=$("select[name=kanbanPivot]","#RPT-"+rpt.gridID).val();
         
-          allowMULTIPLE=grid.find(".reportOpts input[name=ALLOWMULTIPLERECORD]").is(":checked");
+          			allowMULTIPLE=grid.find(".reportOpts input[name=ALLOWMULTIPLERECORD]").is(":checked");
 
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
-            rValue=v[pivotColumn];
-            if(rValue!=null && rValue.length>0) {
-              rValueArr=rValue.split(",");
-              if(rValueArr.length>1) {
-                $.each(rValueArr, function(k1, rValue1) {
-                  if(gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").length>0) {
-                    cardHTML=gridCardGen(v);
-                    if(allowMULTIPLE) {
-                      gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
-                    } else {
-                      if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
-                        gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
-                      }	else {
-                        $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
-                      }
-                    }
-                  } else {
-          // 					console.log(v);
-                  }
-                });
-              } else {
-                if(gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").length>0) {
-                  cardHTML=gridCardGen(v);
-                  if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
-                    gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").append(cardHTML);
-                  }	else {
-                    $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
-                  }
-                } else {
-        // 					console.log(v);
-                }
-              }
-            }
+			            rValue=v[pivotColumn];
+			            if(rValue!=null && rValue.length>0) {
+			              rValueArr=rValue.split(",");
+			              if(rValueArr.length>1) {
+			                $.each(rValueArr, function(k1, rValue1) {
+			                  if(gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").length>0) {
+			                    cardHTML=gridCardGen(v);
+			                    if(allowMULTIPLE) {
+			                      gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
+			                    } else {
+			                      if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
+			                        gridBody.find(".kanban-col[data-colkey='"+rValue1+"'] .panel-body").append(cardHTML);
+			                      }	else {
+			                        $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+			                      }
+			                    }
+			                  } else {
+			          // 					console.log(v);
+			                  }
+			                });
+			              } else {
+			                if(gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").length>0) {
+			                  cardHTML=gridCardGen(v);
+			                  if(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']").length<=0) {
+			                    gridBody.find(".kanban-col[data-colkey='"+rValue+"'] .panel-body").append(cardHTML);
+			                  }	else {
+			                    $(gridBody.find(".kanban-entry[data-hash='"+v.hashid+"']")).replaceWith(cardHTML);
+			                  }
+			                } else {
+			        // 					console.log(v);
+			                }
+			              }
+			            }
 					});
 
 					nx=gridBody.find(".kanban-col:not(.hidden)").length;
@@ -430,11 +430,11 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					rpt.updateReportMeta(limit, index, last, max);
 					rpt.postDataPopulate(rpt.gridID);
 				});
-		}
-		function showEmptyColumns(btn){
-			gkey=$(btn).closest(".reportTable").data("rptkey");
-			updateKanbanUI(gkey);
-		}
+	}
+	function showEmptyColumns(btn){
+		gkey=$(btn).closest(".reportTable").data("rptkey");
+		updateKanbanUI(gkey);
+	}
     function allowMultipleRecords(btn){
       gkey=$(btn).closest(".reportTable").data("rptkey");
 			updateKanbanUI(gkey);
