@@ -28,25 +28,25 @@ switch($_REQUEST["action"]) {
     
 					if(isset($reportConfig['source']['table'])) {
 						$colDefn=explode(",",$_POST['dataField']);
-			            $tables=explode(",",$reportConfig['source']['table']);
-			            
-			            if(count($colDefn)>1) {
-			              $srcTable=$colDefn[0];
-			            } else {
-			              $srcTable=$tables[0];
-			            }
-			            
+            $tables=explode(",",$reportConfig['source']['table']);
+            
+            if(count($colDefn)>1) {
+              $srcTable=$colDefn[0];
+            } else {
+              $srcTable=$tables[0];
+            }
+            
 						$colID="md5({$srcTable}.id)";
-			            
-			            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
-			            $sql=$sql->_RUN();
+            
+            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+            $sql=$sql->_RUN();
 
-			            if($sql) {
-			              executeReportHook("fieldupdate",$reportConfig);
-			              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
-			            } else {
-			              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
-			            }
+            if($sql) {
+              executeReportHook("fieldupdate",$reportConfig);
+              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
+            } else {
+              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
+            }
 					} else {
 						printServiceMsg(["msg"=>"Source type not defined correctly","hash"=>$_POST['dataHash']]);
 					}
@@ -99,44 +99,44 @@ switch($_REQUEST["action"]) {
 						$gCols=$src['columns'];
 					}
 					$gCols[0]=explode(" ",$gCols[0]);
-          			$src['groupby']=$gCols[0][0];
+          $src['groupby']=$gCols[0][0];
 					$data=$data->_groupby($gCols[0][0]);
 				}
-        		//exit($data->_SQL());
-				$data=$data->_limit(100,0)->_GET();
+        //exit($data->_SQL());
+				$data=$data->_limit(20,0)->_GET();
 
 				if($data) {
-			          $fData=[
-			//             ["title"=>"","value"=>""]
-			          ];
-			          if(!isset($src['type'])) $src['type']="";
-			          switch(strtolower($src['type'])) {
-			            case "csv":case "list":
-			              foreach($data as $row) {
-			                if($row['value']==null || strlen($row['value'])<=0) {
-			                  continue;
-			                }
-			                $vArr=explode(",",$row['value']);
-			                if(count($vArr)>1) {
-			                  foreach($vArr as $x1=>$y1) {
-			                    if($y1==null || strlen($y1)<=0) continue;
-			                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
-			                  }
-			                } else {
-			                  $fData[$row['value']]=$row;
-			                }
-			              }
-			              $fData=array_values($fData);
-			              break;
-			            default:
-			              foreach($data as $row) {
-			                if($row['title']==null || strlen($row['title'])<=0) {
-			                  continue;
-			                }
-			                $row['title']=_ling($row['title']);
-			                $fData[]=$row;
-			              }
-			          }
+          $fData=[
+//             ["title"=>"","value"=>""]
+          ];
+          if(!isset($src['type'])) $src['type']="";
+          switch(strtolower($src['type'])) {
+            case "csv":case "list":
+              foreach($data as $row) {
+                if($row['value']==null || strlen($row['value'])<=0) {
+                  continue;
+                }
+                $vArr=explode(",",$row['value']);
+                if(count($vArr)>1) {
+                  foreach($vArr as $x1=>$y1) {
+                    if($y1==null || strlen($y1)<=0) continue;
+                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
+                  }
+                } else {
+                  $fData[$row['value']]=$row;
+                }
+              }
+              $fData=array_values($fData);
+              break;
+            default:
+              foreach($data as $row) {
+                if($row['title']==null || strlen($row['title'])<=0) {
+                  continue;
+                }
+                $row['title']=_ling($row['title']);
+                $fData[]=$row;
+              }
+          }
           
 					printServiceMsg($fData);
 				} else {
@@ -543,39 +543,45 @@ function getHTMLData($data,$headers=[]) {
 function processReportWhere($sql,$reportConfig) {
 	$searchCols=$reportConfig['searchCols'];
 	if(!isset($_POST['filterrule'])) $_POST['filterrule']=[];
-		if(isset($_POST['filter']) && count($_POST['filter'])>0) {
-			$whereFilters=[];
-			foreach ($_POST['filter'] as $key => $value) {
-        $colNameKey = getColAlias($key,$reportConfig);
-        if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter']) && isset($reportConfig['datagrid'][$key]['filter']['type'])) {
-          $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
-          if($valueArr) {
-            $value=$valueArr[0];
-            $_POST['filterrule'][$key]=$valueArr[1];
-            if($reportConfig['datagrid'][$key]['filter']['type']=="daterange") {
-              $colNameKey = "date({$colNameKey})";
-            }
-          }
-        }
-				if(isset($_POST['filterrule'][$key])) {
-          $whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
-				} else {
-					$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>"SW")];
-				}
-			}
-			$sql->_whereMulti($whereFilters);
-		}
-    
-		if(isset($_POST['search']) && count($_POST['search'])>0) {
-			if(isset($_POST['search']['q']) && count($_POST['search']['q'])>0) {
-				$searchArr=[];
-				$q=$_POST['search']['q'];
-				foreach ($searchCols as $col) {
-					$searchArr[]=[getColAlias($col,$reportConfig)=>array("VALUE"=>$q,"OP"=>"LIKE")];
-				}
-				$sql->_whereMulti($searchArr,"AND","OR");
+	if(isset($_POST['filter']) && count($_POST['filter'])>0) {
+		$whereFilters=[];
+		foreach ($_POST['filter'] as $key => $value) {
+	        $colNameKey = getColAlias($key,$reportConfig);
+	        if(isset($reportConfig['datagrid'][$key]) && isset($reportConfig['datagrid'][$key]['filter'])) {
+	        	// && isset($reportConfig['datagrid'][$key]['filter']['type'])
+	          $valueArr=processFilterType($value, $reportConfig['datagrid'][$key]['filter']);
+	          
+	          if($valueArr) {
+	            $value=$valueArr[0];
+	            $_POST['filterrule'][$key]=$valueArr[1];
+
+	            if(isset($reportConfig['datagrid'][$key]['filter']['type'])) {
+	            	if($reportConfig['datagrid'][$key]['filter']['type']=="daterange") {
+	            		$colNameKey = "date({$colNameKey})";
+	            	}
+	            }
+	          }
+	        }
+
+			if(isset($_POST['filterrule'][$key])) {
+      			$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
+			} else {
+				$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>"SW")];
 			}
 		}
+		$sql->_whereMulti($whereFilters);
+	}
+
+	if(isset($_POST['search']) && count($_POST['search'])>0) {
+		if(isset($_POST['search']['q']) && count($_POST['search']['q'])>0) {
+			$searchArr=[];
+			$q=$_POST['search']['q'];
+			foreach ($searchCols as $col) {
+				$searchArr[]=[getColAlias($col,$reportConfig)=>array("VALUE"=>$q,"OP"=>"LIKE")];
+			}
+			$sql->_whereMulti($searchArr,"AND","OR");
+		}
+	}
 
 	return $sql;
 }
@@ -589,43 +595,45 @@ function getColAlias($col,$reportConfig) {
 	}
 }
 function processFilterType($value, $filterConfig) {
-  switch(strtolower($filterConfig['type'])) {
-    case "period":
-      if($value=="today") {
-        return [date("Y-m-d"),"EQ"];
-      } elseif($value=="overdue") {
-        return [date('Y-m-d'),"LT"];
-      } elseif($value=="yesterday") {
-        return [date('Y-m-d',strtotime("-1 days")),"EQ"];
-      } elseif($value=="tomorrow") {
-        return [date('Y-m-d',strtotime("+1 days")),"EQ"];
-      } elseif($value=="week") {
-        return [[date('Y-m-d',strtotime("this week")),date('Y-m-d')],"RANGE"];
-      } elseif($value=="thisweek") {
-        return [[date('Y-m-d',strtotime("next week")),date('Y-m-d')],"RANGE"];
-      } elseif($value=="nextweek") {
-        $monday = strtotime("next monday");
-        $sunday = strtotime(date("Y-m-d",$monday)." +6 days");
-        return [[date('Y-m-d',$monday),date('Y-m-d',$sunday)],"RANGE"];
-      } elseif($value=="month") {
-        return [[date('Y-m-1'),date('Y-m-d')],"RANGE"];
-      } elseif($value=="thismonth") {
-        return [[date('Y-m-d'),date('Y-m-d',strtotime("first day of next month"))],"RANGE"];
-      } elseif($value=="thisyear" || $value=="year") {
-        return [[date('Y-1-1'),date('Y-m-d')],"RANGE"];
-      }
-      break;
-    case "daterange":
-      $value=explode(" - ",$value);
-      $dt1=_date($value[0],'d/m/Y','Y-m-d');
-      $dt2=_date($value[1],'d/m/Y','Y-m-d');
-      if($dt1==null || strlen($dt1)<=0 || $dt2==null || strlen($dt2)<=0) {
-      	return false;
-      }
-      return [[$dt1,$dt2],"RANGE"];
-      break;
-  }
-  return [$value,"SW"];
+	if(!isset($filterConfig['type'])) $filterConfig['type'] = "";
+
+	switch(strtolower($filterConfig['type'])) {
+		case "period":
+		  if($value=="today") {
+		    return [date("Y-m-d"),"EQ"];
+		  } elseif($value=="overdue") {
+		    return [date('Y-m-d'),"LT"];
+		  } elseif($value=="yesterday") {
+		    return [date('Y-m-d',strtotime("-1 days")),"EQ"];
+		  } elseif($value=="tomorrow") {
+		    return [date('Y-m-d',strtotime("+1 days")),"EQ"];
+		  } elseif($value=="week") {
+		    return [[date('Y-m-d',strtotime("this week")),date('Y-m-d')],"RANGE"];
+		  } elseif($value=="thisweek") {
+		    return [[date('Y-m-d',strtotime("next week")),date('Y-m-d')],"RANGE"];
+		  } elseif($value=="nextweek") {
+		    $monday = strtotime("next monday");
+		    $sunday = strtotime(date("Y-m-d",$monday)." +6 days");
+		    return [[date('Y-m-d',$monday),date('Y-m-d',$sunday)],"RANGE"];
+		  } elseif($value=="month") {
+		    return [[date('Y-m-1'),date('Y-m-d')],"RANGE"];
+		  } elseif($value=="thismonth") {
+		    return [[date('Y-m-d'),date('Y-m-d',strtotime("first day of next month"))],"RANGE"];
+		  } elseif($value=="thisyear" || $value=="year") {
+		    return [[date('Y-1-1'),date('Y-m-d')],"RANGE"];
+		  }
+		  break;
+		case "daterange":
+		  $value=explode(" - ",$value);
+		  $dt1=_date($value[0],'d/m/Y','Y-m-d');
+		  $dt2=_date($value[1],'d/m/Y','Y-m-d');
+		  if($dt1==null || strlen($dt1)<=0 || $dt2==null || strlen($dt2)<=0) {
+		  	return false;
+		  }
+		  return [[$dt1,$dt2],"RANGE"];
+		  break;
+	}
+	if(!isset($filterConfig['qtype'])) $filterConfig['qtype'] = "SW";
+	return [$value,$filterConfig['qtype']];
 }
 ?>
-
