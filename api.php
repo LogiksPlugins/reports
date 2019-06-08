@@ -401,7 +401,10 @@ if(!function_exists("findReport")) {
 	        $filterConfig['nofilter']="No $key";
 	      }
 	    }
-		if(!isset($filterConfig['value'])) $filterConfig['value']="";
+		if(!isset($filterConfig['value'])) {
+			if(isset($filterConfig['default'])) $filterConfig['value']=$filterConfig['default'];
+			else $filterConfig['value']="";
+		}
 
 		$noFilter=_ling($filterConfig['nofilter']);
 
