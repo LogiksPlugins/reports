@@ -308,6 +308,18 @@ table.dataTable .image-avatar {
     cursor: -webkit-grabbing;
 }
 
+.badgeIcon:after {
+    content: " ";
+    position: absolute;
+    background: #333;
+    height: 5px;
+    top: -4px;
+    right: -8px;
+    width: 5px;
+    border-radius: 50%;
+    color: white;
+    border: 1px solid #333;
+}
 
 
 

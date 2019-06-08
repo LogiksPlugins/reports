@@ -408,12 +408,20 @@ var LGKSReports = (function() {
 			});
 		
 		//For fields in : Filter Bar
-		grid.find(".tableFilter:not(.hidden) .filterCol:not(.hidden) .filterBarField[name]").each(function() {
+		//.tableFilter:not(.hidden) .filterCol:not(.hidden) 
+		filterCount = 0;
+		grid.find(".filterBarField[name]").each(function() {
 				name=$(this).attr('name');
 				if(this.value!=null && this.value.length>0) {
 					q.push("filter["+name+"]"+"="+encodeURIComponent(this.value));
+					filterCount++;
 				}
 			});
+		if(filterCount>0) {
+			grid.find(".table-tools .control-primebar *[cmd=filterbar] .glyphicon").addClass("badgeIcon");
+		} else {
+			grid.find(".table-tools .control-primebar *[cmd=filterbar] .glyphicon").removeClass("badgeIcon");
+		}
 		
 		//For custom fields in : any other part of page.
 		$("body").find("div.forReport[for='"+this.gridID+"']").find(".filterfield[name]").each(function() {
