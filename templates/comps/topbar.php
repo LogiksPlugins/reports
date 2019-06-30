@@ -24,8 +24,9 @@ if(isset($reportConfig['calendar'])) {
 if(isset($reportConfig['gmap'])) {
   $templateViews[]="gmap";
 }
-// $templateViews[]="calendar";
-// $templateViews[]="gmap";
+if(isset($reportConfig['drilldown'])) {
+  $templateViews[]="drilldown";
+}
 //printArray($reportConfig);
 ?>
 <div class="control-primebar">

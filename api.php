@@ -217,7 +217,10 @@ if(!function_exists("findReport")) {
 			case 'time':
 				$value=explode(" ", $value);
 				$value=end($value);
-				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._time($value)."</td>";
+				if($value==null || strlen($value)<=0)
+					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+				else
+					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._time($value)."</td>";
 				break;
 
 			case 'datetime':
