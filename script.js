@@ -417,6 +417,14 @@ var LGKSReports = (function() {
 					filterCount++;
 				}
 			});
+		$(".report-sidebar .reportFilters[name]").each(function() {
+			name=$(this).attr('name');
+			if(this.value!=null && this.value.length>0) {
+				q.push("filter["+name+"]"+"="+encodeURIComponent(this.value));
+		        filterCount++;
+			}
+		});
+		
 		if(filterCount>0) {
 			grid.find(".table-tools .control-primebar *[cmd=filterbar] .glyphicon").addClass("badgeIcon");
 		} else {
@@ -449,10 +457,10 @@ var LGKSReports = (function() {
 			sortCol=$(".dataTable thead.tableHead tr th .colSort:not(.sorting)").closest("th").data("key");
 			if(sortBy.hasClass('sorting_desc')) {
 				q.push("orderby="+sortCol+" DESC");
-        rpt.settings("sort",sortCol+" DESC");
+				rpt.settings("sort",sortCol+" DESC");
 			} else {
 				q.push("orderby="+sortCol+" ASC");
-        rpt.settings("sort",sortCol+" ASC");
+				rpt.settings("sort",sortCol+" ASC");
 			}
 		} else if($(".table-tools input.colSort:checked").length>0) {
 		      sortCol=$(".table-tools input.colSort:checked").val();

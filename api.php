@@ -189,9 +189,31 @@ if(!function_exists("findReport")) {
 				if(isset($reportConfig['style']) && strlen($reportConfig['style'])>0) {
 					echo _css(["reports/{$reportConfig['style']}",$reportConfig['style']]);
 				}
+				echo "<div class='row'>";
+
+				if(isset($reportConfig['sidebar']) && isset($reportConfig['sidebar']['type']) &&
+						isset($reportConfig['sidebar']['fields']) && count($reportConfig['sidebar']['fields'])>0) {
+
+					$sidebarFile = __DIR__."/templates/comps/sidebar_{$reportConfig['sidebar']['type']}.php";
+
+					echo "<div class='hidden-xs hidden-sm noprint col-md-3 col-lg-2 nopadding'>";
+					if(file_exists($sidebarFile)) {
+						include_once $sidebarFile;
+					} else {
+						echo "<p class='text-center'><br><br><br>Sidebar Source Not Found</p>";
+					}
+					echo "</div>";
+					echo "<div class='col-xs-12 col-sm-12 col-md-10 col-lg-10 nopadding'>";
+					include $f;	
+					echo "</div>";
+				} else {
+					echo "<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>";
+					include $f;	
+					echo "</div>";
+				}
 				
-				include $f;
-				
+				echo "</div>";
+
 				echo _js(['moment','reports']);
 				if(isset($reportConfig['script']) && strlen($reportConfig['script'])>0) {
 					echo _js(["reports/{$reportConfig['script']}",$reportConfig['script']]);

@@ -322,11 +322,44 @@ table.dataTable .image-avatar {
 }
 
 
+.report-sidebar {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    margin-bottom: 0px;
+    border-right: 1px solid #DEDEDE;
+}
+.report-sidebar .list-group-item {
+    overflow: hidden;
+    border-right: 0px;
+    padding-left: 25px;
+    cursor: pointer;
+}
+
+.report-sidebar .panel-body .list-group, .report-sidebar .panel {
+    margin-bottom: 0px;
+}
+
+.report-sidebar .panel-body .list-group {
+    
+}
+.report-sidebar .panel-heading {
+    padding-left: 21px;
+    font-weight: bold;
+}
+
+.report-sidebar .fa-panel-status:before {
+    content: "\f078";
+}
+
+.report-sidebar .fa-panel-status {
+    content: "\f077";
+}
 
 
-
-
-
+.nopadding {
+    padding: 0px;
+}
 .onlyprint {
     display: none !important;
 }

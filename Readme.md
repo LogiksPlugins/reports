@@ -26,6 +26,9 @@ Logiks Core 4.0.0 or higher
 
 
 ## Upcoming Features
+- Sidebar : List
+- Sidebar : Filters
+- Sidebar : Tree
 
 - Inline Editing
 - TreeTable
@@ -35,3 +38,4 @@ Logiks Core 4.0.0 or higher
 
 - New Template : Calendar
 - New Template : GMap
+- New Template : Drilldown UI

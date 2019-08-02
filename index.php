@@ -29,7 +29,7 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 // 		$report['template']="kanban";
 		
 		echo _css("reports");
-		echo "<div class='reportholder' style='width:100%;height:100%;'>";
+		echo "<div class='reportholder' style='width:100%;height:100%;overflow-x: hidden;'>";
 		//include_once "sample.php";
 		printReport($report,$report['dbkey']);
 		echo "</div>";
