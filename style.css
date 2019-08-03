@@ -2,8 +2,15 @@
 @import url("css/cards.css");
 @import url("css/rcolors.css");
 
+canvas, .report-sidebar {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
 .reportTable {
     width: 100%;height: 100%;
+    overflow: unset;
 }
 .reportTable h1 {
     border: 0px;
@@ -11,7 +18,7 @@
 /*Toolbar*/
 .reportTable .table-tools {
     margin:0px;margin-top: 5px;
-		padding-right: 5px;
+	padding-right: 5px;
     margin-bottom: 5px;
 }
 .reportTable .table-tools .control-primebar {
@@ -296,7 +303,12 @@ table.dataTable .image-avatar {
 }
 
 
+.report-sidebar-container {
 
+}
+.report-main-container {
+    overflow: auto;
+}
 
 .grab {
     cursor: -moz-grab;
@@ -354,6 +366,15 @@ table.dataTable .image-avatar {
 
 .report-sidebar .fa-panel-status {
     content: "\f077";
+}
+
+.chartArea {
+    height:250px;
+    padding-right: 20px !important;
+    text-align: center;
+}
+.chartArea .reportChartCanvas {
+    width: 100%;height: 100%;
 }
 
 

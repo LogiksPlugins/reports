@@ -389,6 +389,109 @@ switch($_REQUEST["action"]) {
 			break;
 		}
 	break;
+	case "fetchChartData":
+		$reportKey=$_REQUEST['gridid'];
+		if(!isset($_SESSION['REPORT'][$reportKey])) {
+			trigger_error("Sorry, grid report key not found.");
+		}
+
+		$reportConfig=$_SESSION['REPORT'][$reportKey];
+
+		if(isset($reportConfig['charts']) && isset($reportConfig['charts']['source']) && count($reportConfig['charts']['source'])>0) {
+			
+			if(isset($reportConfig['charts']['source']['type'])) {
+				$reportConfig['charts']['source'] = [$reportConfig['charts']['source']];
+			}
+
+			if(!isset($reportConfig['charts']['type'])) $reportConfig['charts']['type'] = "line";
+			if(!isset($reportConfig['charts']['options'])) $reportConfig['charts']['options'] = [];
+
+			$fData = [];
+			$labels = [];
+			foreach ($reportConfig['charts']['source'] as $kn => $src) {
+				$dbKey = $reportConfig['dbkey'];
+				if(isset($src['dbkey'])) $dbKey = $src['dbkey'];
+				$dbData = _db($dbKey)->queryBuilder()->fromJSON(json_encode($src),_db($dbKey));
+				if($dbData) {
+					$tempData = $dbData->_GET();
+
+					if($tempData) {
+						if(!isset($src['fill'])) $src['fill'] = false;
+						if(!isset($src['title'])) {
+							$src['title'] = "Dataset {$kn}";
+							if(!is_numeric($kn)) $src['title'] = $kn;
+						}
+
+						$fData[$kn] = ["datapoints"=>[],"fill"=>$src['fill'],"title"=>$src['title']];
+						foreach ($tempData as $record) {
+							if(isset($record['title']) && isset($record['value'])) {
+								$labels[] = $record['title'];
+								$fData[$kn]['datapoints'][] = $record['value'];
+							}
+						}
+					}
+				}
+			}
+
+			if(isset($reportConfig['charts']['title']) && strlen($reportConfig['charts']['title'])>0) {
+				$reportConfig['charts']['options']['title'] = [
+						"display"=>true,
+						"text"=>$reportConfig['charts']['title']
+					];
+			}
+
+			if(!isset($reportConfig['charts']['options']['scales'])) {
+				$reportConfig['charts']['options']['scales'] = [];
+
+				if(isset($reportConfig['charts']['x-axis-text']) && strlen($reportConfig['charts']['x-axis-text'])>0) {
+					$reportConfig['charts']['options']['scales']['xAxes'] = [
+						[
+							"display"=>true,
+							"scaleLabel"=> [
+								"display"=> true,
+								"labelString"=> $reportConfig['charts']['x-axis-text']
+							]
+						]
+					];
+				}
+
+				if(isset($reportConfig['charts']['y-axis-text']) && strlen($reportConfig['charts']['y-axis-text'])>0) {
+					$reportConfig['charts']['options']['scales']['yAxes'] = [
+						[
+							"display"=>true,
+							"scaleLabel"=> [
+								"display"=> true,
+								"labelString"=> $reportConfig['charts']['y-axis-text']
+							]
+						]
+					];
+				}
+			}
+			
+
+			if(!isset($reportConfig['charts']['options']['legend'])) {
+				if(count($reportConfig['charts']['source'])>1) {
+					$reportConfig['charts']['options']['legend'] = [
+							"display"=>true,
+							"position"=>"right"
+						];
+				}
+			}
+
+			if(count($fData)>0) {
+				printServiceMsg([
+					"type"=>$reportConfig['charts']['type'],
+					"options"=>$reportConfig['charts']['options'],
+					"labels"=>array_unique($labels),
+					"datasets"=>$fData
+				]);
+			} else {
+				printServiceMsg("DATA NOT FOUND");
+			}
+		} else {
+			printServiceMsg("CHART NOT FOUND");
+		}
+	break;
 	default:
 		trigger_error("Action Not Defined or Not Supported");
 }

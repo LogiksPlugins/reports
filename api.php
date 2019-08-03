@@ -192,22 +192,39 @@ if(!function_exists("findReport")) {
 				echo "<div class='row'>";
 
 				if(isset($reportConfig['sidebar']) && isset($reportConfig['sidebar']['type']) &&
-						isset($reportConfig['sidebar']['fields']) && count($reportConfig['sidebar']['fields'])>0) {
+						isset($reportConfig['sidebar']['source']) && count($reportConfig['sidebar']['source'])>0) {
 
 					$sidebarFile = __DIR__."/templates/comps/sidebar_{$reportConfig['sidebar']['type']}.php";
 
-					echo "<div class='hidden-xs hidden-sm noprint col-md-3 col-lg-2 nopadding'>";
+					echo "<div class='hidden-xs hidden-sm noprint col-md-3 col-lg-2 nopadding report-sidebar-container'>";
 					if(file_exists($sidebarFile)) {
 						include_once $sidebarFile;
 					} else {
 						echo "<p class='text-center'><br><br><br>Sidebar Source Not Found</p>";
 					}
 					echo "</div>";
-					echo "<div class='col-xs-12 col-sm-12 col-md-10 col-lg-10 nopadding'>";
+
+					echo "<div class='col-xs-12 col-sm-12 col-md-10 col-lg-10 nopadding report-main-container'>";
+
+					if(isset($reportConfig['charts'])) {
+						$chartFile = __DIR__."/templates/comps/charts.php";
+						if(file_exists($chartFile)) {
+							include $chartFile;
+						}
+					}
+
 					include $f;	
 					echo "</div>";
 				} else {
-					echo "<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>";
+					echo "<div class='col-xs-12 col-sm-12 col-md-12 col-lg-12 report-main-container'>";
+
+					if(isset($reportConfig['charts'])) {
+						$chartFile = __DIR__."/templates/comps/charts.php";
+						if(file_exists($chartFile)) {
+							include $chartFile;
+						}
+					}
+
 					include $f;	
 					echo "</div>";
 				}

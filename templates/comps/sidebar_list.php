@@ -2,10 +2,13 @@
 if(!defined('ROOT')) exit('No direct script access allowed');
 
 if($reportConfig["source"]['type']=="sql") {
-	$fieldID = array_keys($reportConfig['sidebar']['fields'])[0];
-	$field = $reportConfig['sidebar']['fields'][$fieldID];
+	$fieldID = array_keys($reportConfig['sidebar']['source'])[0];
+	$field = $reportConfig['sidebar']['source'][$fieldID];
 
-	$dbData = _db()->queryBuilder()->fromJSON(json_encode($field),_db());
+	$dbKeyForList = $reportConfig['dbkey'];
+	if(isset($field['dbkey'])) $dbKeyForList = $field['dbkey'];
+
+	$dbData = _db($dbKeyForList)->queryBuilder()->fromJSON(json_encode($field),_db($dbKeyForList));
 	if($dbData) {
 		$dbData->_limit(500);
 		if($dbData->_array()["groupby"]==NULL || !is_array($dbData->_array()["groupby"])) {
