@@ -748,7 +748,7 @@ var LGKSReports = (function() {
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
-					window.location=_link("modules/"+cmdX[1]);
+					window.location=_link(cmdX[1]);
 				}
 				break;
 			case "module":case "popup":
