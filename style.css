@@ -350,6 +350,7 @@ table.dataTable .image-avatar {
 
 .report-sidebar .panel-body .list-group, .report-sidebar .panel {
     margin-bottom: 0px;
+    border-bottom: 0px;
 }
 
 .report-sidebar .panel-body .list-group {

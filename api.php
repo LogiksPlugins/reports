@@ -196,7 +196,7 @@ if(!function_exists("findReport")) {
 
 					$sidebarFile = __DIR__."/templates/comps/sidebar_{$reportConfig['sidebar']['type']}.php";
 
-					echo "<div class='hidden-xs hidden-sm noprint col-md-3 col-lg-2 nopadding report-sidebar-container'>";
+					echo "<div class='hidden-xs hidden-sm noprint col-md-2 col-lg-2 nopadding report-sidebar-container'>";
 					if(file_exists($sidebarFile)) {
 						include_once $sidebarFile;
 					} else {
