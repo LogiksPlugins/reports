@@ -715,11 +715,11 @@ var LGKSReports = (function() {
 				hash=$(src).closest(".tableRow").data('hash');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
-				title=$(src).text();
-				if(title==null || title.length<=0) {
+				title=$(src).text().trim();
+				if(title==null || title.trim().length<=0) {
 					title=$(src).attr("title");
 				}
-				if(title==null || title.length<=0) {
+				if(title==null || title.trim().length<=0) {
 					title="Dialog";
 				}
 				
@@ -737,11 +737,11 @@ var LGKSReports = (function() {
 				hash=$(src).closest(".tableRow").data('hash');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
-				title=$(src).text();
-				if(title==null || title.length<=0) {
+				title=$(src).text().trim();
+				if(title==null || title.trim().length<=0) {
 					title=$(src).attr("title");
 				}
-				if(title==null || title.length<=0) {
+				if(title==null || title.trim().length<=0) {
 					title="Dialog";
 				}
 				
@@ -755,11 +755,11 @@ var LGKSReports = (function() {
 				hash=$(src).closest(".tableRow").data('hash');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
-				title=$(src).text();
-				if(title==null || title.length<=0) {
+				title=$(src).text().trim();
+				if(title==null || title.trim().length<=0) {
 					title=$(src).attr("title");
 				}
-				if(title==null || title.length<=0) {
+				if(title==null || title.trim().length<=0) {
 					title="Dialog";
 				}
 				

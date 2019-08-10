@@ -26,7 +26,7 @@ var COLORS_KEYS = Object.keys(COLORS);
 $(function() {
 	processAJAXQuery(_service("reports","fetchChartData")+"&gridid=<?=$reportKey?>", function(jsonData) {
 		if(typeof jsonData.Data != "string") {
-			console.log(jsonData.Data);
+			// console.log(jsonData.Data);
 
 			config = {
 				type: jsonData.Data.type,

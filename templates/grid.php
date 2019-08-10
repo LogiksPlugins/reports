@@ -28,7 +28,7 @@ if(isset($reportConfig['pager'])) {
       <?php
       	}
       ?>
-  </div>
+  	</div>
 
 	<table class="dataTable table table-hover table-striped table-condensed reportContainer">
 		<thead class='tableHead'>
