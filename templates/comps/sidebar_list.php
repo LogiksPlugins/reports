@@ -5,6 +5,10 @@ if($reportConfig["source"]['type']=="sql") {
 	$fieldID = array_keys($reportConfig['sidebar']['source'])[0];
 	$field = $reportConfig['sidebar']['source'][$fieldID];
 
+	if(!isset($field['cols']) && isset($field['data_col'])) {
+		$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
+	}
+
 	$dbKeyForList = $reportConfig['dbkey'];
 	if(isset($field['dbkey'])) $dbKeyForList = $field['dbkey'];
 
@@ -26,6 +30,7 @@ if($reportConfig["source"]['type']=="sql") {
 
 				echo "<div class='list-group report-sidebar'>";
 				echo "<input type='hidden' class='reportFilters' name='{$fieldID}' />";
+				echo "<li class='list-group-item list-group-flush' data-value=''>".toTitle(_ling("All records"))."</li>";
 				foreach ($dbDataFinal as $category => $recordSet) {
 					$collapseID = md5($category.time());
 
@@ -40,6 +45,7 @@ if($reportConfig["source"]['type']=="sql") {
 
 					echo "<ul class='list-group'>";
 					foreach ($recordSet as $record) {
+						if(strlen($record['value'])<=0) continue;
 						echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
 					}
 					echo "</ul>";
@@ -49,15 +55,48 @@ if($reportConfig["source"]['type']=="sql") {
 			} else {
 				echo "<ul class='list-group report-sidebar'>";
 				echo "<input type='hidden' class='reportFilters' name='{$fieldID}' />";
-				foreach ($dbData as $record) {
-					echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+				echo "<li class='list-group-item list-group-flush' data-value=''>".toTitle(_ling("All records"))."</li>";
+
+				if(isset($field['data_col'])) {
+					$finalList = [];
+					foreach ($dbData as $record) {
+						$recs = explode(",", $record['title']);
+						foreach ($recs as $a) {
+							$finalList[]=$a;
+						}
+					}
+					$finalList = array_unique($finalList);
+					sort($finalList);
+					
+					foreach ($finalList as $value) {
+						if(strlen($value)<=0) continue;
+						echo "<li class='list-group-item list-group-flush' data-value='{$value}'>".toTitle(_ling($value))."</li>";
+					}
+				} else {
+					foreach ($dbData as $record) {
+						if(strlen($record['value'])<=0) continue;
+						echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+					}
 				}
+
 				echo "</ul>";
 			}
 		} else {
+			echo "<div class='list-group report-sidebar'>";
+			echo "<ul class='list-group'>";
+			echo "<h3 class='text-center'>".toTitle(_ling("No filters"))."</h3>";
+			//echo "<li class='list-group-item list-group-flush'>".toTitle(_ling("No filters"))."</li>";
+			echo "</ul>";
+			echo "</div>";
 			return;
 		}
 	} else {
+		echo "<div class='list-group report-sidebar'>";
+		echo "<ul class='list-group'>";
+		echo "<h3 class='text-center'>".toTitle(_ling("No filters"))."</h3>";
+		// echo "<li class='list-group-item list-group-flush'>".toTitle(_ling("No filters"))."</li>";
+		echo "</ul>";
+		echo "</div>";
 		return;
 	}
 	
