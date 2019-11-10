@@ -6,7 +6,11 @@ if($reportConfig["source"]['type']=="sql") {
 	$field = $reportConfig['sidebar']['source'][$fieldID];
 
 	if(!isset($field['cols']) && isset($field['data_col'])) {
-		$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
+		if(isset($field['group_col'])) {
+			$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value,{$field['group_col']} as category";
+		} else {
+			$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
+		}
 	}
 
 	$dbKeyForList = $reportConfig['dbkey'];
