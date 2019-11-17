@@ -181,7 +181,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 						<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
 					</figure>
 					{{/if}}
-          <div class="kanban-label" title="{{<?=$colMap['tooltip']?>}}">
+          			<div class="kanban-label" title="{{<?=$colMap['tooltip']?>}}">
 						{{#if <?=$colMap['wallphoto']?>}}
 						<figure class='wallphoto'>
 							<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
@@ -190,6 +190,8 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 						<h2>
 							<span class='pull-right label label-info'>{{<?=$colMap['counter']?>}}</span>
 							<?php if($unilink) { ?>
+								{{#if unilink}}
+								<a class='unilink' href='#' data-link="{{unilink}}">{{<?=$colMap['title']?>}}</a>
 								{{#if hashid}}
 								<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
 								{{else}}
@@ -198,7 +200,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 							<?php } else { ?>
 								<a href='#'>{{<?=$colMap['title']?>}}</a>
 							<?php } ?>
-            </h2>
+            			</h2>
 						{{#if <?=$colMap['category']?>}}
 						<h3>{{<?=$colMap['category']?>}}</h3>
 						{{/if}}
@@ -206,7 +208,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 						<figure>
 							<img src="{{<?=$colMap['image']?>}}" class="img-responsive img-rounded full-width">
 						</figure>
-            {{/if}}
+            			{{/if}}
 						{{#if <?=$colMap['descs']?>}}
 						<p>{{{<?=$colMap['descs']?>}}}</p>
 						{{/if}}
