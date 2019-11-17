@@ -72,7 +72,10 @@ if(!function_exists("findReport")) {
 
 		if(!isset($reportConfig['reportkey'])) $reportConfig['reportkey']=md5(session_id().time());
 
-		$reportConfig['dbkey']=$dbKey;
+		if($dbKey) {
+			$reportConfig['dbkey']=$dbKey;
+		}
+		if(!isset($reportConfig['dbkey'])) $reportConfig['dbkey']="app";
 
 		if(!isset($reportConfig['template']) || strlen($reportConfig['template'])<=0) {
 			$reportConfig['template']="grid";

@@ -101,6 +101,7 @@ $unilink=false;
 if(isset($reportConfig['kanban']['unilink']) && strlen($reportConfig['kanban']['unilink'])>0) {
 	$unilink=$reportConfig['kanban']['unilink'];
 }
+
 $colorMap=[];
 if(isset($reportConfig['kanban']['colormap'])) {
 	$colorMap=$reportConfig['kanban']['colormap'];
