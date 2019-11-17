@@ -192,10 +192,12 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 							<?php if($unilink) { ?>
 								{{#if unilink}}
 								<a class='unilink' href='#' data-link="{{unilink}}">{{<?=$colMap['title']?>}}</a>
-								{{elseif hashid}}
-								<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
 								{{else}}
-								<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
+									{{if hashid}}
+									<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
+									{{else}}
+									<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
+									{{/if}}
 								{{/if}}
 							<?php } else { ?>
 								<a href='#'>{{<?=$colMap['title']?>}}</a>
