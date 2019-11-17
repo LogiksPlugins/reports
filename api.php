@@ -53,7 +53,7 @@ if(!function_exists("findReport")) {
 		return $reportConfig;
 	}
 
-	function printReport($reportConfig,$dbKey="app",$params=[]) {
+	function printReport($reportConfig,$dbKey=false,$params=[]) {
 // 		var_dump($reportConfig);exit();
 		if(!is_array($reportConfig)) $reportConfig=findReport($reportConfig);
 
