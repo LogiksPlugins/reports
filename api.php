@@ -61,6 +61,13 @@ if(!function_exists("findReport")) {
 			trigger_logikserror("Corrupt report defination");
 			return false;
 		}
+		if(isset($reportConfig['policy']) && strlen($reportConfig['policy'])>0) {
+			$allow=checkUserPolicy($reportConfig['policy']);
+			if(!$allow) {
+				trigger_logikserror("Sorry, you are not allowed to access this report");
+				return false;
+			}
+		}
 
 		if($params==null) $params=[];
 		$reportConfig=array_replace_recursive($reportConfig,$params);
