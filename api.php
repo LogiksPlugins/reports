@@ -165,30 +165,7 @@ if(!function_exists("findReport")) {
 			];
 		foreach ($templateArr as $f) {
 			if(file_exists($f) && is_file($f)) {
-				if(isset($reportConfig['preload'])) {
-					if(isset($reportConfig['preload']['modules'])) {
-						loadModules($reportConfig['preload']['modules']);
-					}
-					if(isset($reportConfig['preload']['api'])) {
-						foreach ($reportConfig['preload']['api'] as $apiModule) {
-							loadModuleLib($apiModule,'api');
-						}
-					}
-					if(isset($reportConfig['preload']['helpers'])) {
-						loadHelpers($reportConfig['preload']['helpers']);
-					}
-					if(isset($reportConfig['preload']['method'])) {
-						if(!is_array($reportConfig['preload']['method'])) $reportConfig['preload']['method']=explode(",",$reportConfig['preload']['method']);
-						foreach($reportConfig['preload']['method'] as $m) call_user_func($m,$reportConfig);
-					}
-					if(isset($reportConfig['preload']['file'])) {
-						if(!is_array($reportConfig['preload']['file'])) $reportConfig['preload']['file']=explode(",",$reportConfig['preload']['file']);
-						foreach($reportConfig['preload']['file'] as $m) {
-							if(file_exists($m)) include $m;
-							elseif(file_exists(APPROOT.$m)) include APPROOT.$m;
-						}
-					}
-				}
+				executeReportHook("preload",$reportConfig);
 				
 // 				printArray($reportConfig);return;
 				$vendorPath=getWebPath(__DIR__)."/vendors/";
@@ -559,6 +536,8 @@ if(!function_exists("findReport")) {
 	function executeReportHook($state,$reportConfig) {
 		if(!isset($reportConfig['hooks']) || !is_array($reportConfig['hooks'])) return false;
 		$state=strtolower($state);
+
+		if(!isset($_ENV['FORM-HOOK-PARAMS'])) $_ENV['FORM-HOOK-PARAMS'] = [];
 
 		if(isset($reportConfig['hooks'][$state]) && is_array($reportConfig['hooks'][$state])) {
 			$postCFG=$reportConfig['hooks'][$state];
