@@ -210,7 +210,7 @@ switch($_REQUEST["action"]) {
 
 					$dataKey=array_keys($reportConfig['datagrid'])[0];
 					$otherKey=array_keys($data[0])[0];
-					//printArray($data);
+					//printArray($ruleSet);
 					foreach ($data as $record) {
 						if(isset($record['id'])) {
 							$hashid=($record['id']);//md5
@@ -223,9 +223,13 @@ switch($_REQUEST["action"]) {
 						$rowClass = "";
 
 						if(count($ruleSet['row_class'])>0) {
-							foreach ($ruleSet['row_class'] as $key => $classValue) {
+							foreach ($ruleSet['row_class'] as $key => $ruleArr) {
 								if(isset($record[$key])) {
-									$rowClass .= $classValue;
+									if(isset($ruleArr[$record[$key]])) {
+										$rowClass .= " " . $ruleArr[$record[$key]];
+									} elseif(isset($ruleArr[strtolower($record[$key])])) {
+										$rowClass .= " " . $ruleArr[strtolower($record[$key])];
+									}
 								}
 							}
 						}
@@ -256,11 +260,11 @@ switch($_REQUEST["action"]) {
 							if(!isset($column['hidden'])) $column['hidden']=false;
 
 							if(isset($record[$key])) {
-								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record);
+								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record,$ruleSet);
 							} elseif(isset($record[$keyx])) {
-								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden'],$record);
+								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden'],$record,$ruleSet);
 							} else {
-								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record);
+								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record,$ruleSet);
 							}
 						}
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {

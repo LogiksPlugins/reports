@@ -230,10 +230,25 @@ if(!function_exists("findReport")) {
 	}
 
 
-	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[]) {
+	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[], $ruleSet = []) {
 		$clz="tableColumn";
 		if($hidden) $clz.=" hidden";
 		$keyS=str_replace(".","_",$key);
+
+		if(count($ruleSet['col_class'])>0) {
+			$keyID = explode(".", $key);
+			$keyID = end($keyID);
+			if(isset($ruleSet['col_class'][$keyID])) {
+				$ruleArr = $ruleSet['col_class'][$keyID];
+
+				if(isset($ruleArr[$value])) {
+					$clz .= " ".$ruleArr[$value];
+				} elseif(isset($ruleArr[strtolower($value)])) {
+					$clz .= " ".$ruleArr[strtolower($value)];
+				}
+			}
+		}
+
 		switch (strtolower($type)) {
 			case 'date':
 				$value=current(explode(" ", $value));
