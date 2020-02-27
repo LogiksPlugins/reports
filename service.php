@@ -200,6 +200,14 @@ switch($_REQUEST["action"]) {
 						$firstColumn="";
 					}
 
+					$ruleSet = [
+						"row_class"=>[],
+						"col_class"=>[],
+					];
+					if(isset($reportConfig['rules']) && is_array($reportConfig['rules'])) {
+						$ruleSet = array_merge($ruleSet,$reportConfig['rules']);
+					}
+
 					$dataKey=array_keys($reportConfig['datagrid'])[0];
 					$otherKey=array_keys($data[0])[0];
 					//printArray($data);
@@ -212,10 +220,20 @@ switch($_REQUEST["action"]) {
 							$hashid=md5($record[$otherKey]);
 						}
 
+						$rowClass = "";
+
+						if(count($ruleSet['row_class'])>0) {
+							foreach ($ruleSet['row_class'] as $key => $classValue) {
+								if(isset($record[$key])) {
+									$rowClass .= $classValue;
+								}
+							}
+						}
+
 						if($reportConfig['secure']) {
-							echo "<tr class='tableRow' data-hash='".md5($hashid)."'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."'>";
 						} else {
-							echo "<tr class='tableRow' data-hash='{$hashid}'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}'>";
 						}
 
 						echo $firstColumn;
@@ -259,6 +277,7 @@ switch($_REQUEST["action"]) {
 					$limit=$_REQUEST['limit'];
 					$index=$_REQUEST['page']*$limit;
 					$last=$index+$limit;
+
 					echo "<tr class='hidden gridDataInfo'><td class='limit'>{$limit}</td><td class='index'>{$index}</td><td class='last'>{$last}</td><td class='max'>{$maxRecords}</td></tr>";
 				} else {
 					if($_REQUEST['page']>0) {
