@@ -68,7 +68,10 @@
 		"name":{
 			"label":"User Name",
 			"hidden":true,
-			"searchable":true
+			"searchable":true,
+			"filter":{
+			    "qtype":"LIKE"
+			}
 		},
 		"blocked":{
 			"label":"Blocked",
