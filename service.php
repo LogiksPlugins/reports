@@ -28,25 +28,25 @@ switch($_REQUEST["action"]) {
     
 					if(isset($reportConfig['source']['table'])) {
 						$colDefn=explode(",",$_POST['dataField']);
-            $tables=explode(",",$reportConfig['source']['table']);
-            
-            if(count($colDefn)>1) {
-              $srcTable=$colDefn[0];
-            } else {
-              $srcTable=$tables[0];
-            }
-            
+			            $tables=explode(",",$reportConfig['source']['table']);
+			            
+			            if(count($colDefn)>1) {
+			              $srcTable=$colDefn[0];
+			            } else {
+			              $srcTable=$tables[0];
+			            }
+			            
 						$colID="md5({$srcTable}.id)";
-            
-            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
-            $sql=$sql->_RUN();
+			            
+			            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+			            $sql=$sql->_RUN();
 
-            if($sql) {
-              executeReportHook("fieldupdate",$reportConfig);
-              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
-            } else {
-              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
-            }
+			            if($sql) {
+			              executeReportHook("fieldupdate",$reportConfig);
+			              printServiceMsg(["msg"=>"done","hash"=>$_POST['dataHash']]);
+			            } else {
+			              printServiceMsg(["msg"=>"Error updating the field","hash"=>$_POST['dataHash'],"error"=>_db()->get_error()]);
+			            }
 					} else {
 						printServiceMsg(["msg"=>"Source type not defined correctly","hash"=>$_POST['dataHash']]);
 					}
@@ -99,44 +99,44 @@ switch($_REQUEST["action"]) {
 						$gCols=$src['columns'];
 					}
 					$gCols[0]=explode(" ",$gCols[0]);
-          $src['groupby']=$gCols[0][0];
+      				$src['groupby']=$gCols[0][0];
 					$data=$data->_groupby($gCols[0][0]);
 				}
         //exit($data->_SQL());
 				$data=$data->_limit(20,0)->_GET();
 
 				if($data) {
-          $fData=[
-//             ["title"=>"","value"=>""]
-          ];
-          if(!isset($src['type'])) $src['type']="";
-          switch(strtolower($src['type'])) {
-            case "csv":case "list":
-              foreach($data as $row) {
-                if($row['value']==null || strlen($row['value'])<=0) {
-                  continue;
-                }
-                $vArr=explode(",",$row['value']);
-                if(count($vArr)>1) {
-                  foreach($vArr as $x1=>$y1) {
-                    if($y1==null || strlen($y1)<=0) continue;
-                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
-                  }
-                } else {
-                  $fData[$row['value']]=$row;
-                }
-              }
-              $fData=array_values($fData);
-              break;
-            default:
-              foreach($data as $row) {
-                if($row['title']==null || strlen($row['title'])<=0) {
-                  continue;
-                }
-                $row['title']=_ling($row['title']);
-                $fData[]=$row;
-              }
-          }
+			        $fData=[
+			//           ["title"=>"","value"=>""]
+			        ];
+			        if(!isset($src['type'])) $src['type']="";
+			        switch(strtolower($src['type'])) {
+			            case "csv":case "list":
+			              foreach($data as $row) {
+			                if($row['value']==null || strlen($row['value'])<=0) {
+			                  continue;
+			                }
+			                $vArr=explode(",",$row['value']);
+			                if(count($vArr)>1) {
+			                  foreach($vArr as $x1=>$y1) {
+			                    if($y1==null || strlen($y1)<=0) continue;
+			                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
+			                  }
+			                } else {
+			                  $fData[$row['value']]=$row;
+			                }
+			              }
+			              $fData=array_values($fData);
+			              break;
+			            default:
+			              foreach($data as $row) {
+			                if($row['title']==null || strlen($row['title'])<=0) {
+			                  continue;
+			                }
+			                $row['title']=_ling($row['title']);
+			                $fData[]=$row;
+		              	}
+			        }
           
 					printServiceMsg($fData);
 				} else {
@@ -497,7 +497,7 @@ switch($_REQUEST["action"]) {
 }
 
 function getGridDataMax($reportKey,$reportConfig) {
-	if(isset($_SESSION[$reportKey]['MAXRECORDS'])) return $_SESSION[$reportKey]['MAXRECORDS'];
+	//if(isset($_SESSION[$reportKey]['MAXRECORDS'])) return $_SESSION[$reportKey]['MAXRECORDS'];
 
 	$dbKey=$reportConfig['dbkey'];
 	if($dbKey==null) $dbKey="app";
