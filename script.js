@@ -328,6 +328,8 @@ var LGKSReports = (function() {
 					index=parseInt(info.find("td.index").text());
 					last=parseInt(info.find("td.last").text());
 					max=parseInt(info.find("td.max").text());
+
+					if(last>max) last = max;
 					
 					rpt.updateReportMeta(limit, index, last, max);
 					
@@ -335,6 +337,7 @@ var LGKSReports = (function() {
 						grid.find(".displayCounter .recordsIndex").text(index);
 						grid.find(".displayCounter .recordsUpto").text(last);
 						grid.find(".displayCounter .recordsMax").text(max);
+						grid.find(".displayCounter").show();
 					} else {
 						grid.find(".displayCounter").hide();
 					}

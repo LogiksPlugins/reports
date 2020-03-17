@@ -34,7 +34,7 @@ if(isset($reportConfig['pager'])) {
 		<thead class='tableHead'>
 			<tr>
 				<?php
-					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
+					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
 						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
 							echo "<th class='action' width=25px>";
 							echo "</th>";
