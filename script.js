@@ -299,7 +299,7 @@ var LGKSReports = (function() {
 		gridBody=rpt.getGridTable();
 		gridID=grid.data('rptkey');
 
-		if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
+		if(grid.data("page")==grid.data("current") && grid.data("page")!=null && grid.data("page")!=0) {
 			if(typeof lgksToast=="function") lgksToast("All the records are loaded");
 			return false;
 		}
