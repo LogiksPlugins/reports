@@ -6,7 +6,7 @@ if($reportConfig["source"]['type']=="sql") {
 <script>
 var rptTX1 = null;
 $(function() {
-	$(".report-sidebar .list-group-item").click(function(e) {
+	$(".report-sidebar-container").delegate(".report-sidebar .list-group-item", "click", function(e) {
 			$(".report-sidebar .list-group-item.active").removeClass("active");
 			$(this).addClass("active");
 			$(".report-sidebar input.reportFilters").val($(this).data("value"));
