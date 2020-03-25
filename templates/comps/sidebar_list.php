@@ -24,9 +24,14 @@ $(function() {
 	}, 500);
 });
 function loadSidebar(gridID) {
+	oldValue = $(".report-sidebar-container .list-group-item.active").data("value");
 	$(".report-sidebar-container").html("<div class='ajaxloading ajaxloading5'></div>");
 	lx=_service("reports","sidebar","html")+"&gridid="+gridID;
-	$(".report-sidebar-container").load(lx)
+	$(".report-sidebar-container").load(lx, function() {
+		if($(".report-sidebar-container .list-group-item[data-value='"+oldValue+"']").length>0) {
+			$(".report-sidebar-container .list-group-item[data-value='"+oldValue+"']").addClass("active");
+		}
+    })
 }
 </script>
 	<?php
