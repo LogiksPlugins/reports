@@ -49,17 +49,17 @@ $colMap=array_merge([
 		 ],$colMap);
 
 $unilink=false;
-if(isset($reportConfig['kanban']['unilink']) && strlen($reportConfig['kanban']['unilink'])>0) {
-	$unilink=$reportConfig['kanban']['unilink'];
+if(isset($reportConfig['cards']['unilink']) && strlen($reportConfig['cards']['unilink'])>0) {
+	$unilink=$reportConfig['cards']['unilink'];
 }
 $colorMap=[];
-if(isset($reportConfig['kanban']['colormap'])) {
-	$colorMap=$reportConfig['kanban']['colormap'];
+if(isset($reportConfig['cards']['colormap'])) {
+	$colorMap=$reportConfig['cards']['colormap'];
 	if($colorMap==null || !is_array($colorMap)) $colorMap=[];
 }
 $iconMap=[];
-if(isset($reportConfig['kanban']['iconmap'])) {
-	$iconMap=$reportConfig['kanban']['iconmap'];
+if(isset($reportConfig['cards']['iconmap'])) {
+	$iconMap=$reportConfig['cards']['iconmap'];
 	if($iconMap==null || !is_array($iconMap)) $iconMap=[];
 }
 
