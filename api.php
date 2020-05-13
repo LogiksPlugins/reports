@@ -280,10 +280,10 @@ if(!function_exists("findReport")) {
 				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
 				break;
 			case 'email':
-				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> EMAIL</a></td>";
+				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> {$value}</a></td>";
 				break;
 			case 'tel':case 'mob':case 'phone':case 'mobile':
-				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='tel:{$value}'> CALL</a></td>";
+				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-phone' href='tel:{$value}'> {$value}</a></td>";
 				break;
 
 			case 'geoloc':case 'geolocation':case 'geoaddress':
