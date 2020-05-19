@@ -51,7 +51,7 @@ if(isset($reportConfig['drilldown'])) {
           else $button['title']="";
 
           if(!isset($button['class'])) $button['class']="btn btn-primary";
-          echo "<a class='{$button['class']}' cmd='{$key}' title='{$button['title']}' >";
+          echo "<a class='{$button['class']}' cmd='{$key}' title='{$button['title']}' data-refid='"._replace("#refid#")."' >";
           if(isset($button['icon']) && strlen($button['icon'])>0) {
             if(strpos($button['icon'],"<")!==false) {
               echo $button['icon'];
