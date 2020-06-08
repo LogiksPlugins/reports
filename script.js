@@ -519,6 +519,18 @@ var LGKSReports = (function() {
 		cmdOriginal=cmd;
 		cmd=cmd.split("@");
 		cmd=cmd[0];
+
+		params = $(src).attr("params");
+        if(params==null || params.length<=0) params = "{}";
+        a = "{}";
+        try {
+            params = JSON.parse(params);
+        } catch(e) {
+            params = {};
+        }
+        params = $.param(params);
+        if(params.length>0) params = "&"+params;
+
 		switch(cmd) {
 			case "stayPut":
 				$(src).toggleClass("btn-info");
@@ -731,7 +743,7 @@ var LGKSReports = (function() {
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					
 					showLoader();
-					lgksOverlayURL(_link("popup/"+cmd+"/"+cmdX[1]),title,function() {
+					lgksOverlayURL(_link("popup/"+cmd+"/"+cmdX[1])+params,title,function() {
 							hideLoader();
 						},{"className":"overlayBox reportPopup"});
 				}
@@ -751,7 +763,7 @@ var LGKSReports = (function() {
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
-					window.location=_link(cmdX[1]);
+					window.location=_link(cmdX[1])+params;
 				}
 				break;
 			case "module":case "popup":
@@ -771,10 +783,10 @@ var LGKSReports = (function() {
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					
 					if(cmd=="module" || cmd=="modules") {
-						top.openLinkFrame(title,_link("modules/"+cmdX[1]),true);
+						top.openLinkFrame(title,_link("modules/"+cmdX[1])+params,true);
 					} else {
 						showLoader();
-						lgksOverlayURL(_link("popup/"+cmdX[1]),title,function() {
+						lgksOverlayURL(_link("popup/"+cmdX[1])+params,title,function() {
 								hideLoader();
 							},{"className":"overlayBox reportPopup"});
 					}

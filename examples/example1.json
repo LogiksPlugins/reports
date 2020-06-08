@@ -23,6 +23,19 @@
 			"icon":"<i class='fa fa-plus'></i>"
 		}
 	},
+	"buttons": {
+	    "infoview@test.main/{hashid}": {
+			"label":"View Info",
+			"icon":"fa fa-eye"
+	    },
+	    "forms@test.remarks/new": {
+			"label":"Add Remarks",
+			"icon":"fa fa-tags pull-left",
+			"params":{
+			    "test_id": "id"
+			}
+	    }
+	},
 	"toolbar":{
 		"search":false,
 		"print":false,

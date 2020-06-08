@@ -546,7 +546,19 @@ if(!function_exists("findReport")) {
 		}, $cmd);
 		if(isset($_ENV['REPORTRECORD'])) unset($_ENV['REPORTRECORD']);
 
-		return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' title='{$button['label']}'></i>";
+		if(isset($button['params'])) {
+			foreach($button['params'] as $a=>$b) {
+				if(isset($record[$b]))
+					$button['params'][$a] = $record[$b];
+				else
+					$button['params'][$a] = _replace($b);
+			}
+			$button['params'] = json_encode($button['params']);
+		} else {
+			$button['params'] = "{}";
+		}
+
+		return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}'></i>";
 	}
 	function executeReportHook($state,$reportConfig) {
 		if(!isset($reportConfig['hooks']) || !is_array($reportConfig['hooks'])) return false;
