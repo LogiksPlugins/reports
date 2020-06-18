@@ -373,6 +373,7 @@ if(!function_exists("findReport")) {
 					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._ling("No Content")."</td>";
 				} else {
 					$value=str_replace("\\r\\n","<br>",$value);
+					$value=str_replace("\\n","<br>",$value);
 					$value=str_replace("\\'s","'s",$value);
 					$value=str_replace('\\"','"',$value);
 					
