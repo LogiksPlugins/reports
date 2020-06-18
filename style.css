@@ -261,8 +261,6 @@ table.dataTable thead th .ui-resizable-handle.ui-resizable-e:after {
     color: black;
 }
 
-table.dataTable th,table.dataTable td {padding:10px !important;}
-
 /*Column Formatter*/
 table.dataTable tbody td.currency,
     table.dataTable tbody td.decimal {

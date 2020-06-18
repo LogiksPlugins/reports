@@ -333,15 +333,15 @@ if(!function_exists("findReport")) {
 				}
 				break;
 			case 'method':
-					$keyFunc=explode(".",$key);
-					$keyFunc=end($keyFunc);
-					$keyFunc="get".ucwords($keyFunc);
-					if(function_exists($keyFunc)) {
-						$valueS=call_user_func($keyFunc,$value,$record);
-					} else {
-						$valueS="--";
-					}
-					return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$valueS}</td>";
+				$keyFunc=explode(".",$key);
+				$keyFunc=end($keyFunc);
+				$keyFunc="get".ucwords($keyFunc);
+				if(function_exists($keyFunc)) {
+					$valueS=call_user_func($keyFunc,$value,$record);
+				} else {
+					$valueS="--";
+				}
+				return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$valueS}</td>";
 				break;
 
 			case "embed":

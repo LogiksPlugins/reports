@@ -811,7 +811,7 @@ function generateSidebar($reportConfig) {
 						$collapseID = md5($category.time());
 
 						echo '<div class="panel panel-default">';
-						if(strlen($category)>0) {
+						if(strlen($category)>0 && $category!=".") {
 							echo '<div class="panel-heading" data-toggle="collapse" href="#'.$collapseID.'" role="button" aria-expanded="false" aria-controls="'.$collapseID.'">'.toTitle(_ling($category)).
 								' <i class="fa fa-panel-status pull-right"></i></div>';
 							echo '<div id="'.$collapseID.'" class="panel-body nopadding collapse">';
