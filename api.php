@@ -374,6 +374,8 @@ if(!function_exists("findReport")) {
 				} else {
 					$value=str_replace("\\r\\n","<br>",$value);
 					$value=str_replace("\\'s","'s",$value);
+					$value=str_replace('\\"','"',$value);
+					
 					if(strlen($value)>40) {
 						$abstract=substr($value,0,35)." ...";
 						return "<td class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value='{$value}'>{$abstract}<div class='contentBox hidden'>{$value}</div></td>";
