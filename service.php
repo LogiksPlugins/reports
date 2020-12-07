@@ -709,7 +709,7 @@ function processReportWhere($sql,$reportConfig) {
 	}
 
 	if(isset($_POST['search']) && count($_POST['search'])>0) {
-		if(isset($_POST['search']['q']) && count($_POST['search']['q'])>0) {
+		if(isset($_POST['search']['q']) && strlen($_POST['search']['q'])>0) {
 			$searchArr=[];
 			$q=$_POST['search']['q'];
 			foreach ($searchCols as $col) {
