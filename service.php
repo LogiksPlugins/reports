@@ -47,8 +47,16 @@ switch($_REQUEST["action"]) {
 			            }
 			            
 						$colID="md5({$srcTable}.id)";
-			            
-			            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+
+						if(isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]) &&
+							isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]['alias'])) {
+
+			            	$dataField = $reportConfig['kanban']['colkeys'][$_POST['dataField']]['alias'];
+					   	} else {
+				           	$dataField = $_POST['dataField'];
+					   	}
+						                                    
+						$sql=_db()->_updateQ($srcTable,[$dataField=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
 			            $sql=$sql->_RUN();
 
 			            if($sql) {
