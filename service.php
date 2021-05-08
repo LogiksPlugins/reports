@@ -100,6 +100,15 @@ switch($_REQUEST["action"]) {
 						$src['where'][$k]=_replace($v);
 					}
 				}
+				
+				if(!isset($src['columns'])) {
+					if(isset($src['cols'])) {
+						$src['columns'] = $src['cols'];
+					} else {
+						$src['columns'] = "*";
+					}
+				}
+				
 				$data=_db()->_selectQ($src['table'],$src['columns'],$src['where']);
 
 				if(isset($src['orderby'])) {
