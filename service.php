@@ -624,7 +624,7 @@ function getGridData($reportKey,$reportConfig) {
 			$sql=QueryBuilder::fromArray($source,_db($dbKey));
 			$sql=processReportWhere($sql,$reportConfig);
 
-			if(!isset($reportConfig['autosort']) || $reportConfig['autosort']!==false) {
+			if(!isset($reportConfig['autosort']) || $reportConfig['autosort']!==true) {
 				if(isset($_POST['orderby']) && strlen($_POST['orderby'])>0) {
 					$sql->_orderby(getColAlias($_POST['orderby'],$reportConfig));
 				}
