@@ -1,6 +1,7 @@
 @import url("css/kanban.css");
 @import url("css/cards.css");
 @import url("css/rcolors.css");
+@import url("css/smartfilter.css");
 
 canvas, .report-sidebar {
     -moz-user-select: none;

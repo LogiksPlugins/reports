@@ -1,0 +1,41 @@
+.smartfilterBlock{
+    
+}
+.smartfilterBlock ul{
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+}
+.smartfilterBlock ul li{
+    text-align: center;
+    border-right: 1px solid #ddd;
+    flex: 0 0 124px;
+}
+.smartfilterBlock ul li a{
+    text-decoration: none;
+    color: #000;
+    display: block;
+    padding: 10px 15px;
+}
+.smartfilterBlock ul li.active a{
+    border-bottom: 4px solid #06395F;
+}
+.smartfilterBlock ul li a h4{
+    font-size: 18px;
+    color: #06395F;
+    font-weight: 600;
+    margin: 5px 0 0 0;
+}
+.smartfilterBlock ul li a i{
+    font-size: 24px;
+    margin-bottom: 6px;
+    color:#333333;
+}
+.smartfilterBlock ul li a span{
+   font-size: 14px;
+    color: #06395F;
+    display: block;
+}
+/*.smartfilterBlock .filter-icon:before {
+
+}*/

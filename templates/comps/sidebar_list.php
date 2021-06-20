@@ -25,6 +25,7 @@ $(function() {
 });
 function loadSidebar(gridID) {
 	oldValue = $(".report-sidebar-container .list-group-item.active").data("value");
+	
 	$(".report-sidebar-container").html("<div class='ajaxloading ajaxloading5'></div>");
 	lx=_service("reports","sidebar","html")+"&gridid="+gridID;
 	$(".report-sidebar-container").load(lx, function() {

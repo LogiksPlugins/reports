@@ -22,8 +22,9 @@ $googleKey=getConfig("GOOGLE_API_KEY");
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable kanbanBoardTable table-responsive">
   <div class="row table-tools noprint">
       <?php
-				include_once __DIR__."/comps/topbar.php";
-			?>
+        include_once __DIR__."/comps/smartfilter.php";
+      include_once __DIR__."/comps/topbar.php";
+    ?>
       <?php
       	if(isset($reportConfig['filters']) && !empty($reportConfig['filters'])) {
       ?>

@@ -21,6 +21,16 @@ switch($_REQUEST["action"]) {
 
 		generateSidebar($reportConfig);
 	break;
+	case "smartfilter":
+		$reportKey=$_REQUEST['gridid'];
+		if(!isset($_SESSION['REPORT'][$reportKey])) {
+			trigger_error("Sorry, grid report key not found.");
+		}
+
+		$reportConfig=$_SESSION['REPORT'][$reportKey];
+
+		generateSmartfilter($reportConfig);
+	break;
 	case "updateFieldValue":
 		if(!isset($_POST['dataField']) || !isset($_POST['dataVal']) || !isset($_POST['dataHash'])) {
 			trigger_error("Sorry, required fields not found.");
@@ -878,5 +888,84 @@ function generateSidebar($reportConfig) {
 	} else {
 		echo "<p class='text-center'><br><br><br>Source type not supported</p>";
 	}
+}
+function generateSmartfilter($reportConfig) {
+	$smartfilterConfig = $reportConfig['smartfilter'];
+
+	$fieldID = array_keys($reportConfig['smartfilter']['source'])[0];
+	$field = $reportConfig['smartfilter']['source'][$fieldID];
+
+	if(!isset($field['cols']) && isset($field['data_col'])) {
+		if(isset($field['group_col'])) {
+			$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value,{$field['group_col']} as category";
+		} else {
+			$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
+		}
+	}
+
+	$finalData = false;
+	$dbKeyForList = $reportConfig['dbkey'];
+	if(isset($field['dbkey'])) $dbKeyForList = $field['dbkey'];
+
+	$dbData = _db($dbKeyForList)->queryBuilder()->fromJSON(json_encode($field),_db($dbKeyForList));
+	if($dbData) {
+		$dbData->_limit(500);
+		if($dbData->_array()["groupby"]==NULL || !is_array($dbData->_array()["groupby"])) {
+			$dbData->_groupBy(current(explode(" ", current(explode(",", $field['cols'])))));
+		}
+		$dbData = $dbData->_GET();
+
+		if($dbData && count($dbData)>0) {
+		    $finalData = $dbData;
+		} else {
+		    return;
+		}
+	} else {
+	    return;
+	}
+
+	if(!isset($smartfilterConfig['all_records'])) $smartfilterConfig['all_records'] = false;
+	if(!isset($smartfilterConfig['show_counter'])) $smartfilterConfig['show_counter'] = true;
+	if(!isset($smartfilterConfig['show_icons'])) $smartfilterConfig['show_icons'] = true;
+	if(!isset($smartfilterConfig['title_prefix'])) $smartfilterConfig['title_prefix'] = "All";
+
+	$totalCount = 0;
+
+	if($finalData) {
+		foreach($finalData as $row) {
+			if(isset($row['counter'])) $totalCount += $row['counter'];
+		}
+	}
+
+	if(!isset($smartfilterConfig['all_records']) || $smartfilterConfig['all_records']) {
+		echo "<li class='filter-item' data-value=''>";
+	        echo "<a href='#'>";
+	        if($smartfilterConfig['show_icons']) echo "<i class='filter-icon fa filter-icon-all' aria-hidden='true'></i>";
+	        if($smartfilterConfig['show_counter']) echo "<h4>{$totalCount}</h4>";
+	        echo "<span>All Records</span>";
+	        echo "</a>";
+	    echo "</li>";
+	}
+	
+    
+    if($finalData) {
+        foreach($finalData as $row) {
+            $clz = "filter-item ";//class="active"
+            $icon = "fa";
+            if(isset($row['class'])) $clz .= " {$row['class']}";
+            if(isset($row['icon'])) $icon .= " filter-icon-"._slugify($row['icon']);
+            
+            $clz = trim($clz);
+            $icon = trim($icon);
+            
+            echo "<li class='{$clz}' data-value='{$row['value']}'>";
+                echo "<a href='#'>";
+                    if($smartfilterConfig['show_icons']) echo "<i class='filter-icon {$icon}' aria-hidden='true'></i>";
+                    if(isset($row['counter']) && $smartfilterConfig['show_counter']) echo "<h4>{$row['counter']}</h4>";
+                    echo "<span>".trim("{$smartfilterConfig['title_prefix']} ".toTitle(_ling($row['title'])))."</span>";
+                echo "</a>";
+            echo "</li>";
+        }
+    }
 }
 ?>
