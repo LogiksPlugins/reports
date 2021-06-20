@@ -57,8 +57,16 @@ switch($_REQUEST["action"]) {
 			            }
 			            
 						$colID="md5({$srcTable}.id)";
-			            
-			            $sql=_db()->_updateQ($srcTable,[$_POST['dataField']=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
+
+						if(isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]) &&
+							isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]['alias'])) {
+
+			            	$dataField = $reportConfig['kanban']['colkeys'][$_POST['dataField']]['alias'];
+					   	} else {
+				           	$dataField = $_POST['dataField'];
+					   	}
+						                                    
+						$sql=_db()->_updateQ($srcTable,[$dataField=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
 			            $sql=$sql->_RUN();
 
 			            if($sql) {
@@ -102,6 +110,15 @@ switch($_REQUEST["action"]) {
 						$src['where'][$k]=_replace($v);
 					}
 				}
+				
+				if(!isset($src['columns'])) {
+					if(isset($src['cols'])) {
+						$src['columns'] = $src['cols'];
+					} else {
+						$src['columns'] = "*";
+					}
+				}
+				
 				$data=_db()->_selectQ($src['table'],$src['columns'],$src['where']);
 
 				if(isset($src['orderby'])) {
@@ -617,8 +634,8 @@ function getGridData($reportKey,$reportConfig) {
 			$sql=QueryBuilder::fromArray($source,_db($dbKey));
 			$sql=processReportWhere($sql,$reportConfig);
 
-			if(!isset($reportConfig['autosort']) || $reportConfig['autosort']!==false) {
-				if(isset($_POST['orderby']) && count($_POST['orderby'])>0) {
+			if(!isset($reportConfig['autosort']) || $reportConfig['autosort']!==true) {
+				if(isset($_POST['orderby']) && strlen($_POST['orderby'])>0) {
 					$sql->_orderby(getColAlias($_POST['orderby'],$reportConfig));
 				}
 			}
@@ -719,7 +736,7 @@ function processReportWhere($sql,$reportConfig) {
 	}
 
 	if(isset($_POST['search']) && count($_POST['search'])>0) {
-		if(isset($_POST['search']['q']) && count($_POST['search']['q'])>0) {
+		if(isset($_POST['search']['q']) && strlen($_POST['search']['q'])>0) {
 			$searchArr=[];
 			$q=$_POST['search']['q'];
 			foreach ($searchCols as $col) {
