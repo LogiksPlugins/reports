@@ -92,7 +92,7 @@ if(isset($reportConfig['drilldown'])) {
             ?>
             <div class='btn-group'>
                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <span class="glyphicon glyphicon-print"></span><span class="caret"></span></button>
+                      <span class="glyphicon glyphicon-print"></span><!-- <span class="caret"></span> --> <small class='button_label'><?=_ling("Export")?></small></button>
                       <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
                         <?php
                           if(!isset($reportConfig['toolbar']['print']) || $reportConfig['toolbar']['print']) {
@@ -154,6 +154,7 @@ if(isset($reportConfig['drilldown'])) {
               ?>
               <button type="button" cmd='filterbar' class="btn btn-default">
                 <span class="glyphicon glyphicon-filter"></span>
+                <small class='button_label'><?=_ling("Filter")?></small>
               </button>
               <?php
                 }
@@ -161,7 +162,7 @@ if(isset($reportConfig['drilldown'])) {
               ?>
               <div class="btn-group uiswitcher">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="glyphicon glyphicon-th"></span> <span class="caret"></span>
+                  <span class="glyphicon glyphicon-th"></span> &nbsp;<span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
                   <?php
@@ -205,7 +206,7 @@ if(isset($reportConfig['drilldown'])) {
               ?>
               <div class='btn-group'>
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="glyphicon glyphicon-list-alt"></span><span class="caret"></span></button>
+                  <span class="glyphicon glyphicon-list-alt"></span> <small class='button_label'><?=_ling("Cols")?></small><!-- <span class="caret" style='    margin-top: 10%;'></span> --></button>
                   <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
                   <?php
                     echo "<li class='bg-info text-white'><a href='#'><label><input class='allColumns' type='checkbox'>"._ling("Check All")."</label></a></li>";
