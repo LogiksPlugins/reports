@@ -154,6 +154,27 @@ var LGKSReports = (function() {
 			});
 		}
 		$(".table-tools .columnFilter",rpt.getGrid()).delegate("input.columnName","change",function(e) {
+			var maxCols = $(this).closest(".reportTable").data("maxcols");
+			if(maxCols!=null && !isNaN(maxCols) && maxCols>0) {
+				if($(".table-tools .columnFilter input.columnName:checked",$(this).closest(".reportTable")).length>maxCols) {
+
+					if(typeof lgksToast == "function") lgksToast(`Only ${maxCols} columns can be seen at one time.`);
+
+					var columns1=rpt.settings("columns-visible");
+					$(".table-tools .columnFilter input.columnName",$(this).closest(".reportTable")).each(function() {
+						name=$(this).attr("name");
+						if(columns1.indexOf(name)<0) {
+							this.checked=false;
+						} else {
+							this.checked=true;
+						}
+					});
+
+
+					return false;
+				}
+			}
+			
 			gridID=$(this).closest(".reportTable").data('rptkey');
 			updateGridUI(gridID);
 		});
