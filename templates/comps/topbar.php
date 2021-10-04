@@ -205,7 +205,7 @@ if(isset($reportConfig['drilldown'])) {
                 if(!isset($reportConfig['toolbar']['columnselector']) || $reportConfig['toolbar']['columnselector']) {
               ?>
               <div class='btn-group'>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="btn btn-default btn-reports-toggle">
                   <span class="glyphicon glyphicon-list-alt"></span> <small class='button_label'><?=_ling("Cols")?></small><!-- <span class="caret" style='    margin-top: 10%;'></span> --></button>
                   <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
                   <?php

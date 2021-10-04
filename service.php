@@ -935,16 +935,18 @@ function generateSmartfilter($reportConfig) {
 		if($dbData && count($dbData)>0) {
 		    $finalData = $dbData;
 		} else {
-		    return;
+		    $finalData = [];
 		}
 	} else {
-	    return;
+	    $finalData = [];
 	}
 
 	if(!isset($smartfilterConfig['all_records'])) $smartfilterConfig['all_records'] = false;
 	if(!isset($smartfilterConfig['show_counter'])) $smartfilterConfig['show_counter'] = true;
 	if(!isset($smartfilterConfig['show_icons'])) $smartfilterConfig['show_icons'] = true;
-	if(!isset($smartfilterConfig['title_prefix'])) $smartfilterConfig['title_prefix'] = "All";
+	if(!isset($smartfilterConfig['title_prefix'])) $smartfilterConfig['title_prefix'] = "";
+	if(!isset($smartfilterConfig['all_records_title'])) $smartfilterConfig['all_records_title'] = "All Records";
+	if(!isset($smartfilterConfig['no_records_show_all_records'])) $smartfilterConfig['no_records_show_all_records'] = true;
 
 	$totalCount = 0;
 
@@ -954,12 +956,18 @@ function generateSmartfilter($reportConfig) {
 		}
 	}
 
+	if(!$smartfilterConfig['no_records_show_all_records']) {
+		if($totalCount<=0) {
+			return;
+		}
+	}
+
 	if(!isset($smartfilterConfig['all_records']) || $smartfilterConfig['all_records']) {
 		echo "<li class='filter-item' data-value=''>";
 	        echo "<a href='#'>";
 	        if($smartfilterConfig['show_icons']) echo "<i class='filter-icon fa filter-icon-all' aria-hidden='true'></i>";
 	        if($smartfilterConfig['show_counter']) echo "<h4>{$totalCount}</h4>";
-	        echo "<span>All Records</span>";
+	        echo "<span>"._ling($smartfilterConfig['all_records_title'])."</span>";
 	        echo "</a>";
 	    echo "</li>";
 	}
@@ -979,7 +987,7 @@ function generateSmartfilter($reportConfig) {
                 echo "<a href='#'>";
                     if($smartfilterConfig['show_icons']) echo "<i class='filter-icon {$icon}' aria-hidden='true'></i>";
                     if(isset($row['counter']) && $smartfilterConfig['show_counter']) echo "<h4>{$row['counter']}</h4>";
-                    echo "<span>".trim("{$smartfilterConfig['title_prefix']} ".toTitle(_ling($row['title'])))."</span>";
+                    echo "<span>"._ling(trim("{$smartfilterConfig['title_prefix']} ".toTitle(_ling($row['title']))))."</span>";
                 echo "</a>";
             echo "</li>";
         }
