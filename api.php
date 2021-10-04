@@ -84,7 +84,11 @@ if(!function_exists("findReport")) {
 		}
 		if(!isset($reportConfig['dbkey'])) $reportConfig['dbkey']="app";
 
-		if(!isset($reportConfig['template']) || strlen($reportConfig['template'])<=0) {
+		if(isset($reportConfig['template']) && strlen($reportConfig['template'])>0) {
+
+		} elseif(isset($_COOKIE['RPTVIEW-'.$reportConfig['reportgkey']])) {
+			$reportConfig['template']=$_COOKIE['RPTVIEW-'.$reportConfig['reportgkey']];
+		} else {
 			$reportConfig['template']="grid";
 		}
 		//setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/");
