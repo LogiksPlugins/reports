@@ -1,0 +1,102 @@
+{
+	"schema":"1.0",
+	"title":"Preform Example",
+	"category":"Example",
+	"privilege":"*",
+	"blocked":false,
+	"rowlink":false,
+	"rowsPerPage":20,
+	"source": {
+        "type": "sql",
+        "table": "profiletbl",
+        "cols": "id,userid,gender,name,blocked,dtoc,dtoe",
+        "where": {
+            "userid": {
+                "VALUE": "#SESS_USER_ID#",
+                "OP": "neq"
+            },
+            "profiletbl.gender": "#preform_gender#"
+        },
+        "limit": "10"
+    },
+    "preform": {
+        "fields": {
+            "preform_gender": {
+                "label": "Gender",
+                "type": "dataSelector",
+                "groupid": "gender",
+                "group": "Info",
+                "required": true,
+                "no-option": "Select Gender"
+            }
+        }
+    },
+	"datagrid":{
+		"id":{
+			"label":"ID",
+			"hidden":false,
+			"searchable":false,
+			"sortable":true,
+			"groupable":false,
+			"classes":"",
+			"style":"width:50px;",
+			"formatter":"text"
+		},
+		"userid":{
+			"label":"UserID",
+			"sortable":true,
+			"searchable":true,
+			"filter":{
+				"type":"createDataSelectorFromUniques",
+				"table":"lgks_users",
+				"col1":"userid",
+				"where":{
+					"guid":{"VALUE":"seleccontrols","OP":"EQ"},
+					"id":{"RAW":"id>1"}
+				}
+			}
+		},
+		"gender":{
+			"label":"Gender",
+			"searchable":true,
+			"filter":{
+				"type":"select",
+				"options":{
+					"male":"Male",
+					"female":"Female"
+				}
+			}
+		},
+		"name":{
+			"label":"User Name",
+			"hidden":true,
+			"searchable":true
+		},
+		"blocked":{
+			"label":"Blocked",
+			"formatter":"checkbox",
+			"searchable":true,
+			"filter":{
+				"type":"select",
+				"nofilter":"--",
+				"options":{
+					"true":"Blocked",
+					"false":"Not Blocked"
+				}
+			}
+		},
+		"dtoc":{
+			"label":"Created At",
+			"formatter":"date",
+			"searchable":true,
+			"filter":{
+				"type":"date"
+			}
+		},
+		"dtoe":{
+			"label":"Updated At",
+			"formatter":"time"
+		}
+	}
+}
+
