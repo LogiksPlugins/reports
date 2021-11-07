@@ -925,3 +925,7 @@ function showMoreRecords(src,rpt) {
 	$(grid).data("page",nx);
 	rpt.loadDataGrid();
 }
+
+function goBackOnePage() {
+	window.history.back();
+}
