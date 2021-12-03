@@ -27,6 +27,32 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 		$report['template']=$template;
 		
 // 		$report['template']="kanban";
+
+		if(isset($report['preform'])) {
+			loadModuleLib("preform", "api");
+			if(!function_exists("printPreform")) {
+				echo "<h3 class='errormsg text-center'>Sorry, Preform Capabilities Not Found.<br> This report needs `reportPreform` module installed.</h3>";
+				return;
+			}
+			if(!isset($_POST) || count($_POST)<=0) {
+				//load preform
+				printPreform($report, "reports");
+				return;
+			} else {
+				if(!isset($report['preform']['allow_back'])) $report['preform']['allow_back'] = true;
+				if($report['preform']['allow_back']) {
+					if(!isset($report['actions'])) $report['actions'] = [];
+
+					$report['actions'] = array_merge([
+						"goBackOnePage" => [
+							"label"=>"",
+							"icon"=>"fa fa-chevron-left"
+						]
+					],$report['actions']);
+					echo "<script>function goBackOnePage(){window.history.back();}</script>";
+				}
+			}
+		}
 		
 		echo _css("reports");
 		echo "<div class='reportholder' style='width:100%;height:100%;overflow-x: hidden;'>";
@@ -36,10 +62,10 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 		echo _js(["filesaver","html2canvas",'jquery.cookie',"reports"]);
 	} else {
 // 		trigger_logikserror("Sorry, report '{$_REQUEST['src']}' not found.",E_USER_NOTICE,404);
-		echo "<h1 class='errormsg'>Sorry, report '{$_REQUEST['src']}' not found.</h1>";
+		echo "<h3 class='errormsg'>Sorry, report '{$_REQUEST['src']}' not found.</h3>";
 	}
 } else {
 	//trigger_logikserror("Sorry, report not defined.");
-	echo "<h1 class='errormsg'>Sorry, report not defined.</h1>";
+	echo "<h3 class='errormsg'>Sorry, report not defined.</h3>";
 }
 ?>

@@ -9,8 +9,13 @@ if(isset($reportConfig['pager'])) {
 } else {
   $arrPager=[5, 10,20,50,100,500,1000,5000];
 }
+if(isset($reportConfig['max_visible_cols'])) {
+	$maxCols = $reportConfig['max_visible_cols'];
+} else {
+	$maxCols = "";
+}
 ?>
-<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive">
+<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive" data-maxcols="<?=$maxCols?>">
 	<div class="row table-tools noprint">
       <?php
   			include_once __DIR__."/comps/smartfilter.php";
