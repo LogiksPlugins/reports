@@ -803,6 +803,7 @@ function generateSidebar($reportConfig) {
 	if($reportConfig["source"]['type']=="sql") {
 		$fieldID = array_keys($reportConfig['sidebar']['source'])[0];
 		$field = $reportConfig['sidebar']['source'][$fieldID];
+		$lastValue = "";
 
 		if(!isset($field['cols']) && isset($field['data_col'])) {
 			if(isset($field['group_col'])) {
@@ -810,6 +811,12 @@ function generateSidebar($reportConfig) {
 			} else {
 				$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
 			}
+		}
+
+		if(isset($reportConfig['LASTVIEW-REQUEST'])
+				 && isset($reportConfig['LASTVIEW-REQUEST']['filter'])
+				 && isset($reportConfig['LASTVIEW-REQUEST']['filter'][$fieldID])) {
+			$lastValue = $reportConfig['LASTVIEW-REQUEST']['filter'][$fieldID];
 		}
 
 		$dbKeyForList = $reportConfig['dbkey'];
@@ -849,7 +856,10 @@ function generateSidebar($reportConfig) {
 						echo "<ul class='list-group'>";
 						foreach ($recordSet as $record) {
 							if(strlen($record['value'])<=0) continue;
-							echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+							if($lastValue==$record['value'])
+								echo "<li class='list-group-item list-group-flush active' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+							else
+								echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
 						}
 						echo "</ul>";
 						echo '</div></div>';
@@ -873,12 +883,18 @@ function generateSidebar($reportConfig) {
 						
 						foreach ($finalList as $value) {
 							if(strlen($value)<=0) continue;
-							echo "<li class='list-group-item list-group-flush' data-value='{$value}'>".toTitle(_ling($value))."</li>";
+							if($lastValue==$record['value'])
+								echo "<li class='list-group-item list-group-flush active' data-value='{$value}'>".toTitle(_ling($value))."</li>";
+							else
+								echo "<li class='list-group-item list-group-flush' data-value='{$value}'>".toTitle(_ling($value))."</li>";
 						}
 					} else {
 						foreach ($dbData as $record) {
 							if(strlen($record['value'])<=0) continue;
-							echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+							if($lastValue==$record['value'])
+								echo "<li class='list-group-item list-group-flush active' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
+							else
+								echo "<li class='list-group-item list-group-flush' data-value='{$record['value']}'>".toTitle(_ling($record['title']))."</li>";
 						}
 					}
 
