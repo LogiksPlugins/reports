@@ -411,7 +411,12 @@ if(!function_exists("findReport")) {
 				$html.="</td>";
 				return $html;
 				break;
-
+		case 'html':
+				if(is_array($value)) {
+		          $value=implode(", ",$value);
+		        }
+		        $value=str_replace("\\r","",$value);
+			$value=str_replace("\\n","<br>",$value);
 	      	case 'pretty':case 'uppercase':case 'lowercase':
 		        if(is_array($value)) {
 		          $value=implode(", ",$value);
