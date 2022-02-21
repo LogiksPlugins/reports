@@ -234,7 +234,7 @@ if(!function_exists("findReport")) {
 	}
 
 
-	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[], $ruleSet = []) {
+	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[], $ruleSet = [],$columnInfo = false) {
 		$clz="tableColumn";
 		if($hidden) $clz.=" hidden";
 		$keyS=str_replace(".","_",$key);
@@ -411,12 +411,26 @@ if(!function_exists("findReport")) {
 				$html.="</td>";
 				return $html;
 				break;
-		case 'html':
+			case 'template':
+				$html="<td class='{$clz} {$keyS} col_{$type}' data-key='$key' data-value='{$value}'>";
+				if($columnInfo && isset($columnInfo['template'])) {
+					$lr=new LogiksReplace();
+					$lr->setData($record);
+					$glue="%";
+					$str=preg_replace_callback("/{$glue}[a-zA-Z0-9-_.]+{$glue}/",array($lr,"replaceFromEnviroment"),$columnInfo['template']);
+					$html .= $str;
+				} else {
+					$html.=$value;
+				}
+				$html.="</td>";
+				return $html;
+				break;
+			case 'html':
 				if(is_array($value)) {
 		          $value=implode(", ",$value);
 		        }
 		        $value=str_replace("\\r","",$value);
-			$value=str_replace("\\n","<br>",$value);
+				$value=str_replace("\\n","<br>",$value);
 	      	case 'pretty':case 'uppercase':case 'lowercase':
 		        if(is_array($value)) {
 		          $value=implode(", ",$value);

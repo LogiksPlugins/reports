@@ -297,11 +297,11 @@ switch($_REQUEST["action"]) {
 							if(!isset($column['hidden'])) $column['hidden']=false;
 
 							if(isset($record[$key])) {
-								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record,$ruleSet);
+								echo formatReportColumn($key,$record[$key],$column['formatter'],$column['hidden'],$record,$ruleSet,$column);
 							} elseif(isset($record[$keyx])) {
-								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden'],$record,$ruleSet);
+								echo formatReportColumn($key,$record[$keyx],$column['formatter'],$column['hidden'],$record,$ruleSet,$column);
 							} else {
-								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record,$ruleSet);
+								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record,$ruleSet,$column);
 							}
 						}
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
