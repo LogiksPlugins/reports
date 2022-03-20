@@ -272,9 +272,9 @@ switch($_REQUEST["action"]) {
 						}
 
 						if($reportConfig['secure']) {
-							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."' data-refid='{$hashid}'>";
 						} else {
-							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}' data-refid='{$hashid}'>";
 						}
 
 						echo $firstColumn;
