@@ -788,7 +788,7 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					
 					showLoader();
@@ -812,7 +812,7 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					window.location=_link(cmdX[1])+params;
 				}
@@ -832,7 +832,7 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					
 					if(cmd=="module" || cmd=="modules") {
