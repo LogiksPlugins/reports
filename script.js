@@ -209,15 +209,17 @@ var LGKSReports = (function() {
 			gridID=$(this).closest(".reportTable").data('rptkey');
 		  	updateGridUI(gridID);
       	});
-		    
-		$("thead.tableHead th:not(:first-child).resizable",rpt.getGrid()).resizable({
-			  handles: "e",
-			  resize: function (event, ui) {
-			    event.preventDefault();
-			    var sizerID = "#" + $(event.target).attr("id") + "-sizer";
-			    $(sizerID).width(ui.size.width);
-			  }
-		      });
+		
+		if(typeof $.fn.resizable == "function")  {
+			$("thead.tableHead th:not(:first-child).resizable",rpt.getGrid()).resizable({
+			  	handles: "e",
+			  	resize: function (event, ui) {
+				    event.preventDefault();
+				    var sizerID = "#" + $(event.target).attr("id") + "-sizer";
+				    $(sizerID).width(ui.size.width);
+			  	}
+	      	});
+		}
 
 		//Row Filters
 		rowFilter=rpt.settings("filterbar");
