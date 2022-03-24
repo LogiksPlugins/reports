@@ -14,11 +14,11 @@ $reportConfig['toolbar']['filter']=false;
 $reportConfig['toolbar']['columnselector']=false;
 
 $topbar['settings']=[
-				"showEmptyColumns"=>[
+	"showEmptyColumns"=>[
             "name"=>"SHOWALLCOLS",
             "label"=>"Show Columns with no Cards also",
             "type"=>"checkbox",
-					],
+	],
         "allowMultipleRecords"=>[
             "name"=>"ALLOWMULTIPLERECORD",
             "label"=>"Allow same block multiple times for different Columns",
