@@ -71,8 +71,8 @@ foreach ($reportConfig['buttons'] as $cmd => $button) {
 }
 
 $colMap=array_merge([
-             "title"=>"title",
-             "tooltip"=>"tooltip",
+       "title"=>"title",
+       "tooltip"=>"tooltip",
 			 "category"=>"category",
 			 "descs"=>"descs",
 			 "msg"=>"msg",
@@ -124,7 +124,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
   <div class="row table-tools noprint">
   		<?php
   			include_once __DIR__."/comps/smartfilter.php";
-			include_once __DIR__."/comps/topbar.php";
+				include_once __DIR__."/comps/topbar.php";
 		?>
       <?php
       	if(isset($reportConfig['filters']) && !empty($reportConfig['filters'])) {

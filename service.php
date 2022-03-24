@@ -272,9 +272,9 @@ switch($_REQUEST["action"]) {
 						}
 
 						if($reportConfig['secure']) {
-							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."' data-refid='{$hashid}'>";
 						} else {
-							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}'>";
+							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}' data-refid='{$hashid}'>";
 						}
 
 						echo $firstColumn;
@@ -812,13 +812,13 @@ function generateSidebar($reportConfig) {
 				$field['cols'] = "{$field['data_col']} as title, {$field['data_col']} as value";
 			}
 		}
-
+		if(!isset($reportConfig['sidebar']['all_records'])) $reportConfig['sidebar']['all_records'] = "All Records";
 		if(isset($reportConfig['LASTVIEW-REQUEST'])
 				 && isset($reportConfig['LASTVIEW-REQUEST']['filter'])
 				 && isset($reportConfig['LASTVIEW-REQUEST']['filter'][$fieldID])) {
 			$lastValue = $reportConfig['LASTVIEW-REQUEST']['filter'][$fieldID];
 		}
-
+		
 		$dbKeyForList = $reportConfig['dbkey'];
 		if(isset($field['dbkey'])) $dbKeyForList = $field['dbkey'];
 
@@ -840,7 +840,8 @@ function generateSidebar($reportConfig) {
 
 					echo "<div class='list-group report-sidebar'>";
 					echo "<input type='hidden' class='reportFilters' name='{$fieldID}' />";
-					echo "<li class='list-group-item list-group-flush' data-value=''>".toTitle(_ling("All records"))."</li>";
+					echo "<li class='list-group-item list-group-flush' data-value=''>".
+							toTitle(_ling($reportConfig['sidebar']['all_records']))."</li>";
 					foreach ($dbDataFinal as $category => $recordSet) {
 						$collapseID = md5($category.time());
 
@@ -868,7 +869,8 @@ function generateSidebar($reportConfig) {
 				} else {
 					echo "<ul class='list-group report-sidebar'>";
 					echo "<input type='hidden' class='reportFilters' name='{$fieldID}' />";
-					echo "<li class='list-group-item list-group-flush' data-value=''>".toTitle(_ling("All records"))."</li>";
+					echo "<li class='list-group-item list-group-flush' data-value=''>".
+						toTitle(_ling($reportConfig['sidebar']['all_records']))."</li>";
 
 					if(isset($field['data_col'])) {
 						$finalList = [];

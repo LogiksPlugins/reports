@@ -141,6 +141,15 @@ var LGKSReports = (function() {
 				});
 		});
 
+		$(".reportContainer",rpt.getGrid()).delegate(".unilink[data-unilink]","click",function(e) {
+			e.preventDefault();
+			var unilink = $(this).data('unilink');
+			var unilink_type = $(this).data('unilinktype');
+			// alert(unilink+" "+unilink_type);
+
+			rpt.datagridAction(unilink, this, $(this).closest("tr"));
+		});
+
 		//Column Filter
 		columns=rpt.settings("columns-visible");
 		if(columns!=null && columns.length>0) {
@@ -209,15 +218,17 @@ var LGKSReports = (function() {
 			gridID=$(this).closest(".reportTable").data('rptkey');
 		  	updateGridUI(gridID);
       	});
-		    
-		$("thead.tableHead th:not(:first-child).resizable",rpt.getGrid()).resizable({
-			  handles: "e",
-			  resize: function (event, ui) {
-			    event.preventDefault();
-			    var sizerID = "#" + $(event.target).attr("id") + "-sizer";
-			    $(sizerID).width(ui.size.width);
-			  }
-		      });
+		
+		if(typeof $.fn.resizable == "function")  {
+			$("thead.tableHead th:not(:first-child).resizable",rpt.getGrid()).resizable({
+			  	handles: "e",
+			  	resize: function (event, ui) {
+				    event.preventDefault();
+				    var sizerID = "#" + $(event.target).attr("id") + "-sizer";
+				    $(sizerID).width(ui.size.width);
+			  	}
+	      	});
+		}
 
 		//Row Filters
 		rowFilter=rpt.settings("filterbar");
@@ -775,6 +786,7 @@ var LGKSReports = (function() {
 			break;
 			case "forms":case "reports":case "infoview":
 				hash=$(src).closest(".tableRow").data('hash');
+				refid=$(src).closest(".tableRow").data('refid');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
 				title=$(src).text().trim();
@@ -787,7 +799,8 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					
 					showLoader();
 					lgksOverlayURL(_link("popup/"+cmd+"/"+cmdX[1])+params,title,function() {
@@ -797,6 +810,7 @@ var LGKSReports = (function() {
 			break;
 			case "page":
 				hash=$(src).closest(".tableRow").data('hash');
+				refid=$(src).closest(".tableRow").data('refid');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
 				title=$(src).text().trim();
@@ -809,12 +823,14 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					// cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					window.location=_link(cmdX[1])+params;
 				}
 				break;
 			case "module":case "popup":
 				hash=$(src).closest(".tableRow").data('hash');
+				refid=$(src).closest(".tableRow").data('refid');
 				gkey=$(src).closest(".reportTable").data('gkey');
 				if(gkey==null) return;
 				title=$(src).text().trim();
@@ -827,7 +843,8 @@ var LGKSReports = (function() {
 				
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
-					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					// cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					
 					if(cmd=="module" || cmd=="modules") {
 						top.openLinkFrame(title,_link("modules/"+cmdX[1])+params,true);

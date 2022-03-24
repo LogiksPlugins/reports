@@ -4,29 +4,21 @@ if(!defined('ROOT')) exit('No direct script access allowed');
 if(!isset($topbar)) {
   $topbar=[];
 }
+
 $topbar=array_merge([
-          "settings"=>false,
+          "settings"=>[],
           "XtraHtmlToolButton"=>"",
         ],$topbar);
+
+$topbar['settings']["fitTableToWindow"] = [
+        "name"=>"FitTableToWindow",
+        "label"=>"Fit Table to Window",
+        "type"=>"checkbox",
+      ];
 //$reportConfig['template']
 
-$templateViews=["grid"];
-
-if(isset($reportConfig['kanban'])) {
-  $templateViews[]="kanban";
-}
-if(isset($reportConfig['cards']) || isset($reportConfig['kanban'])) {
-  $templateViews[]="cards";
-}
-if(isset($reportConfig['calendar'])) {
-  $templateViews[]="calendar";
-}
-if(isset($reportConfig['gmap'])) {
-  $templateViews[]="gmap";
-}
-if(isset($reportConfig['drilldown'])) {
-  $templateViews[]="drilldown";
-}
+$templateViews=getReportViewsList($reportConfig);
+// printArray($templateViews);
 //printArray($reportConfig);
 ?>
 <div class="control-primebar">
@@ -88,6 +80,14 @@ if(isset($reportConfig['drilldown'])) {
               }
             ?>
             <?php
+              if(!isset($reportConfig['toolbar']['filter']) || $reportConfig['toolbar']['filter']) {
+              ?>
+              <button type="button" cmd='filterbar' class="btn btn-default">
+                <span class="glyphicon glyphicon-filter"></span>
+                <small class='button_label'><?=_ling("Filter")?></small>
+              </button>
+              <?php
+                }
               if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']) {
             ?>
             <div class='btn-group'>
@@ -150,32 +150,72 @@ if(isset($reportConfig['drilldown'])) {
                 }
               ?>
               <?php
-                if(!isset($reportConfig['toolbar']['filter']) || $reportConfig['toolbar']['filter']) {
-              ?>
-              <button type="button" cmd='filterbar' class="btn btn-default">
-                <span class="glyphicon glyphicon-filter"></span>
-                <small class='button_label'><?=_ling("Filter")?></small>
-              </button>
-              <?php
-                }
                 if($reportConfig['uiswitcher']) {
               ?>
-              <div class="btn-group uiswitcher">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="glyphicon glyphicon-th"></span> &nbsp;<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
+              <div class="uiswitcher">
+                <div class="btn-group">
                   <?php
-                    foreach($templateViews as $v) {
-                      $vt=toTitle($v);
-                      if($v==$reportConfig['template']) {
-                        echo "<li><a href='#' cmd='ui@{$v}'>{$vt} View <i class='fa fa-check pull-right'></i></a></li>";
+                    if($templateViews) {
+                      if(count($templateViews)<=3) {
+                        foreach($templateViews as $v=>$conf) {
+                          if(isset($conf['title'])) $vt = _ling($conf['title']);
+                          else $vt = toTitle(_ling($v));
+                          if($v==$reportConfig['template']) {
+                            echo "<button type='button' cmd='ui@{$v}' class='btn btn-default btn-active' title='{$vt}'><span class='{$conf['icon']}'></span></button>";
+                          } else {
+                            echo "<button type='button' cmd='ui@{$v}' class='btn btn-default' title='{$vt}'><span class='{$conf['icon']}'></span></button>";
+                          }
+                        }
                       } else {
-                        echo "<li><a href='#' cmd='ui@{$v}'>{$vt} View</a></li>";
+                        $set1 = array_slice($templateViews, 0, 3);
+                        $set2 = array_slice($templateViews, 3);
+                        foreach($set1 as $v=>$conf) {
+                          if(isset($conf['title'])) $vt = _ling($conf['title']);
+                          else $vt = toTitle(_ling($v));
+                          if($v==$reportConfig['template']) {
+                            echo "<button type='button' cmd='ui@{$v}' class='btn btn-default btn-active' title='{$vt}'><span class='{$conf['icon']}'></span></button>";
+                          } else {
+                            echo "<button type='button' cmd='ui@{$v}' class='btn btn-default' title='{$vt}'><span class='{$conf['icon']}'></span></button>";
+                          }
+                        }
+                        echo '<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">&nbsp;<span class="caret"></span></button>';
+                        echo '<ul class="dropdown-menu">';
+                        foreach($set2 as $v=>$conf) {
+                          if(isset($conf['title'])) $vt = _ling($conf['title']);
+                          else $vt = toTitle(_ling($v));
+                          if($v==$reportConfig['template']) {
+                            echo "<li><a href='#' cmd='ui@{$v}'>{$vt} View <i class='fa fa-check pull-right'></i></a></li>";
+                          } else {
+                            echo "<li><a href='#' cmd='ui@{$v}'>{$vt} View</a></li>";
+                          }
+                        }
+                        echo '</ul>';
                       }
                     }
                   ?>
-                </ul>
+                </div>
+              </div>
+              <?php
+                }
+                if(!isset($reportConfig['toolbar']['columnselector']) || $reportConfig['toolbar']['columnselector']) {
+              ?>
+              <div class='btn-group'>
+                <button type="button" class="btn btn-default btn-reports-toggle">
+                  <span class="fa fa-columns"></span> <small class='button_label'><?=_ling("Cols")?></small><!-- <span class="caret" style='    margin-top: 10%;'></span> --></button>
+                  <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
+                  <?php
+                    echo "<li class='bg-info text-white'><a href='#'><label><input class='allColumns' type='checkbox'>"._ling("Check All")."</label></a></li>";
+                    foreach ($reportConfig['datagrid'] as $colID => $column) {
+                      $colIDS=$colID;//str_replace(".","_",$colID);
+                      if(isset($column['noshow']) && $column['noshow']===true) continue;
+                      if(isset($column['hidden']) && $column['hidden']) {
+                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}'>"._ling($column['label'])."</label></a></li>";
+                      } else {
+                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}' checked=true>"._ling($column['label'])."</label></a></li>";
+                      }
+                    }
+                  ?>
+                  </ul>
               </div>
               <?php
                 }
@@ -200,28 +240,6 @@ if(isset($reportConfig['drilldown'])) {
                       ?>
                       </ul>
                   </div>
-              <?php
-                }
-                if(!isset($reportConfig['toolbar']['columnselector']) || $reportConfig['toolbar']['columnselector']) {
-              ?>
-              <div class='btn-group'>
-                <button type="button" class="btn btn-default btn-reports-toggle">
-                  <span class="glyphicon glyphicon-list-alt"></span> <small class='button_label'><?=_ling("Cols")?></small><!-- <span class="caret" style='    margin-top: 10%;'></span> --></button>
-                  <ul class="columnFilter dropdown-menu" aria-labelledby="dropdownMenu" role='menu' onclick="event.stopPropagation()">
-                  <?php
-                    echo "<li class='bg-info text-white'><a href='#'><label><input class='allColumns' type='checkbox'>"._ling("Check All")."</label></a></li>";
-                    foreach ($reportConfig['datagrid'] as $colID => $column) {
-                      $colIDS=$colID;//str_replace(".","_",$colID);
-                      if(isset($column['noshow']) && $column['noshow']===true) continue;
-                      if(isset($column['hidden']) && $column['hidden']) {
-                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}'>"._ling($column['label'])."</label></a></li>";
-                      } else {
-                        echo "<li class='colcheckbox'><a href='#'><label><input class='columnName' type='checkbox' name='{$colIDS}' checked=true>"._ling($column['label'])."</label></a></li>";
-                      }
-                    }
-                  ?>
-                  </ul>
-              </div>
               <?php
                 }
               ?>
