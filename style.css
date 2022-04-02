@@ -332,6 +332,14 @@ table.dataTable .image-avatar {
     border: 1px solid #333;
 }
 
+.reportTable .unilink {
+    color: #7095d0;
+    cursor: pointer;
+    font-weight: 600;
+}
+.reportTable .unilink span, .reportTable .unilink p {
+    color: black;
+}
 
 .report-sidebar {
     width: 100%;

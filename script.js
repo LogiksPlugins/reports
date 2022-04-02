@@ -141,6 +141,15 @@ var LGKSReports = (function() {
 				});
 		});
 
+		$(".reportContainer",rpt.getGrid()).delegate(".unilink[data-unilink]","click",function(e) {
+			e.preventDefault();
+			var unilink = $(this).data('unilink');
+			var unilink_type = $(this).data('unilinktype');
+			// alert(unilink+" "+unilink_type);
+
+			rpt.datagridAction(unilink, this, $(this).closest("tr"));
+		});
+
 		//Column Filter
 		columns=rpt.settings("columns-visible");
 		if(columns!=null && columns.length>0) {
@@ -850,6 +859,8 @@ var LGKSReports = (function() {
 			case "ui":
 				cmdX=cmdOriginal.split("@");
 				if(cmdX[1]!=null) {
+					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
+					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);
 					cmd=cmdX[1];
 					gkey=$(src).closest(".reportTable").data('gkey');
 					if(gkey==null) return;
