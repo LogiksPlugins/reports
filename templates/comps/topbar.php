@@ -22,9 +22,25 @@ $templateViews=getReportViewsList($reportConfig);
 //printArray($reportConfig);
 ?>
 <div class="control-primebar">
-<!--       	<div class="col-lg-6 col-xs-6 pull-left">
+  <div class="col-lg-6 col-xs-6 pull-left">
     <h1 class='reportTitle'><?=$reportConfig['title']?></h1>
-  </div> -->
+  </div>
+  <div class="col-lg-6 col-xs-6 pull-right" style="padding-right: 10px;">
+    <div class='input-group pull-right' style='text-align: right;'>
+      <div class="input-group-btn">
+        <?php
+          if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
+            echo '<button type="button" cmd="refresh" class="btn btn-default" style="margin: 0px;"><span class="glyphicon glyphicon-refresh"></span></button>';
+          }
+        ?>
+        <?php
+          if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
+            echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon" style="min-width: 250px;">';
+          }
+        ?>
+      </div>
+    </div>
+  </div>
   <div class="col-lg-6 col-xs-6 pull-left control-toolbar">
     <?php
       if(isset($reportConfig['actions']) && is_array($reportConfig['actions']) && count($reportConfig['actions'])>0) {
@@ -59,26 +75,15 @@ $templateViews=getReportViewsList($reportConfig);
     ?>
   </div>
 
-  <div class="col-lg-6 col-xs-6 pull-right">
+  <div class="col-lg-6 col-xs-6 pull-right" style="padding-right: 0px;">
       <?php
         if(strlen($topbar['XtraHtmlToolButton'])>2) {
           echo "<div class='input-group pull-left' style='text-align: right; width:70%;'>";
         } else {
-          echo "<div class='input-group' style='text-align: right;'>";
+          echo "<div class='input-group pull-right' style='text-align: right;'>";
         }
       ?>
-          <?php
-            if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
-              echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon">';
-            }
-          ?>
-
           <div class="input-group-btn">
-            <?php
-              if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
-                echo '<button type="button" cmd="refresh" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span></button>';
-              }
-            ?>
             <?php
               if(!isset($reportConfig['toolbar']['filter']) || $reportConfig['toolbar']['filter']) {
               ?>
