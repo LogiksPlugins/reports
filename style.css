@@ -420,7 +420,9 @@ table.dataTable .image-avatar {
 .reportTable .table-tools .uiswitcher .btn-group .btn {
 	margin: 0px;
 }
-
+.control-primebar>* {
+  margin-bottom: 8px;
+}
 
 .nopadding {
     padding: 0px;
