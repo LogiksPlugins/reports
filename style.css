@@ -26,6 +26,8 @@ canvas, .report-sidebar {
 	height: 35px;
 	max-height: 35px;
 	/*overflow: hidden;*/
+    margin-left: -12px;
+    margin-right: 5px;
 }
 .reportTable .table-tools .control-toolbar {
 /* 	margin-top: 10px; */
@@ -70,6 +72,12 @@ canvas, .report-sidebar {
 	padding: 0px;
 	font-size: 20px;
 	line-height: 36px;
+    height: 36px;
+}
+.reportTable .table-tools h1.reportTitle citie {
+    color: #999;
+    font-size: 10px;
+    margin-left: 7px;
 }
 .reportTable .table-tools input.searchfield {
 	/*width: 150px;
@@ -301,7 +309,6 @@ table.dataTable .image-avatar {
 	margin: 0px;
 	display: inline-table;
 }
-
 
 .report-sidebar-container {
 

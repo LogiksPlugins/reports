@@ -576,11 +576,16 @@ if(!function_exists("findReport")) {
 			else {
 				$_ENV['REPORTRECORD']['hashid']=md5($record[array_keys($record)[0]]);
 			}
+
+			if(!isset($record['refid']) && isset($record['id'])) {
+				$record['refid'] = $record['id'];
+			}
 		}
 		$cmd=preg_replace_callback('/{(.*?)}/', function($matches) {
 			$colName=substr($matches[0],1,strlen($matches[0])-2);
 			if(isset($_ENV['REPORTRECORD'][$colName])) {
-				if(is_numeric($_ENV['REPORTRECORD'][$colName])) return md5($_ENV['REPORTRECORD'][$colName]);
+				// if(is_numeric($_ENV['REPORTRECORD'][$colName])) return md5($_ENV['REPORTRECORD'][$colName]);
+				// return $_ENV['REPORTRECORD'][$colName];
 				return $_ENV['REPORTRECORD'][$colName];
 			}
 			return "";

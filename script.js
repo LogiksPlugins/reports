@@ -858,6 +858,9 @@ var LGKSReports = (function() {
 			break;
 			case "ui":
 				cmdX=cmdOriginal.split("@");
+				hash=$(src).closest(".tableRow").data('hash');
+				refid=$(src).closest(".tableRow").data('refid');
+				gkey=$(src).closest(".reportTable").data('gkey');
 				if(cmdX[1]!=null) {
 					//cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{gkey}",gkey);
 					cmdX[1]=cmdX[1].replace("{hashid}",hash).replace("{refid}",refid).replace("{gkey}",gkey);

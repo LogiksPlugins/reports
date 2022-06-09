@@ -2,6 +2,8 @@
 if(!defined('ROOT')) exit('No direct script access allowed');
 
 if($reportConfig["source"]['type']=="sql") {
+	//printArray($reportConfig['sidebar']['no_records_msg']);return;
+	if(!isset($reportConfig['sidebar']['no_records'])) $reportConfig['sidebar']['no_records'] = "No Records";
 	?>
 <script>
 var rptTX1 = null;
@@ -28,9 +30,17 @@ function loadSidebar(gridID) {
 	
 	$(".report-sidebar-container").html("<div class='ajaxloading ajaxloading5'></div>");
 	lx=_service("reports","sidebar","html")+"&gridid="+gridID;
-	$(".report-sidebar-container").load(lx, function() {
+	$(".report-sidebar-container").load(lx, function(txt) {
 		if($(".report-sidebar-container .list-group-item[data-value='"+oldValue+"']").length>0) {
 			$(".report-sidebar-container .list-group-item[data-value='"+oldValue+"']").addClass("active");
+		}
+
+		if($(".report-sidebar-container .list-group-item").length<=0) {
+			$(".report-sidebar-container").html("<div class='list-group report-sidebar'><ul class='list-group'><h3 class='text-center'><?=(_ling($reportConfig['sidebar']['no_records']))?></h3></ul></div>");
+		}
+
+		if(typeof window['onLoadSidebar']=="function") {
+			onLoadSidebar(gridID);
 		}
     })
 }
