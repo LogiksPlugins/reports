@@ -195,7 +195,11 @@ table.dataTable td.rowSelector.action,table.dataTable th.rowSelector.action {
 table.dataTable td.actionCol,table.dataTable th.actionCol {
     text-align:right;
     vertical-align:center;
-		min-width:100px;
+    min-width:100px;
+}
+table.dataTable td.actionCol.left,table.dataTable th.actionCol.left {
+    text-align:left;
+    min-width:10px !important;
 }
 table.dataTable td.actionCol i,table.dataTable th.actionCol i {
     font-size: 15px;
@@ -458,3 +462,23 @@ table.dataTable .image-avatar {
     }
 }
 
+/*DropDown Action Button*/
+.actionDropdown {
+    float: right;
+}
+.actionCol.left .actionDropdown {
+    float: left;
+}
+.actionDropdown .dropdown-menu {
+    padding:  0px;
+    margin-left: -201px;
+}
+.actionCol.left .actionDropdown .dropdown-menu {
+    padding:  0px;
+    margin-left: 0px;
+}
+.actionDropdown .dropdown-menu li {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #CCC;
+}

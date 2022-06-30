@@ -54,7 +54,6 @@ if(!function_exists("findReport")) {
 	}
 
 	function printReport($reportConfig,$dbKey=false,$params=[]) {
-// 		var_dump($reportConfig);exit();
 		if(!is_array($reportConfig)) $reportConfig=findReport($reportConfig);
 
 		if(!is_array($reportConfig) || count($reportConfig)<=2) {
@@ -157,6 +156,9 @@ if(!function_exists("findReport")) {
 // 			} else {
 // 				$reportConfig['toolbar']['search']=true;
 // 			}
+		}
+		if(!isset($reportConfig['buttons_align'])) {
+			$reportConfig['buttons_align'] = "left";
 		}
 		//printArray($reportConfig);return;
 
@@ -553,7 +555,7 @@ if(!function_exists("findReport")) {
 				break;
 		}
 	}
-	function createReportRecordAction($button, $record) {
+	function createReportRecordAction($button, $record, $uiType = 'button') {
 		if(isset($button['policy']) && strlen($button['policy'])>0) {
 			$allow=checkUserPolicy($button['policy']);
 			if(!$allow) return "";
@@ -604,7 +606,16 @@ if(!function_exists("findReport")) {
 			$button['params'] = "{}";
 		}
 
-		return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}'></i>";
+		switch($uiType) {
+			case "dropdown"://<i class='fa fa-eye profile-customers' ></i>
+				return "<li><a href='#' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'><i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}'></i> {$button['label']}</a></li>";
+			case "select":
+				return "<option class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'>{$button['label']}</option>";
+			break;
+			case "button":
+			default:
+				return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}'></i>";
+		}
 	}
 	function executeReportHook($state,$reportConfig) {
 		if(!isset($reportConfig['hooks']) || !is_array($reportConfig['hooks'])) return false;

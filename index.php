@@ -15,7 +15,7 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 	$report=findReport($_REQUEST['src']);
 
 	if($report) {
-		$report['uiswitcher']=true;
+		if(!isset($report['uiswitcher'])) $report['uiswitcher']=true;
 		
 		if(isset($slug['tmpl']) && strlen($slug['tmpl'])>0) {
 			$template=$slug['tmpl'];
@@ -25,8 +25,8 @@ if(isset($_REQUEST['src']) && strlen($_REQUEST['src'])>0) {
 			$template=$_COOKIE['RPTVIEW-'.$report['reportgkey']];
 		}
 		$report['template']=$template;
-		
-// 		$report['template']="kanban";
+
+		if(isset($report['force_template'])) $report['template'] = $report['force_template'];
 
 		if(isset($report['preform'])) {
 			loadModuleLib("preform", "api");

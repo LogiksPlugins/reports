@@ -40,11 +40,6 @@ if(isset($reportConfig['max_visible_cols'])) {
 		<thead class='tableHead'>
 			<tr>
 				<?php
-					if($reportConfig['buttons_align']=="left") {
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            echo "<th class='actionCol left hidden-print'></th>";
-	          }
-					}
 					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
 						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
 							echo "<th class='action' width=25px>";
@@ -81,11 +76,9 @@ if(isset($reportConfig['max_visible_cols'])) {
 						}
             echo "</th>";
 					}
-					if($reportConfig['buttons_align']=="right") {
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            echo "<th class='actionCol hidden-print'></th>";
-	          }
-					}
+          if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+            echo "<th class='actionCol hidden-print'></th>";
+          }
 				?>
 			</tr>
 		</thead>

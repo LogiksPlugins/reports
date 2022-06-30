@@ -277,6 +277,35 @@ switch($_REQUEST["action"]) {
 							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}' data-refid='{$hashid}'>";
 						}
 
+						if($reportConfig['buttons_align']=="left") {
+							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+								echo "<td class='actionCol left hidden-print'>";
+								foreach ($reportConfig['buttons'] as $cmd => $button) {
+									if($cmd=="more") {
+										echo "<div class='dropdown actionDropdown'><button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'><span class='glyphicon glyphicon-option-vertical'></span></button><ul class='dropdown-menu'>";
+										//<span class='caret'></span>
+										foreach($button as $cmd1=>$button1) {
+											$button1['cmd']=$cmd1;
+											echo createReportRecordAction($button1, $record, "dropdown");
+										}
+										echo "</ul></div>";
+
+
+										// echo "<select class='form-control select action-select'><option value=''>"._ling("Select Action")."</option>";
+										// foreach($button as $cmd1=>$button1) {
+										// 	$button1['cmd']=$cmd1;
+										// 	echo createReportRecordAction($button1, $record, "select");
+										// }
+										// echo "</select>";
+									} else {
+										$button['cmd']=$cmd;
+										echo createReportRecordAction($button, $record);
+									}
+								}
+								echo "</td>";
+							}
+						}
+
 						echo $firstColumn;
 						foreach ($reportConfig['datagrid'] as $key => $column) {
 							$keyx=explode(".",$key);
@@ -304,14 +333,35 @@ switch($_REQUEST["action"]) {
 								echo formatReportColumn($key,"",$column['formatter'],$column['hidden'],$record,$ruleSet,$column);
 							}
 						}
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-							echo "<td class='actionCol hidden-print'>";
-							foreach ($reportConfig['buttons'] as $cmd => $button) {
-								$button['cmd']=$cmd;
-								echo createReportRecordAction($button, $record);
+						if($reportConfig['buttons_align']=="right") {
+							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+								echo "<td class='actionCol hidden-print'>";
+								foreach ($reportConfig['buttons'] as $cmd => $button) {
+									if($cmd=="more") {
+										echo "<div class='dropdown actionDropdown'><button class='btn btn-default dropdown-toggle' type='button' data-toggle='dropdown'><span class='glyphicon glyphicon-option-vertical'></span></button><ul class='dropdown-menu'>";
+										//<span class='caret'></span>
+										foreach($button as $cmd1=>$button1) {
+											$button1['cmd']=$cmd1;
+											echo createReportRecordAction($button1, $record, "dropdown");
+										}
+										echo "</ul></div>";
+
+
+										// echo "<select class='form-control select action-select'><option value=''>"._ling("Select Action")."</option>";
+										// foreach($button as $cmd1=>$button1) {
+										// 	$button1['cmd']=$cmd1;
+										// 	echo createReportRecordAction($button1, $record, "select");
+										// }
+										// echo "</select>";
+									} else {
+										$button['cmd']=$cmd;
+										echo createReportRecordAction($button, $record);
+									}
+								}
+								echo "</td>";
 							}
-							echo "</td>";
 						}
+						
 						echo "</tr>";
 					}
 
@@ -601,10 +651,29 @@ function getGridDataMax($reportKey,$reportConfig) {
 			}
 			break;
 
+		case 'plugin':
+			if(function_exists("get_max_record_count")) {
+				$data = get_max_record_count();
+			} else {
+				if(isset($MAXRECORDS)) {
+					$data = $MAXRECORDS;
+				} elseif(isset($_SESSION[$reportKey]['MAXRECORDS'])) {
+					$data = $_SESSION[$reportKey]['MAXRECORDS'];
+				} else {
+					$data = "-1";
+				}
+			}
+			break;	
+
 		case 'model':
 
 		default:
-			trigger_error("Report Source Not Supported");
+			//trigger_error("Report Source Not Supported");
+			if(isset($_SESSION[$reportKey]['MAXRECORDS'])) {
+				$data = $_SESSION[$reportKey]['MAXRECORDS'];
+			} else {
+				$data = "-1";
+			}
 			break;
 	}
 	$_SESSION[$reportKey]['MAXRECORDS']=$data;
@@ -663,6 +732,42 @@ function getGridData($reportKey,$reportConfig) {
 				}
 			} else {
 				trigger_error("Report Source File Not Found");
+			}
+			break;
+
+		case 'plugin':
+			if(isset($reportConfig['source']['plugin']) && strlen($reportConfig['source']['plugin'])>0) {
+				$pluginPath = checkModule($reportConfig['source']['plugin']);
+				if($pluginPath) {
+					$pluginPath = dirname($pluginPath);
+
+					$dataFiles = [
+							$pluginPath."/data_reports.php",
+							$pluginPath."/data.php",
+						];
+
+					$finalFile = false;
+					foreach($dataFiles as $f) {
+						if($finalFile) continue;
+						if(file_exists($f)) {
+							$finalFile = $f;
+						}
+					}
+
+					if($finalFile) {
+						$data=include_once($finalFile);
+
+						if(isset($MAXRECORDS)) {
+							$_SESSION[$reportKey]['MAXRECORDS']=$MAXRECORDS;
+						}
+					} else {
+						trigger_error("Report Data - Plugin Does Not Support Plugin:Data Requirements");
+					}
+				} else {
+					trigger_error("Report Data - Plugin Not Found");
+				}
+			} else {
+				trigger_error("Report Data - Plugin Not Defined");
 			}
 			break;
 
