@@ -711,7 +711,7 @@ function getGridData($reportKey,$reportConfig) {
 			if(isset($reportConfig['DEBUG']) && $reportConfig['DEBUG']==true) {
 				exit($sql->_SQL());
 			}
-//  			exit($sql->_SQL());
+ 			//exit($sql->_SQL());
 			$res=_dbQuery($sql,$dbKey);
 			if($res) {
 				$data=_dbData($res,$dbKey);
@@ -833,6 +833,14 @@ function processReportWhere($sql,$reportConfig) {
 
 			if(isset($_POST['filterrule'][$key])) {
       			$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>$_POST['filterrule'][$key])];
+      		} elseif(strpos($colNameKey, "[")>1) {
+      			$colNameKey = str_replace("[", "", str_replace("]", "", $colNameKey));
+      			$valueArr = explode(",", $value);
+      			$finalWhereArr = [];
+      			foreach($valueArr as $val) {
+      				$finalWhereArr[]=[$colNameKey=>array("VALUE"=>$val,"OP"=>"FIND")];
+      			}
+      			$sql->_whereMulti($finalWhereArr, "AND", "OR");
 			} else {
 				$whereFilters[]=[$colNameKey=>array("VALUE"=>$value,"OP"=>"SW")];
 			}

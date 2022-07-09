@@ -1,0 +1,152 @@
+{
+	"schema": "1.0",
+	"title": "Leave Applications",
+	"category": "personal",
+	"privilege": "*",
+	"blocked": false,
+	"rowlink": false,
+	"rowsPerPage": 20,
+	"showExtraColumn": "checkbox",
+	"custombar": false,
+	"uiswitcher": false,
+	"template": "list",
+	"force_template": "grid",
+	"hooks": {
+		"fieldupdate": {
+		    "modules":["bizflow","bizlogger"]
+		}
+	},
+	"source": {
+		"type": "sql",
+		"table": "hr_applications,profiletbl",
+		"cols": "hr_applications.id,hr_applications.title,hr_applications.type,hr_applications.sub_type,hr_applications.status,hr_applications.date_start,hr_applications.start_time,hr_applications.date_end,hr_applications.end_time,hr_applications.descs,hr_applications.verified_by,hr_applications.application_to,hr_applications.remarks",
+		"where": {
+			"hr_applications.profile_id=profiletbl.id":"RAW"
+		},
+		"limit": 20
+	},
+	"buttons_align": "left",
+	"buttons": {
+	    "more": {
+	        "infoview@profile.main/{hashid}": {
+    			"label": "View Leave Application",
+    			"icon": "fa fa-code"
+    		},
+    		"forms@hr.my_misc_appl/new": {
+    			"label": "Show Misc Application",
+    			"icon": "fa fa-plus"
+    		}
+	    },
+	    "infoview@profile.main/{hashid}": {
+    			"label": "View Leave Application",
+    			"icon": "fa fa-code"
+    		}
+	},
+	"sidebar":{
+        "type":"filter",
+        "source":{
+            "hr_applications.type":{
+                "title": "Type",
+                "type": "dataSelectorFromTable",
+				"table": "hr_applications",
+				"cols": "hr_applications.type as title, hr_applications.type as value",
+				"where":{
+				    "hr_applications.blocked":"false"
+				},
+				"groupby":"hr_applications.type",
+				"multiple": true
+            },
+            "hr_applications.sub_type":{
+                "title": "Subtype",
+                "type": "dataSelectorFromTable",
+				"table": "hr_applications",
+				"cols": "hr_applications.sub_type as title, hr_applications.sub_type as value",
+				"where":{
+				    "hr_applications.blocked":"false",
+				    "(hr_applications.sub_type IS NOT NULL AND length(hr_applications.sub_type)>0)": "RAW"
+				},
+				"groupby":"hr_applications.sub_type"
+            }
+        }
+	},
+	"datagrid": {
+		"hr_applications.id": {
+			"label": "ID",
+			"hidden": false,
+			"searchable": true,
+			"sortable": true,
+			"groupable": false,
+			"classes": "",
+			"style": "width:50px;",
+			"formatter": "text"
+		},
+		"hr_applications.title": {
+			"label": "Subject",
+			"sortable": true,
+			"searchable": true,
+			"hidden": false
+		},
+		"hr_applications.type": {
+			"label": "Type",
+			"sortable": true,
+			"searchable": true,
+			"hidden": true
+		},
+		"hr_applications.sub_type": {
+			"label": "Sub Type",
+			"sortable": true,
+			"searchable": true
+		},
+		"hr_applications.status": {
+			"label": "Status",
+			"sortable": true,
+			"searchable": true
+		},
+		"hr_applications.date_start": {
+			"label": "Date Start",
+			"format": "date",
+			"sortable": true,
+			"searchable": true
+		},
+		"hr_applications.start_time": {
+			"label": "Start Time",
+			"format": "time",
+			"sortable": true,
+			"hidden": true,
+			"searchable": true
+		},
+		"hr_applications.date_end": {
+			"label": "Date End",
+			"format": "date",
+			"sortable": true,
+			"searchable": true
+		},
+		"hr_applications.end_time": {
+			"label": "End time",
+			"format": "time",
+			"sortable": true,
+			"hidden": true,
+			"searchable": true
+		},
+		"hr_applications.descs": {
+			"label": "Descs",
+			"hidden": true
+		},
+		"hr_applications.verified_by": {
+			"label": "Verified By",
+			"sortable": true,
+			"searchable": true,
+			"hidden": true
+		},
+		"hr_applications.application_to": {
+			"label": "Application To",
+			"sortable": true,
+			"searchable": true
+		},
+		"hr_applications.remarks": {
+			"label": "Remark",
+			"searchable": true,
+			"hidden": true
+		}
+	}
+}

@@ -482,3 +482,16 @@ table.dataTable .image-avatar {
     padding-bottom: 3px;
     border-bottom: 1px solid #CCC;
 }
+
+.sidebar-filters {
+	padding-left: 18px;
+}
+.sidebar-filters .filter-field {
+    padding: 2px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+}
+.sidebar-filters .filter-field label {
+	font-weight: bold;
+	color: #666;
+}

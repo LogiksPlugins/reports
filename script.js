@@ -481,7 +481,11 @@ var LGKSReports = (function() {
 		$(".report-sidebar .reportFilters[name]").each(function() {
 			name=$(this).attr('name');
 			if(this.value!=null && this.value.length>0) {
-				q.push("filter["+name+"]"+"="+encodeURIComponent(this.value));
+				if(typeof $(this).val() == "object") {
+					q.push("filter["+name+"]"+"="+encodeURIComponent($(this).val().join(",")));
+				} else {
+					q.push("filter["+name+"]"+"="+encodeURIComponent(this.value));
+				}
 		        filterCount++;
 			}
 		});
