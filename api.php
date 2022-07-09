@@ -298,27 +298,46 @@ if(!function_exists("findReport")) {
 				break;
 
 			case 'url':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 			case 'email':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> {$value}</a></td>";
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> {$value}</a></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 			case 'tel':case 'mob':case 'phone':case 'mobile':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-phone' href='tel:{$value}'> {$value}</a></td>";
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-phone' href='tel:{$value}'> {$value}</a></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case 'geoloc':case 'geolocation':case 'geoaddress':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='https://www.google.co.in/maps/place/{$value}' target=_blank> MAP</a></td>";
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='https://www.google.co.in/maps/place/{$value}' target=_blank> MAP</a></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case 'color':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'><span style='background:{$value};'></span></td>";
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'><span style='background:{$value};'></span></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case "avatar":
 				if($value==null || strlen($value)<=0) $value=loadMedia("images/user.png");
 				$fname=basename($value);
-				return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-avatar'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-avatar'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 			case "photo":case "picture":case "media":
 				if($value==null || strlen($value)<=0) $value=loadMedia("images/noimg.png");
@@ -327,7 +346,11 @@ if(!function_exists("findReport")) {
 					$value=$value['url'];
 				}
 				$fname=basename($value);
-				return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-inline'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+
+				if($value && strlen($value)>0)
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-inline'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+				else
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case "file":case "attachment":
@@ -338,7 +361,10 @@ if(!function_exists("findReport")) {
 			            $valueF = searchMedia($value);
 			            $value=$valueF['url'];
 		          	}
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$value}' target=_blank> FILE</a></td>";
+		          	if(strlen($value)>0)
+						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$value}' target=_blank> FILE</a></td>";
+					else
+						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
 				}
 				break;
 			case "mediafile":
@@ -346,7 +372,7 @@ if(!function_exists("findReport")) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No File</td>";
 				} else {
 					$valueX=searchMedia($value);
-					if($valueX) {
+					if($valueX && strlen($valueX)>0) {
 						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$valueX['url']}' target=_blank> FILE</a></td>";
 					} else {
 						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}' title='{$value}'>Not Found</td>";
