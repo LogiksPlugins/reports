@@ -238,6 +238,7 @@ if(!function_exists("findReport")) {
 
 	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[], $ruleSet = [],$columnInfo = false) {
 		$clz="tableColumn";
+		$xtraAttributes = [];
 		if($hidden) $clz.=" hidden";
 		$keyS=str_replace(".","_",$key);
 
@@ -270,64 +271,70 @@ if(!function_exists("findReport")) {
 			$clz.=" unilink";
 		}
 
+		if(isset($columnInfo['calculate'])) {
+			$xtraAttributes[] = "data-calculate='{$columnInfo['calculate']}'";
+		}
+
+		$xtraAttributes = implode(" ", $xtraAttributes);
+
 		switch (strtolower($type)) {
 			case 'date':
 				$value=current(explode(" ", $value));
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._pDate($value)."</td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>"._pDate($value)."</td>";
 				break;
 
 			case 'time':
 				$value=explode(" ", $value);
 				$value=end($value);
 				if($value==null || strlen($value)<=0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._time($value)."</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>"._time($value)."</td>";
 				break;
 
 			case 'datetime':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._pDate($value)."</td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>"._pDate($value)."</td>";
 				break;
 
 			case 'currency':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>".number_format($value,2)."</td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>".number_format($value,2)."</td>";
 				break;
 
 			case 'num':case 'number':
-				return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'>".$value."</td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' $xtraAttributes data-key='$key' data-value='{$value}'>".$value."</td>";
 				break;
 
 			case 'url':
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-globe' href='{$value}' target=_blank> LINK</a></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 			case 'email':
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> {$value}</a></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-email' href='email:{$value}'> {$value}</a></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 			case 'tel':case 'mob':case 'phone':case 'mobile':
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-phone' href='tel:{$value}'> {$value}</a></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-phone' href='tel:{$value}'> {$value}</a></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case 'geoloc':case 'geolocation':case 'geoaddress':
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='https://www.google.co.in/maps/place/{$value}' target=_blank> MAP</a></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-map-marker' href='https://www.google.co.in/maps/place/{$value}' target=_blank> MAP</a></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case 'color':
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' data-key='$key' data-value='{$value}'><span style='background:{$value};'></span></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} text-center' $xtraAttributes data-key='$key' data-value='{$value}'><span style='background:{$value};'></span></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case "avatar":
@@ -335,9 +342,9 @@ if(!function_exists("findReport")) {
 				$fname=basename($value);
 
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-avatar'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' $xtraAttributes data-key='$key' data-value='{$value}'><div class='image-avatar'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 			case "photo":case "picture":case "media":
 				if($value==null || strlen($value)<=0) $value=loadMedia("images/noimg.png");
@@ -348,34 +355,34 @@ if(!function_exists("findReport")) {
 				$fname=basename($value);
 
 				if($value && strlen($value)>0)
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' data-key='$key' data-value='{$value}'><div class='image-inline'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} imagebox text-center' $xtraAttributes data-key='$key' data-value='{$value}'><div class='image-inline'><img src='{$value}' class='img-responsive' alt='{$fname}' /></div></td>";
 				else
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				break;
 
 			case "file":case "attachment":
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No File</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>No File</td>";
 				} else {
 					if(!(substr($value,0,5)=="http:" || substr($value,0,6)=="https:" || substr($value,0,4)=="ftp:")) {
 			            $valueF = searchMedia($value);
 			            $value=$valueF['url'];
 		          	}
 		          	if(strlen($value)>0)
-						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$value}' target=_blank> FILE</a></td>";
+						return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$value}' target=_blank> FILE</a></td>";
 					else
-						return "<td class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+						return "<td class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				}
 				break;
 			case "mediafile":
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>No File</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>No File</td>";
 				} else {
 					$valueX=searchMedia($value);
 					if($valueX && strlen($valueX)>0) {
-						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$valueX['url']}' target=_blank> FILE</a></td>";
+						return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'><a class='fa fa-paperclip' href='{$valueX['url']}' target=_blank> FILE</a></td>";
 					} else {
-						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}' title='{$value}'>Not Found</td>";
+						return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}' title='{$value}'>Not Found</td>";
 					}
 				}
 				break;
@@ -388,36 +395,36 @@ if(!function_exists("findReport")) {
 				} else {
 					$valueS="--";
 				}
-				return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$valueS}</td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$valueS}</td>";
 				break;
 
 			case "embed":
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' data-key='$key' data-value='###'><i class='fa fa-arrows-alt'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' $xtraAttributes data-key='$key' data-value='###'><i class='fa fa-arrows-alt'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
 				}
 				break;
 			case "video":case "videoembed":
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' data-key='$key' data-value='###'><i class='fa fa-youtube-play'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' $xtraAttributes data-key='$key' data-value='###'><i class='fa fa-youtube-play'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
 				}
 				break;
 
 			case "iframe":
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'></td>";
 				} else {
 					$value="<iframe width='560' height='315' src='{$value}' frameborder='0' allowfullscreen></iframe>";
-					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' data-key='$key' data-value='###'><i class='fa fa-arrows-alt'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type} embed' $xtraAttributes data-key='$key' data-value='###'><i class='fa fa-arrows-alt'></i> OPEN <div class='contentBox hidden'>{$value}</div></td>";
 				}
 				break;
 
 			case 'content':
 				if($value==null || strlen($value)<=0) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>"._ling("No Content")."</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>"._ling("No Content")."</td>";
 				} else {
 					$value=str_replace("\\r\\n","<br>",$value);
 					$value=str_replace("\\n","<br>",$value);
@@ -426,9 +433,9 @@ if(!function_exists("findReport")) {
 					
 					if(strlen($value)>40) {
 						$abstract=substr($value,0,35)." ...";
-						return "<td {$unilink} class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value='{$value}'>{$abstract}<div class='contentBox hidden'>{$value}</div></td>";
+						return "<td {$unilink} class='{$clz} {$keyS} {$type} moreContent' $xtraAttributes data-key='$key' data-value='{$value}'>{$abstract}<div class='contentBox hidden'>{$value}</div></td>";
 					} else {
-						return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$value}</td>";
+						return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$value}</td>";
 					}
 				}
 				break;
@@ -439,12 +446,12 @@ if(!function_exists("findReport")) {
 					$html.="<li class='list-group'><label>{$aa}</label>&nbsp;&nbsp;$bb</li>";
 				}
 				$html.="</ul>";
-				return "<td {$unilink} class='{$clz} {$keyS} {$type} moreContent' data-key='$key' data-value=''>VIEW<div class='contentBox hidden'>{$html}</div></td>";
+				return "<td {$unilink} class='{$clz} {$keyS} {$type} moreContent' $xtraAttributes data-key='$key' data-value=''>VIEW<div class='contentBox hidden'>{$html}</div></td>";
 				break;
 
 			case 'checkbox':
 				$value1=strtolower($value);
-				$html="<td {$unilink} class='{$clz} {$keyS} checkboxes' data-key='$key' data-value='{$value}'>";
+				$html="<td {$unilink} class='{$clz} {$keyS} checkboxes' $xtraAttributes data-key='$key' data-value='{$value}'>";
 				if($value===true || $value1=="true" || $value1=="on") {
 					$html.="<input class='noprint' type='checkbox' disabled checked=true />";
 				} else {
@@ -455,7 +462,7 @@ if(!function_exists("findReport")) {
 				return $html;
 				break;
 			case 'template':
-				$html="<td {$unilink} class='{$clz} {$keyS} col_{$type}' data-key='$key' data-value='{$value}'>";
+				$html="<td {$unilink} class='{$clz} {$keyS} col_{$type}' $xtraAttributes data-key='$key' data-value='{$value}'>";
 				if($columnInfo && isset($columnInfo['template'])) {
 					$lr=new LogiksReplace();
 					$lr->setData($record);
@@ -491,13 +498,13 @@ if(!function_exists("findReport")) {
 		        }
 			default:
 				if(is_array($value)) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
 				} elseif(strlen($value)>100) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='--'><pre>{$value}</pre></td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'><pre>{$value}</pre></td>";
 				} elseif(strlen($value)>50) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='--'>{$value}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>{$value}</td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' data-key='$key' data-value='{$value}'>{$value}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$value}</td>";
 				}
 				break;
 		}

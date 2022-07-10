@@ -37,20 +37,22 @@ if(isset($reportConfig['max_visible_cols'])) {
   	</div>
 
 	<table class="dataTable table table-hover table-striped table-condensed reportContainer">
+		<thead class='tableHeadGroups'>
+		</thead>
 		<thead class='tableHead'>
 			<tr>
 				<?php
 					if($reportConfig['buttons_align']=="left") {
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            echo "<th class='actionCol left hidden-print'></th>";
+	            echo "<th class='actionCol nocalculate left hidden-print'></th>";
 	          }
 					}
 					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
 						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
-							echo "<th class='action' width=25px>";
+							echo "<th class='action nocalculate' width=25px>";
 							echo "</th>";
 						} else {
-							echo "<th class='action' width=25px>";
+							echo "<th class='action nocalculate' width=25px>";
 							echo "<input name='rowSelector' type='{$reportConfig['showExtraColumn']}' class='checkbox'  />";
 							echo "</th>";
 						}
@@ -61,7 +63,7 @@ if(isset($reportConfig['max_visible_cols'])) {
 							if(!$allow) continue;
 						}
 
-						$clz="$key";$style="";
+						$clz="$key";$style="";$xtraAttributes=[];
 						if(isset($row['classes'])) {
 							$clz.=" {$row['classes']}";
 						}
@@ -74,12 +76,29 @@ if(isset($reportConfig['max_visible_cols'])) {
 						if(isset($row['resizable']) && $row['resizable']) {
 							$clz.=" resizable";
 						}
-						echo "<th id='".md5($key)."' class='".trim($clz)."' data-key='{$key}' $style >";
+
+						if(isset($row['calculate'])) {
+							$xtraAttributes[] = "data-calculate='{$row['calculate']}'";
+
+							if(isset($row['calculate-decimal'])) {
+								$xtraAttributes[] = "data-calculate_decimal='{$row['calculate-decimal']}'";
+							}
+							if(isset($row['calculate-prefix'])) {
+								$xtraAttributes[] = "data-calculate_prefix='{$row['calculate-prefix']}'";
+							}
+							if(isset($row['calculate-suffix'])) {
+								$xtraAttributes[] = "data-calculate_suffix='{$row['calculate-suffix']}'";
+							}
+						}
+
+						$xtraAttributes = implode(" ", $xtraAttributes);
+
+						echo "<th id='".md5($key)."' class='".trim($clz)."' $xtraAttributes data-key='{$key}' $style >";
 						echo _ling($row['label']);
 						if(isset($row['sortable']) && $row['sortable']) {
 							echo "<span class='colSort sorting noprint'></span>";
 						}
-            echo "</th>";
+            			echo "</th>";
 					}
 					if($reportConfig['buttons_align']=="right") {
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
@@ -92,9 +111,9 @@ if(isset($reportConfig['max_visible_cols'])) {
 		<thead class='tableFilter hidden'>
 			<tr>
 				<?php
-					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
-						echo "<th data-key='action' width=25px></th>";
-					}
+							if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
+								echo "<th data-key='action' width=25px></th>";
+							}
         			foreach ($reportConfig['datagrid'] as $colID => $column) {
         				if(isset($column['searchable']) && $column['searchable']) {
         					$filterConfig=[];
@@ -158,6 +177,12 @@ if(isset($reportConfig['max_visible_cols'])) {
 $(function() {
 	var rpt=new LGKSReports().init("<?=$reportKey?>");
 	rpt.addListener(updateGridUI,"postload");
+
+	rpt.addListener(function(gridID) {
+			    generateSummary(gridID);
+			    generateHeaderGroups(gridID);
+			});
+
 	rpt.loadDataGrid();
 });
 function updateGridUI(rkey){
@@ -184,5 +209,91 @@ function updateGridUI(rkey){
 			}
 		});
 	rpt.settings("columns-visible",qCols);
+}
+function generateSummary(gridID) {
+    //console.log("generateSummary", gridID);
+    $("#RPT-"+gridID).find(".tableSummary").html("");
+	
+	//tableSummary
+    if($("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-calculate]").length>0) {
+        $("#RPT-"+gridID).find(".tableSummary").removeClass("hidden");
+        $("#RPT-"+gridID).find(".tableSummary").html("<tr></tr>");
+        $("#RPT-"+gridID).find(".tableHead>tr>th").each(function() {
+            if($(this).hasClass("hidden")) {
+                if($(this).hasClass("nocalculate") || $(this).data("calculate")==null) 
+                    $("#RPT-"+gridID).find(".tableSummary>tr").append("<th class='hidden'></th>");
+                else 
+                    $("#RPT-"+gridID).find(".tableSummary>tr").append("<th class='column-summary text-center hidden' data-calculate='"+$(this).data("calculate")+"' data-key='"+$(this).data("key")+"' data-calculate_decimal='"+$(this).data("calculate_decimal")+"' data-calculate_prefix='"+$(this).data("calculate_prefix")+"' data-calculate_suffix='"+$(this).data("calculate_suffix")+"'>-</th>");
+            } else {
+                if($(this).hasClass("nocalculate") || $(this).data("calculate")==null) 
+                    $("#RPT-"+gridID).find(".tableSummary>tr").append("<th></th>");
+                else
+                    $("#RPT-"+gridID).find(".tableSummary>tr").append("<th class='column-summary text-center' data-calculate='"+$(this).data("calculate")+"' data-key='"+$(this).data("key")+"' data-calculate_decimal='"+$(this).data("calculate_decimal")+"' data-calculate_prefix='"+$(this).data("calculate_prefix")+"' data-calculate_suffix='"+$(this).data("calculate_suffix")+"'>-</th>");
+            }
+        });
+
+        $("#RPT-"+gridID).find(".tableSummary>tr>th.column-summary").each(function() {
+            var finalValue = 0;
+            var calculateRule = $(this).data("calculate").toLowerCase();
+            var decimalCount = $(this).data("calculate_decimal");
+            var prefix = $(this).data("calculate_prefix");
+            var suffix = $(this).data("calculate_suffix");
+
+            if(decimalCount==null) decimalCount = 0;
+            if(prefix==null) prefix = "";
+            if(suffix==null) suffix = "";
+
+            switch(calculateRule) {
+                case "max":
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                        if(finalValue<parseFloat($(cell).text())) {
+													finalValue = parseFloat($(cell).text());
+                        }
+                    });
+                    break;
+                case "min":
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                    		if(a==0) finalValue = parseFloat($(cell).text());
+                        if(finalValue>parseFloat($(cell).text())) {
+													finalValue = parseFloat($(cell).text());
+                        }
+                    });
+                    break;
+                case "average":
+                		var tempCount = $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").length;
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                        finalValue += parseFloat($(cell).text());
+                    });
+                    finalValue = finalValue/tempCount;
+                    break;
+                case "count-unique":
+                    var tempArr = [];
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                        if($(cell).text()!=null && $(cell).text().length>0) {
+                        	if(tempArr.indexOf($(cell).text())<0) tempArr.push($(cell).text());
+                        }
+                    });
+                    finalValue = tempArr.length;
+                    break;
+                case "count":
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                        if($(cell).text()!=null && $(cell).text().length>0) finalValue+=1;
+                    });
+                    break;
+                case "sum":
+                default:
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                        finalValue += parseFloat($(cell).text());
+                    });
+                    break;
+            }
+            finalValue = finalValue.toFixed(decimalCount);
+            $(this).html(prefix+finalValue+suffix);
+        });
+    }
+}
+function generateHeaderGroups(gridID) {
+	console.log("generateHeaderGroups");
+	//.tableHeadGroups
 }
 </script>
