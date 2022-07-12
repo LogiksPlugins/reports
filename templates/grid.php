@@ -44,8 +44,8 @@ if(isset($reportConfig['max_visible_cols'])) {
 				<?php
 					if($reportConfig['buttons_align']=="left") {
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            echo "<th class='actionCol nocalculate left hidden-print'></th>";
-	          }
+	            			echo "<th class='actionCol nocalculate left hidden-print'></th>";
+	          			}
 					}
 					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
 						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
@@ -111,9 +111,12 @@ if(isset($reportConfig['max_visible_cols'])) {
 		<thead class='tableFilter hidden'>
 			<tr>
 				<?php
-							if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
-								echo "<th data-key='action' width=25px></th>";
-							}
+					if($reportConfig['buttons_align']=="left") {
+						echo "<th data-key='action' width=25px></th>";
+					}
+					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
+						echo "<th data-key='action' width=25px></th>";
+					}
         			foreach ($reportConfig['datagrid'] as $colID => $column) {
         				if(isset($column['searchable']) && $column['searchable']) {
         					$filterConfig=[];
