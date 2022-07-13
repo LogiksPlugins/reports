@@ -245,7 +245,7 @@ function updateGridUI(rkey){
 	rpt.settings("columns-visible",qCols);
 }
 function generateSummary(gridID) {
-    //console.log("generateSummary", gridID);
+    //console.log("generateSummary", gridID, $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-calculate]").length);
     $("#RPT-"+gridID).find(".tableSummary").html("");
 	
 	//tableSummary
@@ -272,37 +272,46 @@ function generateSummary(gridID) {
             var decimalCount = $(this).data("calculate_decimal");
             var prefix = $(this).data("calculate_prefix");
             var suffix = $(this).data("calculate_suffix");
-
-            if(decimalCount==null) decimalCount = 0;
-            if(prefix==null) prefix = "";
-            if(suffix==null) suffix = "";
+            var colKey = $(this).data("key");
+            
+            if(isNaN(decimalCount)) decimalCount = 0;
+            if(prefix==null || prefix=="undefined") prefix = "";
+            if(suffix==null || suffix=="undefined") suffix = "";
 
             switch(calculateRule) {
                 case "max":
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
-                        if(finalValue<parseFloat($(cell).text())) {
-													finalValue = parseFloat($(cell).text());
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
+                    	var v1 = parseFloat($(cell).text().replace(/,/g, ""));
+                        if(isNaN(v1)) v1 = 0;
+
+                        if(finalValue<v1) {
+							finalValue = v1;
                         }
                     });
                     break;
                 case "min":
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
-                    		if(a==0) finalValue = parseFloat($(cell).text());
-                        if(finalValue>parseFloat($(cell).text())) {
-													finalValue = parseFloat($(cell).text());
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
+                    	var v1 = parseFloat($(cell).text().replace(/,/g, ""));
+                        if(isNaN(v1)) v1 = 0;
+
+                    	if(a==0) finalValue = v1;
+                        if(finalValue>v1) {
+							finalValue = v1;
                         }
                     });
                     break;
                 case "average":
-                		var tempCount = $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").length;
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
-                        finalValue += parseFloat($(cell).text());
+                	var tempCount = $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").length;
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
+                    	var v1 = parseFloat($(cell).text().replace(/,/g, ""));
+                        if(isNaN(v1)) v1 = 0;
+                        finalValue += v1;
                     });
                     finalValue = finalValue/tempCount;
                     break;
                 case "count-unique":
                     var tempArr = [];
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
                         if($(cell).text()!=null && $(cell).text().length>0) {
                         	if(tempArr.indexOf($(cell).text())<0) tempArr.push($(cell).text());
                         }
@@ -310,19 +319,21 @@ function generateSummary(gridID) {
                     finalValue = tempArr.length;
                     break;
                 case "count":
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
                         if($(cell).text()!=null && $(cell).text().length>0) finalValue+=1;
                     });
                     break;
                 case "sum":
                 default:
-                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+$(this).data("key")+"']").each(function(a,cell) {
-                        finalValue += parseFloat($(cell).text());
+                    $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-key='"+colKey+"']").each(function(a,cell) {
+                        var v1 = parseFloat($(cell).text().replace(/,/g, ""));
+                        if(isNaN(v1)) v1 = 0;
+                        finalValue += v1;
                     });
                     break;
             }
             finalValue = finalValue.toFixed(decimalCount);
-            $(this).html(prefix+finalValue+suffix);
+            $(this).html(prefix+finalValue.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')+suffix);
         });
     }
 }
