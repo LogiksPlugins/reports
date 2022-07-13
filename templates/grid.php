@@ -14,8 +14,28 @@ if(isset($reportConfig['max_visible_cols'])) {
 } else {
 	$maxCols = "";
 }
+$reportXtraClasses = "";
+
+if(isset($reportConfig['allow_row_selection'])) {
+	switch($reportConfig['allow_row_selection']) {
+		case "single":
+			$reportXtraClasses .= "allow_row_selection_single ";
+		break;
+		case "not_allowed":
+		case false:
+		break;
+		case "allow":
+		case "multi":
+		case true:
+		default:
+			$reportXtraClasses .= "allow_row_selection ";
+		break;
+	}
+} else {
+	$reportXtraClasses .= "allow_row_selection ";
+}
 ?>
-<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive" data-maxcols="<?=$maxCols?>">
+<div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive <?=$reportXtraClasses?>" data-maxcols="<?=$maxCols?>">
 	<div class="row table-tools noprint">
       <?php
   			include_once __DIR__."/comps/smartfilter.php";
@@ -186,12 +206,23 @@ $(function() {
 			    generateHeaderGroups(gridID);
 			});
 
+	if(rpt.getGrid().hasClass("allow_row_selection")) {
+		rpt.getGrid().delegate(".tableBody .tableRow td", "click", function() {
+			$(this).closest("tr.tableRow").toggleClass("active");
+		});
+	} else if(rpt.getGrid().hasClass("allow_row_selection_single")) {
+		rpt.getGrid().delegate(".tableBody .tableRow td", "click", function() {
+			rpt.getGrid().find(".tableBody tr.tableRow.active").removeClass("hidden");
+			$(this).closest("tr.tableRow").toggleClass("active");
+		});
+	}
+
 	rpt.loadDataGrid();
 });
 function updateGridUI(rkey){
 	rpt=LGKSReports.getInstance(rkey);
 	grid=LGKSReports.getInstance(rkey).getGrid();
-  gridBody=$(".kanbanBoard","#RPT-"+rkey);
+  	gridBody=$(".kanbanBoard","#RPT-"+rkey);
 	
 	qCols=[];
 	$(".table-tools .columnFilter input.columnName",grid).each(function() {
@@ -296,7 +327,7 @@ function generateSummary(gridID) {
     }
 }
 function generateHeaderGroups(gridID) {
-	console.log("generateHeaderGroups");
+	//console.log("generateHeaderGroups");
 	//.tableHeadGroups
 }
 </script>

@@ -112,6 +112,9 @@ canvas, .report-sidebar {
 .reportTable .table-tools .dropdown-menu label.uicheckbox.active {
   border: 1px solid #AAA;
 }
+.reportTable tr.tableRow.active td {
+    background-color: #EDEDED !important;
+}
 /*Table Sections*/
 .reportTable thead.tableHead {
     background: white;
