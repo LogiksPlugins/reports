@@ -598,9 +598,11 @@ if(!function_exists("findReport")) {
 		
 		if(!isset($button['icon'])) return;
 		if(!isset($button['label'])) $button['label']="";
+		if(!isset($button['title'])) $button['title']="";
 		if(!isset($button['class'])) $button['class']="";
 		
 		$button['label']=_ling($button['label']);
+		$button['title']=_ling($button['title']);
 		
 		$_ENV['REPORTRECORD']=$record;
 		$_ENV['REPORTRECORD']['hashid']="";
@@ -643,11 +645,12 @@ if(!function_exists("findReport")) {
 			case "dropdown"://<i class='fa fa-eye profile-customers' ></i>
 				return "<li><a href='#' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'><i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}'></i> {$button['label']}</a></li>";
 			case "select":
-				return "<option class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'>{$button['label']}</option>";
+				if(strlen($button['title'])<=0) $button['title'] = $button['label'];
+				return "<option class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'>{$button['title']}</option>";
 			break;
 			case "button":
 			default:
-				return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}'></i>";
+				return "<i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}'>{$button['title']}</i>";
 		}
 	}
 	function executeReportHook($state,$reportConfig) {
