@@ -132,7 +132,9 @@ if(isset($reportConfig['allow_row_selection'])) {
 			<tr>
 				<?php
 					if($reportConfig['buttons_align']=="left") {
-						echo "<th data-key='action' width=25px></th>";
+						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+							echo "<th data-key='action' width=25px></th>";
+						}
 					}
 					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
 						echo "<th data-key='action' width=25px></th>";
