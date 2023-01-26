@@ -34,6 +34,54 @@ if(isset($reportConfig['allow_row_selection'])) {
 } else {
 	$reportXtraClasses .= "allow_row_selection ";
 }
+
+if(!isset($reportConfig['enable_colgroups'])) $reportConfig['enable_colgroups'] = false;
+
+$groupEnabled = $reportConfig['enable_colgroups'];
+
+$colGroups = [];
+if($groupEnabled) {
+	$colIndex = 0;
+
+	//Sort the fields as per colgroups
+	$tempDatagrid = [];
+	foreach ($reportConfig['datagrid'] as $key => $row) {
+		if(!isset($row['colgroup'])) {
+			if(count($tempDatagrid)<=0) $row['colgroup'] = "PRE";
+			elseif(count($tempDatagrid)==1 && isset($tempDatagrid["PRE"])) $row['colgroup'] = "PRE";
+			else $row['colgroup'] = "POST";
+		}
+		if(!isset($tempDatagrid[$row['colgroup']])) $tempDatagrid[$row['colgroup']] = [];
+		$tempDatagrid[$row['colgroup']][] = ["key"=>$key, "row"=>$row];
+	}
+	if(count($tempDatagrid)<=1) $groupEnabled = false;
+
+	$temp = [];
+	foreach($tempDatagrid as $group=>$dataset) {
+		foreach($dataset as $row) {
+			$temp[$row['key']] = $row['row'];
+		}
+	}
+	$reportConfig['datagrid'] = $temp;
+
+	foreach ($reportConfig['datagrid'] as $key => $row) {
+		if(isset($row['colgroup'])) {
+			if(!isset($colGroups[$row['colgroup']])) $colGroups[$row['colgroup']] = [
+				"index"=>$colIndex,
+				"first_key"=>$key,
+				"count"=>1
+			];
+			else $colGroups[$row['colgroup']]['count']++;
+		} else {
+			$row['colgroup'] = "";
+		}
+
+		$colIndex++;
+	}
+	if(isset($colGroups[''])) unset($colGroups['']);
+
+	// printArray([$colGroups, $tempDatagrid]);
+}
 ?>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive <?=$reportXtraClasses?>" data-maxcols="<?=$maxCols?>">
 	<div class="row table-tools noprint">
@@ -58,6 +106,38 @@ if(isset($reportConfig['allow_row_selection'])) {
 
 	<table class="dataTable table table-hover table-striped table-condensed reportContainer">
 		<thead class='tableHeadGroups'>
+			<?php
+				if($groupEnabled) {
+					echo "<tr>";
+
+					$firstCol = 0;
+					if($reportConfig['buttons_align']=="left") {
+						$firstCol++;
+					}
+					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
+						$firstCol++;
+					}
+
+					if($firstCol>0) {
+						echo "<th class='text-center' colspan='{$firstCol}'>-</th>";
+					}
+
+					$totalCols = 0;
+					foreach($colGroups as $k=>$row) {
+						$totalCols += $row["count"];
+						$t = $k;
+						if($t=="PRE" || $t=="POST") $t = "";
+						echo "<th class='text-center' data-colgroup='${k}' colspan='{$row["count"]}'>${t}</th>";
+					}
+					$availCols = count($reportConfig['datagrid'])- $totalCols;
+
+					if($reportConfig['buttons_align']=="right") {
+						echo "<th class='text-center' colspan='1'>-</th>";
+					}
+
+					echo "</tr>";
+				}
+			?>
 		</thead>
 		<thead class='tableHead'>
 			<tr>
@@ -109,6 +189,10 @@ if(isset($reportConfig['allow_row_selection'])) {
 							if(isset($row['calculate-suffix'])) {
 								$xtraAttributes[] = "data-calculate_suffix='{$row['calculate-suffix']}'";
 							}
+						}
+
+						if(isset($row['colgroup'])) {
+							$xtraAttributes[] = "data-colgroup='{$row['colgroup']}'";
 						}
 
 						$xtraAttributes = implode(" ", $xtraAttributes);
@@ -204,8 +288,8 @@ $(function() {
 	rpt.addListener(updateGridUI,"postload");
 
 	rpt.addListener(function(gridID) {
-			    generateSummary(gridID);
-			    generateHeaderGroups(gridID);
+			    generateSummary(gridID, rpt);
+			    generateHeaderGroups(gridID, rpt);
 			});
 
 	if(rpt.getGrid().hasClass("allow_row_selection")) {
@@ -245,6 +329,9 @@ function updateGridUI(rkey){
 			}
 		});
 	rpt.settings("columns-visible",qCols);
+
+	generateSummary(rkey, rpt);
+    generateHeaderGroups(rkey, rpt);
 }
 function generateSummary(gridID) {
     //console.log("generateSummary", gridID, $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-calculate]").length);
@@ -339,8 +426,24 @@ function generateSummary(gridID) {
         });
     }
 }
-function generateHeaderGroups(gridID) {
-	//console.log("generateHeaderGroups");
-	//.tableHeadGroups
+function generateHeaderGroups(gridID, rptHandler) {
+	// var colGroups = {};
+	// $("thead.tableHead th[data-colgroup]:not(.hidden)", `.reportTable[data-rptkey='${gridID}']`).each(function() {
+	//     if(colGroups[$(this).data("colgroup")]==null) colGroups[$(this).data("colgroup")] = 1;
+	//     else colGroups[$(this).data("colgroup")]++;
+	// });
+	// $.each(colGroups, function(k, v) {
+	//     $(`thead.tableHeadGroups th[data-colgroup='${k}']`, `.reportTable[data-rptkey='${gridID}']`).attr("colspan", v);
+	// })
+	$(`thead.tableHeadGroups th[data-colgroup]`, `.reportTable[data-rptkey='${gridID}']`).each(function() {
+	    var a1 = $(this).data("colgroup")
+	    var a2 = $(`thead.tableHead th[data-colgroup='${a1}']:not(.hidden)`, `.reportTable[data-rptkey='${gridID}']`).length;
+	    if(a2<=0) {
+	        $(this).addClass("hidden");
+	    } else {
+	        $(this).removeClass("hidden");
+	        $(this).attr("colspan", a2);
+	    }
+	})
 }
 </script>

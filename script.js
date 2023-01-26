@@ -442,10 +442,16 @@ var LGKSReports = (function() {
 		}
 	};
 	
-	rpt.fetchReportData = function(format, callBack) {
+	rpt.fetchReportData = function(format, callBack, addonParams) {
+		if(addonParams==null) addonParams = {};
 		grid=rpt.getGrid();
 		
 		q=[];
+
+		$.each(addonParams, function(k,v) {
+			q.push(k+"="+encodeURIComponent(v));
+		});
+
 		//For custom fields in : custom bar
 		grid.find(".filterfield[name]").each(function() {
 				name=$(this).attr('name');
@@ -507,6 +513,13 @@ var LGKSReports = (function() {
 					}
 				}
 			});
+
+		if($("input.date_field[name=date_col]",grid).length>0 && $("input.date_field[name=date_col]",grid).val()!=null) {
+			var dateValue = $("input.date_field[name=date_col]",grid).val();
+
+			// q.push("date_filter[start_date]="+encodeURIComponent(dateValue[0]));
+			// q.push("date_filter[end_date]="+encodeURIComponent(dateValue[1]));
+		}
 
 		//For Search Bar
 		if($("input.searchfield[name=q]",grid).length>0 && $("input.searchfield[name=q]",grid).val()!=null && $("input.searchfield[name=q]",grid).val().length>0) {
@@ -581,6 +594,13 @@ var LGKSReports = (function() {
 		cmdOriginal=cmd;
 		cmd=cmd.split("@");
 		cmd=cmd[0];
+
+		var dataObj = {"hashid": $(src).closest(".dataItem").data("hash"), "refid": $(src).closest(".dataItem").data("refid")};
+		if($(src).closest(".dataItem").find("td,th").length>0) {
+			$(src).closest(".dataItem").find("td,th").each(function(k,v) {
+			    dataObj[$(this).data("key")] = $(this).data("value");
+			})
+		}
 
 		params = $(src).attr("params");
         if(params==null || params.length<=0) params = "{}";

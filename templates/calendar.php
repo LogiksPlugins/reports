@@ -17,13 +17,14 @@ if(isset($reportConfig['calendar']['unilink']) && strlen($reportConfig['calendar
   $unilink=$reportConfig['calendar']['unilink'];
 }
 
+if(!isset($reportConfig['calendar']['date_col'])) $reportConfig['calendar']['date_col'] = "dated";
+
 //dayGridMonth,dayGridWeek,dayGridDay,timeGridWeek,timeGridDay,dayGridWeek,timeGridWeek,dayGridDay,timeGridDay
 if(!isset($reportConfig['calendar']['views'])) $reportConfig['calendar']['views'] = "dayGridMonth,timeGridWeek,timeGridDay";
 
 $colMap=array_merge([
        "title"=>"title",
        "descs"=>"descs",
-       "date_col"=>"dated",
        "icon"=>"icon",
        // "category"=>"category",
        
@@ -35,6 +36,11 @@ $colMap=array_merge([
        //logic: Icons, color
      ],$colMap);
 
+$_SESSION['REPORT'][$reportConfig['reportkey']]['date_filter'] = $reportConfig['calendar']['date_col'];
+
+$colMap['date_col'] = $reportConfig['calendar']['date_col'];
+$colMap['date_col'] = explode(".", $colMap['date_col']);
+$colMap['date_col'] = end($colMap['date_col']);
 
 $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
 // echo $vpath;
@@ -102,7 +108,7 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
 						center: 'title',
 						right: '<?=$reportConfig['calendar']['views']?>'
 					},
-					initialDate: '<?=date("2021-m-d")?>',					
+					initialDate: '<?=date("Y-m-d")?>',
 					navLinks: true, // can click day/week names to navigate views
 					editable: false,
 					weekNumbers: false,
@@ -182,7 +188,11 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
 			        rpt.updateReportMeta(limit, index, last, max);
 			        rpt.postDataPopulate(rpt.gridID);
 
+			        console.log("finalEventList", finalEventList);
 			        successCallback(finalEventList);
+			      }, {
+			      	"date_filter[start_date]": moment(info.start.valueOf()).format("Y-MM-DD 00:00:00"),
+			      	"date_filter[end_date]": moment(info.end.valueOf()).format("Y-MM-DD 23:59:59"),
 			      });
 					},
 					// validRange: function(nowDate) {

@@ -115,7 +115,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     			echo $reportConfig['cards']['template'];
     		} else {
     			?>
-    			<article class="cards-entry grab rColor {{color}}" id="item{{id}}" data-hash='{{hashid}}'>
+    			<article class="dataItem cards-entry grab rColor {{color}}" id="item{{id}}"  data-hash='{{hashid}}' data-refid='{{id}}'>
 		        <div class="cards-entry-inner">
 							{{#if <?=$colMap['avatar']?>}}
 							<figure class='avatar'>

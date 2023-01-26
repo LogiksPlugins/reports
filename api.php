@@ -281,6 +281,9 @@ if(!function_exists("findReport")) {
 		if(isset($columnInfo['calculate'])) {
 			$xtraAttributes[] = "data-calculate='{$columnInfo['calculate']}'";
 		}
+		if(isset($columnInfo['colgroup'])) {
+			$xtraAttributes[] = "data-colgroup='{$columnInfo['colgroup']}'";
+		}
 
 		$xtraAttributes = implode(" ", $xtraAttributes);
 
@@ -702,7 +705,7 @@ if(!function_exists("findReport")) {
 		  $templateViews["kanban"]=["icon"=>"fa fa-bar-chart fa-rotate-90"];
 		}
 		if(isset($reportConfig['cards'])) {// || isset($reportConfig['kanban'])
-		  $templateViews["cards"]=["icon"=>"fa fa-id-card"];
+		  $templateViews["cards"]=["icon"=>"fa fa-th"];
 		}
 		if(isset($reportConfig['calendar'])) {
 		  $templateViews["calendar"]=["icon"=>"fa fa-calendar", "title"=>"Calendar"];
@@ -714,13 +717,13 @@ if(!function_exists("findReport")) {
 		  $templateViews["gmap"]=["icon"=>"fa fa-map", "title"=>"Map"];
 		}
 		if(isset($reportConfig['gnatt'])) {
-		  $templateViews["gnatt"]=["icon"=>"fa fa-tasks", "title"=> "Gnatt Chart"];
+		  $templateViews["gnatt"]=["icon"=>"fa fa-tasks", "title"=> "Gnatt"];
 		}
 		if(isset($reportConfig['drilldown'])) {
-		  $templateViews["drilldown"]=["icon"=>"fa fa-list-alt", "title"=> "Drilldown View"];
+		  $templateViews["drilldown"]=["icon"=>"fa fa-list-alt", "title"=> "Drilldown"];
 		}
 		if(isset($reportConfig['pivot'])) {
-		  $templateViews["pivot"]=["icon"=>"fa fa-table", "title"=> "Pivot Report"];
+		  $templateViews["pivot"]=["icon"=>"fa fa-border-none", "title"=> "Pivot"];
 		}
 		
 		// 

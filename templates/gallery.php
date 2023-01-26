@@ -113,7 +113,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     			echo $reportConfig['gallery']['template'];
     		} else {
     			?>
-    			<article class="gallery-entry grab" id="item{{id}}" data-hash='{{hashid}}'>
+    			<article class="dataItem gallery-entry grab" id="item{{id}}" data-hash='{{hashid}}' data-refid='{{id}}'>
 		        <div class="gallery-entry-inner">
 							<div class="gallery-label">
 								{{#if <?=$colMap['photo']?>}}

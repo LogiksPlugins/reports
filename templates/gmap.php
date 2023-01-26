@@ -19,7 +19,7 @@ if(isset($reportConfig['gmap']['unilink']) && strlen($reportConfig['gmap']['unil
 
 if(!isset($reportConfig['gmap']['zoom'])) $reportConfig['gmap']['zoom'] = 2;
 if(!isset($reportConfig['gmap']['mapid'])) $reportConfig['gmap']['mapid'] = "terrain";//roadmap
-if(!isset($reportConfig['gmap']['template'])) $reportConfig['gmap']['template'] = '<div id="map-content"><h1 id="firstHeading" class="firstHeading">$'.'{record["'.$colMap['title'].'"]}</h1><div id="bodyContent">$'.'{record["'.$colMap['descs'].'"]}</div></div>';
+if(!isset($reportConfig['gmap']['template'])) $reportConfig['gmap']['template'] = '<div id="map-content" class="dataItem" data-hash="$'.'{record["hashid"]}" data-refid="$'.'{record["refid"]}"><h1 id="firstHeading" class="firstHeading">$'.'{record["'.$colMap['title'].'"]}</h1><div id="bodyContent">$'.'{record["'.$colMap['descs'].'"]}</div></div>';
 
 $googleKey=getConfig("GOOGLE_API_KEY");
 

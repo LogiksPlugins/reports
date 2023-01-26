@@ -98,7 +98,7 @@ switch($_REQUEST["action"]) {
 		}
 
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
-// 		printArray($reportConfig);
+		// printArray($reportConfig);exit();
 		try {
 			if(isset($reportConfig['kanban']) && isset($reportConfig['kanban']['colkeys']) && isset($reportConfig['kanban']['colkeys'][$_REQUEST['colKey']])) {
 				$src=$reportConfig['kanban']['colkeys'][$_REQUEST['colKey']];
@@ -179,6 +179,41 @@ switch($_REQUEST["action"]) {
 				} else {
 					printServiceMsg([]);
 				}
+			} elseif(isset($reportConfig['pivot']) && isset($reportConfig['pivot']['colkeys'])) {// && in_array($_REQUEST['colKey'], array_values($reportConfig['pivot']['colkeys']))
+				$dbKey=$reportConfig['dbkey'];
+				if($dbKey==null) $dbKey="app";
+
+				$source=$reportConfig['source'];
+				
+				$allKeys = [];
+				foreach($reportConfig['pivot']['colkeys'] as $a=>$b) {
+					if(is_string($b)) {
+						$reportConfig['pivot']['colkeys'][$a] = explode(",", $b);
+					}
+					$allKeys = array_merge($allKeys, $reportConfig['pivot']['colkeys'][$a]);
+				}
+				$allKeys = array_unique($allKeys);
+
+				$results = [];
+				foreach($allKeys as $a=>$b) {
+					$data = _db($dbKey)->_selectQ($source['table'], "{$b} as keyid, count(*) as count", $source['where'])->_whereRAW("({$b} IS NOT NULL AND length({$b})>0)")->_groupBy($b)->_orderBy($b)->_GET();
+					if($data==null) $data = [];
+
+					$finalList = [];
+					foreach($data as $row) {
+						$finalList = array_merge($finalList, explode(",", $row["keyid"]));
+					}
+					$finalList = array_unique($finalList);
+					asort($finalList);
+
+					$results[$b] = $finalList;
+				}
+				
+				printServiceMsg([
+					"data"=>$results,
+					"default_axis_1"=> current($reportConfig['pivot']['colkeys']["axis_1"]),
+					"default_axis_2"=> current($reportConfig['pivot']['colkeys']["axis_2"]),
+				]);
 			} else {
 				printServiceMsg([]);
 			}
@@ -272,9 +307,9 @@ switch($_REQUEST["action"]) {
 						}
 
 						if($reportConfig['secure']) {
-							echo "<tr class='tableRow {$rowClass}' data-hash='".md5($hashid)."' data-refid='{$hashid}'>";
+							echo "<tr class='dataItem tableRow {$rowClass}' data-hash='".md5($hashid)."' data-refid='{$hashid}'>";
 						} else {
-							echo "<tr class='tableRow {$rowClass}' data-hash='{$hashid}' data-refid='{$hashid}'>";
+							echo "<tr class='dataItem tableRow {$rowClass}' data-hash='{$hashid}' data-refid='{$hashid}'>";
 						}
 
 						if($reportConfig['buttons_align']=="left") {
@@ -711,7 +746,7 @@ function getGridData($reportKey,$reportConfig) {
 			if(isset($reportConfig['DEBUG']) && $reportConfig['DEBUG']==true) {
 				exit($sql->_SQL());
 			}
- 			//exit($sql->_SQL());
+ 			// exit($sql->_SQL());
 			$res=_dbQuery($sql,$dbKey);
 			if($res) {
 				$data=_dbData($res,$dbKey);
@@ -811,6 +846,7 @@ function getHTMLData($data,$headers=[]) {
 function processReportWhere($sql,$reportConfig) {
 	$searchCols=$reportConfig['searchCols'];
 	if(!isset($_POST['filterrule'])) $_POST['filterrule']=[];
+
 	if(isset($_POST['filter']) && count($_POST['filter'])>0) {
 		$whereFilters=[];
 		foreach ($_POST['filter'] as $key => $value) {
@@ -846,6 +882,10 @@ function processReportWhere($sql,$reportConfig) {
 			}
 		}
 		$sql->_whereMulti($whereFilters);
+	}
+
+	if(isset($_POST['date_filter']) && isset($_POST['date_filter']['start_date']) && isset($reportConfig['date_filter'])) {
+		$sql->_where([$reportConfig['date_filter']=>[[$_POST['date_filter']['start_date'], $_POST['date_filter']['end_date']], "RANGE"]]);
 	}
 
 	if(isset($_POST['search']) && count($_POST['search'])>0) {
