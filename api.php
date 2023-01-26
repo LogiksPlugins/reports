@@ -127,6 +127,9 @@ if(!function_exists("findReport")) {
 		if(!isset($reportConfig['toolbar'])) {
 			$reportConfig['toolbar']=[];
 		}
+		if(!isset($reportConfig['topbar'])) {
+			$reportConfig['topbar']=[];
+		}
 
 		if(isset($reportConfig['toolbar']) && $reportConfig['toolbar']===false) {
 			$reportConfig['toolbar']['reload']=false;
@@ -161,6 +164,10 @@ if(!function_exists("findReport")) {
 			$reportConfig['buttons_align'] = "left";
 		}
 		//printArray($reportConfig);return;
+
+		if(!isset($reportConfig['topbar'])) {
+	  		$reportConfig['topbar']=[];
+		}
 
 		$reportKey=$reportConfig['reportkey'];
 		$_SESSION['REPORT'][$reportKey]=$reportConfig;
@@ -688,11 +695,9 @@ if(!function_exists("findReport")) {
 		}
 	}
 	function getReportViewsList($reportConfig) {
-		$templateViews=["grid"=>["icon"=>"fa fa-table"]];
+		$templateViews=["grid"=>["icon"=>"fa fa-table", "title"=> "Grid Table"]];
 
-		if(isset($reportConfig['gnatt'])) {
-		  $templateViews["gnatt"]=["icon"=>"fa fa-bar-chart"];
-		}
+		
 		if(isset($reportConfig['kanban'])) {
 		  $templateViews["kanban"]=["icon"=>"fa fa-bar-chart fa-rotate-90"];
 		}
@@ -700,14 +705,29 @@ if(!function_exists("findReport")) {
 		  $templateViews["cards"]=["icon"=>"fa fa-id-card"];
 		}
 		if(isset($reportConfig['calendar'])) {
-		  $templateViews["calendar"]=["icon"=>"fa fa-calendar"];
+		  $templateViews["calendar"]=["icon"=>"fa fa-calendar", "title"=>"Calendar"];
+		}
+		if(isset($reportConfig['gallery'])) {
+		  $templateViews["gallery"]=["icon"=>"fa fa-photo", "title"=>"Gallery"];
 		}
 		if(isset($reportConfig['gmap'])) {
 		  $templateViews["gmap"]=["icon"=>"fa fa-map", "title"=>"Map"];
 		}
-		if(isset($reportConfig['drilldown'])) {
-		  $templateViews["drilldown"]=["icon"=>"fa fa-list-alt"];
+		if(isset($reportConfig['gnatt'])) {
+		  $templateViews["gnatt"]=["icon"=>"fa fa-tasks", "title"=> "Gnatt Chart"];
 		}
+		if(isset($reportConfig['drilldown'])) {
+		  $templateViews["drilldown"]=["icon"=>"fa fa-list-alt", "title"=> "Drilldown View"];
+		}
+		if(isset($reportConfig['pivot'])) {
+		  $templateViews["pivot"]=["icon"=>"fa fa-table", "title"=> "Pivot Report"];
+		}
+		
+		// 
+		// tree_table
+		// swim_lane
+		// activity
+		// slot
 
 		return $templateViews;
 	}

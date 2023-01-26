@@ -13,12 +13,14 @@ if(!isset($reportConfig['buttons'])) $reportConfig['buttons']=[];
 $reportConfig['toolbar']['filter']=false;
 $reportConfig['toolbar']['columnselector']=false;
 
+$topbar = $reportConfig['topbar'];
+
 $topbar['settings']=[
-	"showEmptyColumns"=>[
+				"showEmptyColumns"=>[
             "name"=>"SHOWALLCOLS",
             "label"=>"Show Columns with no Cards also",
             "type"=>"checkbox",
-	],
+				],
         "allowMultipleRecords"=>[
             "name"=>"ALLOWMULTIPLERECORD",
             "label"=>"Allow same block multiple times for different Columns",
@@ -114,11 +116,13 @@ if(isset($reportConfig['kanban']['iconmap'])) {
 }
 
 $actions=[
-	"showMoreRecords"=>["label"=>"","icon"=>"fa fa-exchange fa-rotate-90","class"=>"btn btn-warning btn-notext","title"=>"Show More Data"]
+	"showMoreRecords"=>["label"=>"","icon"=>"fa fa-retweet","class"=>"btn btn-warning btn-notext","title"=>"Show More Data"]
 ];
 if(!isset($reportConfig['actions'])) $reportConfig['actions']=[];
 $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 
+$reportConfig['topbar'] = $topbar;
+//printArray($reportConfig['topbar']);
 ?>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable kanbanBoardTable table-responsive">
   <div class="row table-tools noprint">
@@ -176,68 +180,76 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
       </div>
     </div>
     <div class='kanbanCardTemplate hidden'>
-      <article class="kanban-entry grab rColor {{cardColor <?=$colMap['color']?>}}" id="item{{id}}" data-hash='{{hashid}}'>
-        <div class="kanban-entry-inner">
-					{{#if <?=$colMap['avatar']?>}}
-					<figure class='avatar'>
-						<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
-					</figure>
-					{{/if}}
-          			<div class="kanban-label" title="{{<?=$colMap['tooltip']?>}}">
-						{{#if <?=$colMap['wallphoto']?>}}
-						<figure class='wallphoto'>
-							<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
-						</figure>
-						{{/if}}
-						<h2>
-							<span class='pull-right label label-info'>{{<?=$colMap['counter']?>}}</span>
-							<?php if($unilink) { ?>
-								{{#if unilink}}
-								<a class='unilink' href='#' data-link="{{unilink}}">{{<?=$colMap['title']?>}}</a>
-								{{else}}
-									{{#if hashid}}
-									<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
-									{{else}}
-									<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
-									{{/if}}
+    	<?php
+    		if(isset($reportConfig['kanban']['template'])) {
+    			echo $reportConfig['kanban']['template'];
+    		} else {
+    			?>
+    			<article class="kanban-entry grab rColor {{cardColor <?=$colMap['color']?>}}" id="item{{id}}" data-hash='{{hashid}}'>
+		        <div class="kanban-entry-inner">
+							{{#if <?=$colMap['avatar']?>}}
+							<figure class='avatar'>
+								<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
+							</figure>
+							{{/if}}
+		          			<div class="kanban-label" title="{{<?=$colMap['tooltip']?>}}">
+								{{#if <?=$colMap['wallphoto']?>}}
+								<figure class='wallphoto'>
+									<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
+								</figure>
 								{{/if}}
-							<?php } else { ?>
-								<a href='#'>{{<?=$colMap['title']?>}}</a>
-							<?php } ?>
-            			</h2>
-						{{#if <?=$colMap['category']?>}}
-						<h3>{{<?=$colMap['category']?>}}</h3>
-						{{/if}}
-						{{#if <?=$colMap['image']?>}}
-						<figure>
-							<img src="{{<?=$colMap['image']?>}}" class="img-responsive img-rounded full-width">
-						</figure>
-            			{{/if}}
-						{{#if <?=$colMap['descs']?>}}
-						<p>{{{<?=$colMap['descs']?>}}}</p>
-						{{/if}}
-						{{#if <?=$colMap['msg']?>}}
-						<blockquote>{{{<?=$colMap['msg']?>}}}</blockquote>
-						{{/if}}
-						<div class='tags'>
-							<div class='label label-success due_date pull-right'>{{<?=$colMap['due_date']?>}}</div>
-							
-							{{#if <?=$colMap['tags']?>}}
-								{{#each <?=$colMap['tags']?>}}
-									<span class="label label-primary">{{this}}</span>
-								{{/each}}
-							{{/if}}
-						</div>
-						
-						<div class='kanban-icon'>
-							{{#if <?=$colMap['icons']?>}}
-								{{cardIcon '<?=$colMap['icons']?>' this}}
-							{{/if}}
-							<?=$htmlButtons?>
-						</div>
-          </div>
-        </div>
-      </article>
+								<h2>
+									<span class='pull-right label label-info'>{{<?=$colMap['counter']?>}}</span>
+									<?php if($unilink) { ?>
+										{{#if unilink}}
+										<a class='unilink' href='#' data-link="{{unilink}}">{{<?=$colMap['title']?>}}</a>
+										{{else}}
+											{{#if hashid}}
+											<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
+											{{else}}
+											<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
+											{{/if}}
+										{{/if}}
+									<?php } else { ?>
+										<a href='#'>{{<?=$colMap['title']?>}}</a>
+									<?php } ?>
+		            			</h2>
+								{{#if <?=$colMap['category']?>}}
+								<h3>{{<?=$colMap['category']?>}}</h3>
+								{{/if}}
+								{{#if <?=$colMap['image']?>}}
+								<figure>
+									<img src="{{<?=$colMap['image']?>}}" class="img-responsive img-rounded full-width">
+								</figure>
+		            			{{/if}}
+								{{#if <?=$colMap['descs']?>}}
+								<p>{{{<?=$colMap['descs']?>}}}</p>
+								{{/if}}
+								{{#if <?=$colMap['msg']?>}}
+								<blockquote>{{{<?=$colMap['msg']?>}}}</blockquote>
+								{{/if}}
+								<div class='tags'>
+									<div class='label label-success due_date pull-right'>{{<?=$colMap['due_date']?>}}</div>
+									
+									{{#if <?=$colMap['tags']?>}}
+										{{#each <?=$colMap['tags']?>}}
+											<span class="label label-primary">{{this}}</span>
+										{{/each}}
+									{{/if}}
+								</div>
+								
+								<div class='kanban-icon'>
+									{{#if <?=$colMap['icons']?>}}
+										{{cardIcon '<?=$colMap['icons']?>' this}}
+									{{/if}}
+									<?=$htmlButtons?>
+								</div>
+		          </div>
+		        </div>
+		      </article>
+    			<?php
+    		}
+    	?>
     </div>
     <script>
 		colorMap=<?=json_encode($colorMap)?>;

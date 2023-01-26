@@ -37,13 +37,13 @@ if(isset($reportConfig['allow_row_selection'])) {
 ?>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive <?=$reportXtraClasses?>" data-maxcols="<?=$maxCols?>">
 	<div class="row table-tools noprint">
-      <?php
-  			include_once __DIR__."/comps/smartfilter.php";
-				include_once __DIR__."/comps/topbar.php";
-			?>
-      <?php
-      	if(isset($reportConfig['custombar']) && $reportConfig['custombar'] && file_exists(APPROOT.$reportConfig['custombar'])) {
-      ?>
+      	<?php
+			include_once __DIR__."/comps/smartfilter.php";
+			include_once __DIR__."/comps/topbar.php";
+		?>
+      	<?php
+      		if(isset($reportConfig['custombar']) && $reportConfig['custombar'] && file_exists(APPROOT.$reportConfig['custombar'])) {
+      	?>
       <div class="control-custombar">
       	<div class="col-lg-12 col-xs-12">
       		<?php

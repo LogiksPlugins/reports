@@ -7,20 +7,52 @@ if(!defined('ROOT')) exit('No direct script access allowed');
 $reportConfig['toolbar']['filter']=false;
 $reportConfig['toolbar']['columnselector']=false;
 
+$colMap=[];
+if(isset($reportConfig['calendar']['colmap'])) {
+  $colMap=$reportConfig['calendar']['colmap'];
+}
+
+$unilink=false;
+if(isset($reportConfig['calendar']['unilink']) && strlen($reportConfig['calendar']['unilink'])>0) {
+  $unilink=$reportConfig['calendar']['unilink'];
+}
+
+//dayGridMonth,dayGridWeek,dayGridDay,timeGridWeek,timeGridDay,dayGridWeek,timeGridWeek,dayGridDay,timeGridDay
+if(!isset($reportConfig['calendar']['views'])) $reportConfig['calendar']['views'] = "dayGridMonth,timeGridWeek,timeGridDay";
+
+$colMap=array_merge([
+       "title"=>"title",
+       "descs"=>"descs",
+       "date_col"=>"dated",
+       "icon"=>"icon",
+       // "category"=>"category",
+       
+       // "tags"=>"tags",
+       // "counter"=>"counter",
+       // "flag"=>"flag",
+
+       // "color"=>"color",//Depends on ColorMap for Logic Based On Column Selected by this field
+       //logic: Icons, color
+     ],$colMap);
+
+
 $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
 // echo $vpath;
 ?>
-<link href='<?=$vpath?>/fullcalendar.min.css' rel='stylesheet' />
-<link href='<?=$vpath?>/fullcalendar.print.min.css' rel='stylesheet' media='print' />
 <script src='<?=$vpath?>/moment.min.js'></script>
-<script src='<?=$vpath?>/fullcalendar.min.js'></script>
-
+<script src='<?=$vpath?>/dist/index.global.js'></script>
+<style>
+.fc-event {cursor: pointer;}
+.fc-toolbar-chunk button {
+	text-transform: capitalize !important;
+}
+</style>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable kanbanBoardTable table-responsive">
   <div class="row table-tools noprint">
       <?php
   			include_once __DIR__."/comps/smartfilter.php";
-			include_once __DIR__."/comps/topbar.php";
-		?>
+				include_once __DIR__."/comps/topbar.php";
+			?>
       <?php
       	if(isset($reportConfig['filters']) && !empty($reportConfig['filters'])) {
       ?>
@@ -54,101 +86,153 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
     <div class='calendarContainer reportContainer'>
       <div id='calendar'></div>
     </div>
-  
-    <div class='calendarCardTemplate hidden'>
-      <article class="calendar-entry grab cardColor {{color}}" id="item{{id}}" draggable="true">
-        <div class="calendar-entry-inner">
-          <div class="calendar-label">
-            <h2>
-              <a href="#">{{}}</a>
-            </h2>
-          </div>
-        </div>
-      </article>
-    </div>
     <script>
+  	var rpt = null;
+	 	var calendar = null;
     $(function() {
-			var rpt=new LGKSReports().init("<?=$reportKey?>","calendar");
+			rpt = new LGKSReports().init("<?=$reportKey?>","calendar");
 			rpt.addRenderer("calendar",renderCalendarUI);
 			//rpt.addListener(updateCalendarUI,"postload");
-// 			rpt.loadDataGrid();
 			
-      $('#calendar').fullCalendar({
-				header: {
-					left: 'prev,next today',
-					center: 'title',
-					right: 'month,basicWeek,basicDay'
-				},
-				defaultDate: '2017-05-12',
-				navLinks: true, // can click day/week names to navigate views
-				editable: true,
-				eventLimit: true, // allow "more" link when too many events
-				events: [
-					{
-						title: 'All Day Event',
-						start: '2017-05-01'
+      var calendarEl = document.getElementById('calendar');
+      calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+						left: 'prev,next today',
+						center: 'title',
+						right: '<?=$reportConfig['calendar']['views']?>'
 					},
-					{
-						title: 'Long Event',
-						start: '2017-05-07',
-						end: '2017-05-10'
+					initialDate: '<?=date("2021-m-d")?>',					
+					navLinks: true, // can click day/week names to navigate views
+					editable: false,
+					weekNumbers: false,
+					dayMaxEvents: true,
+					nowIndicator: false,
+					weekends: true,
+					dayMaxEventRows: 5,
+					dateClick: function() {
+				    //alert('a day has been clicked!');
+				  },
+				  eventClick: function(info) {
+				  	// console.log(info.event);
+				    
+				    <?php
+        			if($unilink) {
+        				?>
+        				var link=_replace("<?=$unilink?>", info.event.extendedProps);
+								top.lgksOverlayFrame(_link("modules/uniLink/"+link),"Viewer",function() {
+						// 			hideLoader();
+								});
+        				<?php
+        			} else {
+        				?>
+        				html = ["<div class='table-responsive' style='max-height: 70%;word-break: break-word;'><table class='table table-striped table-compact'><tbody>"];
+								$.each(info.event.extendedProps, function(k,v) {
+								    var t = toTitle(k);
+								    html.push(`<tr><th style='width:35%'>${t}</th><td>${v}</td></tr>`);
+								})
+								html.push("</tbody></table></div>");
+
+								lgksAlert(html.join(""), "Preview")
+        				<?php
+        			}
+        		?>
+
+				    // change the border color just for fun
+				    info.el.style.borderColor = 'red';
+				  },
+				  // events: [
+				  //   {
+				  //     title  : 'event1',
+				  //     start  : '2021-01-01'
+				  //   },
+				  //   {
+				  //     title  : 'event2',
+				  //     start  : '2021-01-05',
+				  //     end    : '2021-01-07'
+				  //   },
+				  //   {
+				  //     title  : 'event3',
+				  //     start  : '2021-01-09T12:30:00',
+				  //     allDay : false // will make the time show
+				  //   }
+				  // ],
+				  events: function( info, successCallback, failureCallback ) {
+						//https://fullcalendar.io/docs/events-function
+				  	//console.log("LOADING_CALENDAR", {start: info.start.valueOf(),end: info.end.valueOf()});
+
+						rpt.fetchReportData("json",function(txt) {
+							jsonData=$.parseJSON(txt);
+			        if(jsonData==null && jsonData.Data==null) {
+			          lgksToast("Sorry, no data found");
+			          return;
+			        } else {
+			          jsonData=jsonData.Data;
+			        }
+			        
+			        var finalEventList = jsonData.RECORDS.map(row=>{
+			        		return {"id": ((row["hashid"]==null)?row[Object.keys(row)[0]]:row["hashid"]), "title": row["<?=$colMap["title"]?>"], "start": row["<?=$colMap["date_col"]?>"], extendedProps: row};
+							})
+							
+			        limit=jsonData.INFO.limit;
+			        index=jsonData.INFO.index;
+			        last=jsonData.INFO.last;
+			        max=jsonData.INFO.max;
+
+			        rpt.updateReportMeta(limit, index, last, max);
+			        rpt.postDataPopulate(rpt.gridID);
+
+			        successCallback(finalEventList);
+			      });
 					},
-					{
-						id: 999,
-						title: 'Repeating Event',
-						start: '2017-05-09T16:00:00'
-					},
-					{
-						id: 999,
-						title: 'Repeating Event',
-						start: '2017-05-16T16:00:00'
-					},
-					{
-						title: 'Conference',
-						start: '2017-05-11',
-						end: '2017-05-13'
-					},
-					{
-						title: 'Meeting',
-						start: '2017-05-12T10:30:00',
-						end: '2017-05-12T12:30:00'
-					},
-					{
-						title: 'Lunch',
-						start: '2017-05-12T12:00:00'
-					},
-					{
-						title: 'Meeting',
-						start: '2017-05-12T14:30:00'
-					},
-					{
-						title: 'Happy Hour',
-						start: '2017-05-12T17:30:00'
-					},
-					{
-						title: 'Dinner',
-						start: '2017-05-12T20:00:00'
-					},
-					{
-						title: 'Birthday Party',
-						start: '2017-05-13T07:00:00'
-					},
-					{
-						title: 'Click for Google',
-						url: 'http://google.com/',
-						start: '2017-05-28'
-					}
-				]
-			});
+					// validRange: function(nowDate) {
+				  //   return {
+				  //     start: nowDate,
+				  //     end: nowDate.clone().add(1, 'months')
+				  //   };
+				  // },
+				  // businessHours: {
+					//   // days of week. an array of zero-based day of week integers (0=Sunday)
+					//   daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], // Monday - Saturday
+
+					//   startTime: '10:00', // a start time (10am in this example)
+					//   endTime: '18:00', // an end time (6pm in this example)
+					// }
+      });
+      calendar.render();
+
+			rpt.loadDataGrid();
     });
 		function renderCalendarUI(gridID, rptHandler) {
-			grid=rptHandler.getGrid();
-			gridBody=$(".kanbanBoard","#RPT-"+this.gridID);
-			gridID=grid.data('rptkey');
+			if(typeof showLoader == "function") showLoader();
+	    rpt.fetchReportData("json",function(txt) {
+	        if(typeof hideLoader == "function") hideLoader();
 
-			if(grid.data("page")==grid.data("current") && grid.data("page")!=null) {
-				return false;
-			}
+	        jsonData=$.parseJSON(txt);
+	        if(jsonData==null && jsonData.Data==null) {
+	          lgksToast("Sorry, no data found");
+	          return;
+	        } else {
+	          jsonData=jsonData.Data;
+	        }
+	        // console.log(jsonData);
+
+	        $.each(jsonData.RECORDS,function(k,v) {
+	            // console.log("RECORD", k, v);
+	            addCalendarEvent(v);
+	        });
+
+	        limit=jsonData.INFO.limit;
+	        index=jsonData.INFO.index;
+	        last=jsonData.INFO.last;
+	        max=jsonData.INFO.max;
+
+	        rpt.updateReportMeta(limit, index, last, max);
+	        rpt.postDataPopulate(rpt.gridID);
+	      });
+		}
+		function addCalendarEvent(record) {
+
 		}
     </script>
 </div>

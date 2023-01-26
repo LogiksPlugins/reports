@@ -1,5 +1,6 @@
 @import url("css/kanban.css");
 @import url("css/cards.css");
+@import url("css/gallery.css");
 @import url("css/rcolors.css");
 @import url("css/smartfilter.css");
 
@@ -247,6 +248,7 @@ table.dataTable thead .sorting:after {
     content: "\f0dc";
     float: right;
     font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: rgba(50,50,50,.5);
 }
 
@@ -254,6 +256,7 @@ table.dataTable thead .sorting_asc:after {
     content: "\f0de";
     float: right;
     font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: black;
 }
 
@@ -261,6 +264,7 @@ table.dataTable thead .sorting_desc:after {
     content: "\f0dd";
     float: right;
     font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: black;
 }
 
@@ -275,6 +279,7 @@ table.dataTable thead th .ui-resizable-handle.ui-resizable-e:after {
     content: "\f07e";
     float: right;
     font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: black;
 }
 

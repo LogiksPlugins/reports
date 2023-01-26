@@ -64,7 +64,7 @@ if(isset($reportConfig['cards']['iconmap'])) {
 }
 
 $actions=[
-	"showMoreRecords"=>["label"=>"","icon"=>"fa fa-exchange fa-rotate-90","class"=>"btn btn-warning btn-notext","title"=>"Showing 0/0 records"]
+	"showMoreRecords"=>["label"=>"","icon"=>"fa fa-retweet","class"=>"btn btn-warning btn-notext","title"=>"Showing 0/0 records"]
 ];
 $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 ?>
@@ -72,8 +72,8 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
   <div class="row table-tools noprint">
       <?php
   			include_once __DIR__."/comps/smartfilter.php";
-			include_once __DIR__."/comps/topbar.php";
-		?>
+				include_once __DIR__."/comps/topbar.php";
+			?>
       <?php
       	if(isset($reportConfig['filters']) && !empty($reportConfig['filters'])) {
       ?>
@@ -110,64 +110,72 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     </div>
   
     <div class='cardsCardTemplate hidden'>
-      <article class="cards-entry grab rColor {{color}}" id="item{{id}}" data-hash='{{hashid}}'>
-        <div class="cards-entry-inner">
-					{{#if <?=$colMap['avatar']?>}}
-					<figure class='avatar'>
-						<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
-					</figure>
-					{{/if}}
-          <div class="cards-label">
-						{{#if <?=$colMap['wallphoto']?>}}
-						<figure class='wallphoto'>
-							<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
-						</figure>
-						{{/if}}
-						<h2>
-							<span class='pull-right label label-info'>{{<?=$colMap['counter']?>}}</span>
-							<?php if($unilink) { ?>
-								{{#if hashid}}
-								<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
-								{{else}}
-								<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
+    	<?php
+    		if(isset($reportConfig['cards']['template'])) {
+    			echo $reportConfig['cards']['template'];
+    		} else {
+    			?>
+    			<article class="cards-entry grab rColor {{color}}" id="item{{id}}" data-hash='{{hashid}}'>
+		        <div class="cards-entry-inner">
+							{{#if <?=$colMap['avatar']?>}}
+							<figure class='avatar'>
+								<img src="{{<?=$colMap['avatar']?>}}" class="img-responsive img-rounded full-width">
+							</figure>
+							{{/if}}
+		          <div class="cards-label">
+								{{#if <?=$colMap['wallphoto']?>}}
+								<figure class='wallphoto'>
+									<img src="{{<?=$colMap['wallphoto']?>}}" class="img-responsive img-rounded full-width">
+								</figure>
 								{{/if}}
-							<?php } else { ?>
-								<a href='#'>{{<?=$colMap['title']?>}}</a>
-							<?php } ?>
-            </h2>
-						{{#if <?=$colMap['category']?>}}
-						<h3>{{<?=$colMap['category']?>}}</h3>
-						{{/if}}
-						{{#if <?=$colMap['image']?>}}
-						<figure>
-							<img src="{{<?=$colMap['image']?>}}" class="img-responsive img-rounded full-width">
-						</figure>
-            {{/if}}
-						{{#if <?=$colMap['descs']?>}}
-						<p>{{{<?=$colMap['descs']?>}}}</p>
-						{{/if}}
-						{{#if <?=$colMap['msg']?>}}
-						<blockquote>{{{<?=$colMap['msg']?>}}}</blockquote>
-						{{/if}}
-						<div class='tags'>
-							<div class='label label-success due_date pull-right'>{{<?=$colMap['due_date']?>}}</div>
-							
-							{{#if <?=$colMap['tags']?>}}
-								{{#each <?=$colMap['tags']?>}}
-									<span class="label label-primary">{{this}}</span>
-								{{/each}}
-							{{/if}}
-						</div>
-						
-						<div class='cards-icon'>
-							{{#if <?=$colMap['icons']?>}}
-								{{cardIcon '<?=$colMap['icons']?>' this}}
-							{{/if}}
-							<?=$htmlButtons?>
-						</div>
-          </div>
-        </div>
-      </article>
+								<h2>
+									<span class='pull-right label label-info'>{{<?=$colMap['counter']?>}}</span>
+									<?php if($unilink) { ?>
+										{{#if hashid}}
+										<a class='unilink' href='#' data-type="<?=$unilink?>" data-hashid="{{hashid}}">{{<?=$colMap['title']?>}}</a>
+										{{else}}
+										<a class='unilink' href='#'>{{<?=$colMap['title']?>}}</a>
+										{{/if}}
+									<?php } else { ?>
+										<a href='#'>{{<?=$colMap['title']?>}}</a>
+									<?php } ?>
+		            </h2>
+								{{#if <?=$colMap['category']?>}}
+								<h3>{{<?=$colMap['category']?>}}</h3>
+								{{/if}}
+								{{#if <?=$colMap['image']?>}}
+								<figure>
+									<img src="{{<?=$colMap['image']?>}}" class="img-responsive img-rounded full-width">
+								</figure>
+		            {{/if}}
+								{{#if <?=$colMap['descs']?>}}
+								<p>{{{<?=$colMap['descs']?>}}}</p>
+								{{/if}}
+								{{#if <?=$colMap['msg']?>}}
+								<blockquote>{{{<?=$colMap['msg']?>}}}</blockquote>
+								{{/if}}
+								<div class='tags'>
+									<div class='label label-success due_date pull-right'>{{<?=$colMap['due_date']?>}}</div>
+									
+									{{#if <?=$colMap['tags']?>}}
+										{{#each <?=$colMap['tags']?>}}
+											<span class="label label-primary">{{this}}</span>
+										{{/each}}
+									{{/if}}
+								</div>
+								
+								<div class='cards-icon'>
+									{{#if <?=$colMap['icons']?>}}
+										{{cardIcon '<?=$colMap['icons']?>' this}}
+									{{/if}}
+									<?=$htmlButtons?>
+								</div>
+		          </div>
+		        </div>
+		      </article>
+    			<?php
+    		}
+    	?>
     </div>
     <script>
 		colorMap=<?=json_encode($colorMap)?>;
@@ -184,16 +192,18 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					return "";
 				});
 			
-      var rpt=new LGKSReports().init("<?=$reportKey?>","cards");
+	    var rpt=new LGKSReports().init("<?=$reportKey?>","cards");
 			rpt.addRenderer("cards",renderCardsUI);
 			rpt.addRenderer("card",renderCardsUI);
 			//rpt.addListener(updateCardsUI,"postload");
+			
 			rpt.loadDataGrid();
     });
 		function resetCardsUI(gridID, rpt) {
 			gridBody.html('<div class="ajaxloading ajaxloading3"></div>');
 		}
-		function renderCardsUI(gridID, rpt) {
+		function renderCardsUI(gridID, rpt1) {
+			rpt = LGKSReportsInstances[gridID];
 			grid=rpt.getGrid();
 			gridBody=$(".cardsContainer .cardsBoard","#RPT-"+this.gridID);
 			gridID=grid.data('rptkey');
