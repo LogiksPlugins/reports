@@ -129,11 +129,12 @@ if(!function_exists("findReport")) {
 			}
 		}
 
-		if(!isset($reportConfig['toolbar']) || $reportConfig['toolbar']===false) {
-			$reportConfig['toolbar']=[];
-		}
 		if(!isset($reportConfig['topbar'])) {
 			$reportConfig['topbar']=[];
+		}
+
+		if(!isset($reportConfig['toolbar']) || $reportConfig['toolbar']===false) {
+			$reportConfig['toolbar']=[];
 		}
 
 		if(isset($reportConfig['toolbar']) && $reportConfig['toolbar']===false) {
@@ -819,7 +820,8 @@ if(!function_exists("findReport")) {
               //"xmldown"=>"Download XML",
               "email"=>"EMail Report",
             ];
-		if($exportParams) {
+        
+		if(!$exportParams) {
 			return $fullList;
 		} elseif(is_array($exportParams)) {
 			$finalList = [];

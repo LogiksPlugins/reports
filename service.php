@@ -581,7 +581,8 @@ switch($_REQUEST["action"]) {
 				echo implode("", $finalData);
 				// printArray([$headers, $data]);
 			break;
-			case "email":
+			case "email1":
+			case "email2":
 				$_REQUEST['limit'] = 100000;
 				$_REQUEST['page'] = 0;
 
@@ -616,8 +617,12 @@ switch($_REQUEST["action"]) {
 						"subject"=> "EMail Report",
 						"html_body"=> "\n\n\n<br><br><br>".implode("", $finalData)
 					];
-
-				header("Location:"._link("modules/msgComposer"));
+				if($_REQUEST['type']=="email1")
+					header("Location:"._link("modules/msgComposer"));
+				elseif($_REQUEST['type']=="email2") 
+					header("Location:"._link("modules/liteComposer"));
+				else
+					echo "<h3 align='center'><br><br>Email Plugin Not Supported Yet</h3>";
 			break;
 		}
 	break;

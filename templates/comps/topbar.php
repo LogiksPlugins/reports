@@ -108,7 +108,7 @@ switch($topbar['uitype']) {
                           if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']===true) {
                             $reportConfig['toolbar']['export'] = getExportMediumList();
                           } elseif(is_array($reportConfig['toolbar']['export'])) {
-                              //$reportConfig['toolbar']['export']
+                            $reportConfig['toolbar']['export'] = getExportMediumList($reportConfig['toolbar']['export']);
                           } else {
                             $reportConfig['toolbar']['export'] = [];
                           }
@@ -123,7 +123,9 @@ switch($topbar['uitype']) {
                                   break;
                                 case 'email':
                                   if(checkModule('msgComposer')) {
-                                    echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                    echo "<li><a href='#' cmd='report:email1'>"._ling($text)."</a></li>";
+                                  } elseif(checkModule('liteComposer')) {
+                                    echo "<li><a href='#' cmd='report:email2'>"._ling($text)."</a></li>";
                                   }
                                   break;
                                   
@@ -131,12 +133,6 @@ switch($topbar['uitype']) {
                                   echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
                                   break;
                               }
-                            }
-                          }
-
-                          if(!isset($reportConfig['toolbar']['email']) || $reportConfig['toolbar']['email']) {
-                            if(checkModule('liteComposer')) {
-                              echo "<li><a href='#' cmd='report:email'>"._ling("Email Report")."</a></li>";
                             }
                           }
                         ?>
@@ -350,7 +346,9 @@ switch($topbar['uitype']) {
                                   break;
                                 case 'email':
                                   if(checkModule('msgComposer')) {
-                                    echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                    echo "<li><a href='#' cmd='report:email1'>"._ling($text)."</a></li>";
+                                  } elseif(checkModule('liteComposer')) {
+                                    echo "<li><a href='#' cmd='report:email2'>"._ling($text)."</a></li>";
                                   }
                                   break;
 
@@ -358,12 +356,6 @@ switch($topbar['uitype']) {
                                   echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
                                   break;
                               }
-                            }
-                          }
-
-                          if(!isset($reportConfig['toolbar']['email']) || $reportConfig['toolbar']['email']) {
-                            if(checkModule('liteComposer')) {
-                              echo "<li><a href='#' cmd='report:email'>"._ling("Email Report")."</a></li>";
                             }
                           }
                         ?>

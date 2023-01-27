@@ -819,9 +819,15 @@ var LGKSReports = (function() {
 			case "report:exportcsvdown":
 				window.open(_service("reports","export")+"&type=csv&gridid="+this.gridID);
 			break;
-			case "report:email":case "report:exportemail":
+			case "report:email1":
 				showLoader();
-				lgksOverlayFrame(_service("reports","export")+"&type=email&gridid="+this.gridID,"Email Report",function() {
+				lgksOverlayFrame(_service("reports","export")+"&type=email1&gridid="+this.gridID,"Email Report",function() {
+						hideLoader();
+					},{"className":"overlayBox reportPopup"});
+			break;
+			case "report:email2":
+				showLoader();
+				lgksOverlayFrame(_service("reports","export")+"&type=email2&gridid="+this.gridID,"Email Report",function() {
 						hideLoader();
 					},{"className":"overlayBox reportPopup"});
 			break;
