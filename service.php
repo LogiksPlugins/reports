@@ -56,7 +56,11 @@ switch($_REQUEST["action"]) {
 			              $srcTable=$tables[0];
 			            }
 			            
-						$colID="md5({$srcTable}.id)";
+						if(strlen($_POST['dataHash'])==32) {
+							$colID="md5({$srcTable}.id)";
+						} else {
+							$colID="{$srcTable}.id";
+						}
 
 						if(isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]) &&
 							isset($reportConfig['kanban']['colkeys'][$_POST['dataField']]['alias'])) {
@@ -65,7 +69,10 @@ switch($_REQUEST["action"]) {
 					   	} else {
 				           	$dataField = $_POST['dataField'];
 					   	}
-						                                    
+
+					   	$dataField = explode('.',$dataField);
+					   	$dataField = end($dataField);
+
 						$sql=_db()->_updateQ($srcTable,[$dataField=>$_POST['dataVal']],[$colID=>$_POST['dataHash']]);
 			            $sql=$sql->_RUN();
 
@@ -495,8 +502,6 @@ switch($_REQUEST["action"]) {
 
 		$reportConfig=$_SESSION['REPORT'][$reportKey];
 
-		$data=getGridData($reportKey,$reportConfig);
-
 		$headers=[];
 		foreach ($reportConfig['datagrid'] as $colID => $column) {
 			if(isset($column['hidden']) && $column['hidden']) {
@@ -508,6 +513,11 @@ switch($_REQUEST["action"]) {
 
 		switch (strtolower($_REQUEST['type'])) {
 			case 'pdf':
+				$_REQUEST['limit'] = 100000;
+				$_REQUEST['page'] = 0;
+
+				$data=getGridData($reportKey,$reportConfig);
+
 				$htmlData=getHTMLData($data,$headers);
 
 				$lt=new LogiksTemplate(LogiksTemplate::getEngineForExtension(".tpl"));
@@ -531,6 +541,83 @@ switch($_REQUEST["action"]) {
 
 				$mpdf->WriteHTML($html);
 				$mpdf->Output();
+			break;
+			case 'csv':
+				$_REQUEST['limit'] = 1000000000000;
+				$_REQUEST['page'] = 0;
+
+				$data=getGridData($reportKey,$reportConfig);
+
+				$finalData = [];
+				$colIndex = [];
+				foreach($headers as $k=>$col) {
+					$x = explode(".", $k);
+					$colIndex[] = end($x);
+					$finalData[] = "\"{$col}\",";
+				}
+				$finalData[] = "\r\n";
+
+				foreach($data as $row) {
+					foreach($colIndex as $col) {
+						if(isset($row[$col]) && strlen($row[$col])>0) {
+							$finalData[] = "\"{$row[$col]}\",";
+						} else {
+							$finalData[] = "\" \"";
+						}
+					}
+					$finalData[] = "\r\n";
+				}
+
+				loadHelpers("mimes");
+				$mime=getMimeTypeForFile("export.csv");
+
+				header("Content-type: $mime");
+				header("Content-Disposition: attachment; filename={$reportConfig['title']}.csv");
+				header("Expires: 0");
+				header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+				header("Content-Transfer-Encoding: binary");
+				header('Pragma: public');
+
+				echo implode("", $finalData);
+				// printArray([$headers, $data]);
+			break;
+			case "email":
+				$_REQUEST['limit'] = 100000;
+				$_REQUEST['page'] = 0;
+
+				$data=getGridData($reportKey,$reportConfig);
+
+				$finalData = ["<table class='table table-compact table-striped'><thead><tr>"];
+
+				$colIndex = [];
+				foreach($headers as $k=>$col) {
+					$x = explode(".", $k);
+					$colIndex[] = end($x);
+					$finalData[] = "<td>{$col}</td>";
+				}
+
+				$finalData[] = "</tr></thead><tbody>";
+
+				foreach($data as $row) {
+					$finalData[] = "<tr>";
+					foreach($colIndex as $col) {
+						if(isset($row[$col]) && strlen($row[$col])>0) {
+							$finalData[] = "<td>{$row[$col]}</td>";
+						} else {
+							$finalData[] = "<td> </td>";
+						}
+					}
+					$finalData[] = "</tr>";
+				}
+
+				$finalData[] = "</tbody></table>";
+
+				$_SESSION['MSGCOMPOSER'] = [
+						"subject"=> "EMail Report",
+						"html_body"=> "\n\n\n<br><br><br>".implode("", $finalData)
+					];
+
+				header("Location:"._link("modules/msgComposer"));
 			break;
 		}
 	break;

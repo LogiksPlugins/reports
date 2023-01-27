@@ -84,7 +84,7 @@ switch($topbar['uitype']) {
             }
           ?>
           <div class="input-group-btn">
-            <?php
+              <?php
               if(!isset($reportConfig['toolbar']['filter']) || $reportConfig['toolbar']['filter']) {
               ?>
               <button type="button" cmd='filterbar' class="btn btn-default">
@@ -93,7 +93,8 @@ switch($topbar['uitype']) {
               </button>
               <?php
                 }
-              if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']) {
+                //!isset($reportConfig['toolbar']['export']) || 
+              if($reportConfig['toolbar']['export'] || $reportConfig['toolbar']['print'] || $reportConfig['toolbar']['email']) {
             ?>
             <div class='btn-group'>
                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -104,29 +105,14 @@ switch($topbar['uitype']) {
                             echo "<li><a href='#' cmd='report:print'>"._ling("Print Report")."</a></li>";
                           }
 
-                          if(isset($reportConfig['toolbar']['export'])) {
-                            if($reportConfig['toolbar']['export']===true) {
-                              $reportConfig['toolbar']['export']=[
-                                  "csv"=>"Export CSV",
-                                  "csvxls"=>"Export CSV For Excel",
-                                  //"xls"=>"Export For Excel",
-                                  "xml"=>"Export XML",
-                                  "htm"=>"Export HTML",
-                                  "img"=>"Export Image",
-                                  "pdf"=>"Export PDF",
-                                ];
-                            }
+                          if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']===true) {
+                            $reportConfig['toolbar']['export'] = getExportMediumList();
+                          } elseif(is_array($reportConfig['toolbar']['export'])) {
+                              //$reportConfig['toolbar']['export']
                           } else {
-                            $reportConfig['toolbar']['export']=[
-                                  "csv"=>"Export CSV",
-                                  "csvxls"=>"Export CSV For Excel",
-                                  //"xls"=>"Export For Excel",
-                                  "xml"=>"Export XML",
-                                  "htm"=>"Export HTML",
-                                  "img"=>"Export Image",
-                                  "pdf"=>"Export PDF",
-                                ];
+                            $reportConfig['toolbar']['export'] = [];
                           }
+
                           if(is_array($reportConfig['toolbar']['export'])) {
                             foreach ($reportConfig['toolbar']['export'] as $key => $text) {
                               switch ($key) {
@@ -135,7 +121,12 @@ switch($topbar['uitype']) {
                                     echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
                                   }
                                   break;
-
+                                case 'email':
+                                  if(checkModule('msgComposer')) {
+                                    echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                  }
+                                  break;
+                                  
                                 default:
                                   echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
                                   break;
@@ -329,7 +320,8 @@ switch($topbar['uitype']) {
               </button>
               <?php
                 }
-              if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']) {
+              //!isset($reportConfig['toolbar']['export']) || 
+              if($reportConfig['toolbar']['export'] || $reportConfig['toolbar']['print'] || $reportConfig['toolbar']['email']) {
             ?>
             <div class='btn-group'>
                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -340,34 +332,24 @@ switch($topbar['uitype']) {
                             echo "<li><a href='#' cmd='report:print'>"._ling("Print Report")."</a></li>";
                           }
 
-                          if(isset($reportConfig['toolbar']['export'])) {
-                            if($reportConfig['toolbar']['export']===true) {
-                              $reportConfig['toolbar']['export']=[
-                                  "csv"=>"Export CSV",
-                                  "csvxls"=>"Export CSV For Excel",
-                                  //"xls"=>"Export For Excel",
-                                  "xml"=>"Export XML",
-                                  "htm"=>"Export HTML",
-                                  "img"=>"Export Image",
-                                  "pdf"=>"Export PDF",
-                                ];
-                            }
+                          if(!isset($reportConfig['toolbar']['export']) || $reportConfig['toolbar']['export']===true) {
+                            $reportConfig['toolbar']['export'] = getExportMediumList();
+                          } elseif(is_array($reportConfig['toolbar']['export'])) {
+                              //$reportConfig['toolbar']['export']
                           } else {
-                            $reportConfig['toolbar']['export']=[
-                                  "csv"=>"Export CSV",
-                                  "csvxls"=>"Export CSV For Excel",
-                                  //"xls"=>"Export For Excel",
-                                  "xml"=>"Export XML",
-                                  "htm"=>"Export HTML",
-                                  "img"=>"Export Image",
-                                  "pdf"=>"Export PDF",
-                                ];
+                            $reportConfig['toolbar']['export'] = [];
                           }
+                          
                           if(is_array($reportConfig['toolbar']['export'])) {
                             foreach ($reportConfig['toolbar']['export'] as $key => $text) {
                               switch ($key) {
                                 case 'pdf':
                                   if(checkVendor('mpdf')) {
+                                    echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
+                                  }
+                                  break;
+                                case 'email':
+                                  if(checkModule('msgComposer')) {
                                     echo "<li><a href='#' cmd='report:export{$key}'>"._ling($text)."</a></li>";
                                   }
                                   break;

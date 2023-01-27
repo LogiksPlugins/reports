@@ -90,6 +90,11 @@ if(!function_exists("findReport")) {
 		} else {
 			$reportConfig['template']="grid";
 		}
+
+		if(isset($reportConfig['force_template'])) {
+			$reportConfig['template'] = $reportConfig['force_template'];
+		}
+
 		//setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/");
 		setCookie('RPTVIEW-'.$reportConfig['reportgkey'],$reportConfig['template'],0,"/",$_SERVER['SERVER_NAME'], isHTTPS());
 
@@ -124,7 +129,7 @@ if(!function_exists("findReport")) {
 			}
 		}
 
-		if(!isset($reportConfig['toolbar'])) {
+		if(!isset($reportConfig['toolbar']) || $reportConfig['toolbar']===false) {
 			$reportConfig['toolbar']=[];
 		}
 		if(!isset($reportConfig['topbar'])) {
@@ -140,6 +145,17 @@ if(!function_exists("findReport")) {
 			$reportConfig['toolbar']['filter']=false;
 			$reportConfig['toolbar']['columnselector']=false;
 		}
+
+		$reportConfig['toolbar'] = array_merge([
+				'reload'=> true,
+				'search'=> true,
+				'search_date'=>false,
+				'print'=> true,
+				'export'=> true,
+				'email'=> true,
+				'filter'=> true,
+				'columnselector'=> true,
+			], $reportConfig['toolbar']);
 
 		if(!isset($reportConfig['export'])) $reportConfig['export']=[];
 
@@ -286,6 +302,8 @@ if(!function_exists("findReport")) {
 		}
 
 		$xtraAttributes = implode(" ", $xtraAttributes);
+
+		$editorHTML = getReportCellEditor($key,$value,$type, $record, $columnInfo);
 
 		switch (strtolower($type)) {
 			case 'date':
@@ -497,7 +515,7 @@ if(!function_exists("findReport")) {
 		        }
 		        switch(strtolower($type)) {
 		          case "pretty":
-		            $value=toTitle($value);
+		            $value=toTitle(str_replace("_"," ",$value));
 		            break;
 		          case "uppercase":
 		            $value=strtoupper(str_replace("_"," ",$value));
@@ -511,12 +529,64 @@ if(!function_exists("findReport")) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
 				} elseif(strlen($value)>100) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'><pre>{$value}</pre></td>";
-				} elseif(strlen($value)>50) {
+				} elseif(strlen($value)>20) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>{$value}</td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$value}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$editorHTML}</td>";
 				}
 				break;
+		}
+	}
+	function getReportCellEditor($key,$value,$type, $record, $columnInfo) {
+		if(isset($columnInfo['editor'])) {
+			$fieldinfo = $columnInfo['editor'];
+
+			$html="";
+			switch ($fieldinfo['type']) {
+				case 'dataMethod': case 'dataSelector': case 'dataSelectorFromUniques': case 'dataSelectorFromTable':
+				case 'select': case 'selectAJAX':
+
+				if(!isset($fieldinfo['options'])) $fieldinfo['options']=[];
+
+				$html="<div class='select-group'>";
+				$html.="<select class='form-control field-dropdown cell-editor' name='${key}' data-value=\"{$value}\" data-selected=\"{$value}\" >";
+
+				if(is_array($fieldinfo['options'])) {
+					if(!array_key_exists("", $fieldinfo['options']) || $fieldinfo['options']['']===true) {
+						$html.="<option value=''>{$noOption}</option>";
+					}
+					if($typeS!="select") {
+						foreach($fieldinfo['options'] as $a=>$b) {
+							$html.="<option value='{$a}'>{$b}</option>";
+						}
+					}
+				}
+				if(isset($fieldinfo['dbkey'])) $dkey1=$fieldinfo['dbkey'];
+				else $dkey1="app";
+				
+				if(isset($fieldinfo['search']) && $fieldinfo['search']==true) {
+					
+				} else {
+					$html.=generateSelectOptions($fieldinfo,$value,$dkey1);
+				}
+
+				$html.="</select>";
+				$html.="</div>";
+
+				break;
+				case 'text':
+				case 'date':
+				case 'daterange':
+				case 'period':
+				case 'checkbox':
+				default:
+					$html = $value;
+				break;
+			}
+
+			return $html;
+		} else {
+			return $value;
 		}
 	}
 	function formatReportFilter($key,$filterConfig=array(),$dbKey="app") {
@@ -725,14 +795,44 @@ if(!function_exists("findReport")) {
 		if(isset($reportConfig['pivot'])) {
 		  $templateViews["pivot"]=["icon"=>"fa fa-border-none", "title"=> "Pivot"];
 		}
-		
-		// 
+
 		// tree_table
 		// swim_lane
 		// activity
 		// slot
 
 		return $templateViews;
+	}
+
+	function getExportMediumList($exportParams = false) {
+		$fullList = [
+              "csv"=>"Export CSV",
+              // "csvxls"=>"Export CSV For Excel",
+              //"xls"=>"Export For Excel",
+              "xml"=>"Export XML",
+              "htm"=>"Export HTML",
+
+              "img"=>"Export Image",
+              "pdf"=>"Export PDF",
+
+              "csvdown"=>"Download CSV",
+              //"xmldown"=>"Download XML",
+              "email"=>"EMail Report",
+            ];
+		if($exportParams) {
+			return $fullList;
+		} elseif(is_array($exportParams)) {
+			$finalList = [];
+			foreach($exportParams as $k) {
+				if(isset($fullList[$k])) {
+					$finalList[$k] = $fullList[$k];
+				}
+			}
+
+			return $finalList;
+		} else {
+			return [];
+		}
 	}
 }
 if(!function_exists("searchMedia")) {

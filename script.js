@@ -53,6 +53,20 @@ var LGKSReports = (function() {
 				LGKSReports.getInstance(gridID).reloadDataGrid(this);
 			}
 		});
+		rpt.getGrid().delegate("select.cell-editor","change",function(e) {
+			var name = $(this).attr("name");
+			var value = $(this).val();
+			var refid = $(this).closest(".tableRow").data("refid");
+
+			processAJAXPostQuery(_service("reports", "updateFieldValue"),`gridid=${rpt.gridID}&dataField=${name}&dataVal=${value}&dataHash=${refid}`, function(ans) {
+				if(ans.Data.msg!="done") {
+					lgksToast(ans.Data.msg);
+				} else {
+					lgksToast("Successfully updated value");
+				}
+			}, "json");
+		});
+		
 
 		//AutoConnect report fields from other parts of page : autoinitation
 		$("body").delegate("div.forReport.autoConnect[for='"+this.gridID+"'] select.autorefreshReport[name],input.autorefreshReport[name][type=date]","change",function(e) {
@@ -802,11 +816,14 @@ var LGKSReports = (function() {
 			case "report:exportpdf":
 				window.open(_service("reports","export")+"&type=pdf&gridid="+this.gridID);
 			break;
-			case "report:exportxls":
-				window.open(_service("reports","export")+"&type=xls&gridid="+this.gridID);
+			case "report:exportcsvdown":
+				window.open(_service("reports","export")+"&type=csv&gridid="+this.gridID);
 			break;
 			case "report:email":case "report:exportemail":
-				
+				showLoader();
+				lgksOverlayFrame(_service("reports","export")+"&type=email&gridid="+this.gridID,"Email Report",function() {
+						hideLoader();
+					},{"className":"overlayBox reportPopup"});
 			break;
 			case "forms":case "reports":case "infoview":
 				hash=$(src).closest(".tableRow").data('hash');

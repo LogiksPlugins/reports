@@ -40,6 +40,7 @@ if(!isset($reportConfig['enable_colgroups'])) $reportConfig['enable_colgroups'] 
 $groupEnabled = $reportConfig['enable_colgroups'];
 
 $colGroups = [];
+$editColumns = [];
 if($groupEnabled) {
 	$colIndex = 0;
 
@@ -53,6 +54,10 @@ if($groupEnabled) {
 		}
 		if(!isset($tempDatagrid[$row['colgroup']])) $tempDatagrid[$row['colgroup']] = [];
 		$tempDatagrid[$row['colgroup']][] = ["key"=>$key, "row"=>$row];
+
+		if(isset($row['editor'])) {
+			$editColumns[] = $key;
+		}
 	}
 	if(count($tempDatagrid)<=1) $groupEnabled = false;
 
@@ -82,6 +87,11 @@ if($groupEnabled) {
 
 	// printArray([$colGroups, $tempDatagrid]);
 }
+
+$reportConfig['updatableColumns'] = $editColumns;
+
+$_SESSION['REPORT'][$reportKey]=$reportConfig;
+
 ?>
 <div id='RPT-<?=$reportKey?>' data-rptkey='<?=$reportKey?>' data-gkey='<?=$reportConfig['reportgkey']?>' class="reportTable table-responsive <?=$reportXtraClasses?>" data-maxcols="<?=$maxCols?>">
 	<div class="row table-tools noprint">
@@ -206,8 +216,8 @@ if($groupEnabled) {
 					}
 					if($reportConfig['buttons_align']=="right") {
 						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            echo "<th class='actionCol hidden-print'></th>";
-	          }
+				            echo "<th class='actionCol hidden-print'></th>";
+				        }
 					}
 				?>
 			</tr>
@@ -332,6 +342,10 @@ function updateGridUI(rkey){
 
 	generateSummary(rkey, rpt);
     generateHeaderGroups(rkey, rpt);
+
+    rpt.getGrid().find("select.cell-editor").each(function() {
+    	$(this).val($(this).data("selected"));
+    });
 }
 function generateSummary(gridID) {
     //console.log("generateSummary", gridID, $("#RPT-"+gridID).find(".tableBody").find(".tableColumn[data-calculate]").length);
