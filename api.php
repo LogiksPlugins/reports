@@ -305,6 +305,7 @@ if(!function_exists("findReport")) {
 		$xtraAttributes = implode(" ", $xtraAttributes);
 
 		$editorHTML = getReportCellEditor($key,$value,$type, $record, $columnInfo);
+		$valueOriginal = $value;
 
 		switch (strtolower($type)) {
 			case 'date':
@@ -525,6 +526,9 @@ if(!function_exists("findReport")) {
 		            $value=strtolower(str_replace("_"," ",$value));
 		            break;
 		        }
+		        if($valueOriginal == $editorHTML) {
+		        	$editorHTML = $value;
+		        }
 			default:
 				if(is_array($value)) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
@@ -533,7 +537,7 @@ if(!function_exists("findReport")) {
 				} elseif(strlen($value)>20) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>{$value}</td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$value}'>{$editorHTML}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$valueOriginal}'>{$editorHTML}</td>";
 				}
 				break;
 		}
