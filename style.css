@@ -475,7 +475,8 @@ table.dataTable .image-avatar {
     float: right;
 }
 .actionCol.left .actionDropdown {
-    float: left;
+    display: inline-block !important;
+    float: none !important;
 }
 .actionDropdown .dropdown-menu {
     padding:  0px;
