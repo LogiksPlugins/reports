@@ -113,184 +113,185 @@ $_SESSION['REPORT'][$reportKey]=$reportConfig;
       	}
       ?>
   	</div>
-
-	<table class="dataTable table table-hover table-striped table-condensed reportContainer">
-		<thead class='tableHeadGroups'>
-			<?php
-				if($groupEnabled) {
-					echo "<tr>";
-
-					$firstCol = 0;
-					if($reportConfig['buttons_align']=="left") {
-						$firstCol++;
-					}
-					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
-						$firstCol++;
-					}
-
-					if($firstCol>0) {
-						echo "<th class='text-center' colspan='{$firstCol}'>-</th>";
-					}
-
-					$totalCols = 0;
-					foreach($colGroups as $k=>$row) {
-						$totalCols += $row["count"];
-						$t = $k;
-						if($t=="PRE" || $t=="POST") $t = "";
-						echo "<th class='text-center' data-colgroup='${k}' colspan='{$row["count"]}'>${t}</th>";
-					}
-					$availCols = count($reportConfig['datagrid'])- $totalCols;
-
-					if($reportConfig['buttons_align']=="right") {
-						echo "<th class='text-center' colspan='1'>-</th>";
-					}
-
-					echo "</tr>";
-				}
-			?>
-		</thead>
-		<thead class='tableHead'>
-			<tr>
+  	<div class='table-responsive'>
+		<table class="dataTable table table-hover table-striped table-condensed reportContainer">
+			<thead class='tableHeadGroups'>
 				<?php
-					if($reportConfig['buttons_align']=="left") {
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-	            			echo "<th class='actionCol nocalculate left hidden-print'></th>";
-	          			}
-					}
-					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
-						if(strpos($reportConfig['showExtraColumn'],"<")===0) {
-							echo "<th class='action nocalculate' width=25px>";
-							echo "</th>";
-						} else {
-							echo "<th class='action nocalculate' width=25px>";
-							echo "<input name='rowSelector' type='{$reportConfig['showExtraColumn']}' class='checkbox'  />";
-							echo "</th>";
+					if($groupEnabled) {
+						echo "<tr>";
+
+						$firstCol = 0;
+						if($reportConfig['buttons_align']=="left") {
+							$firstCol++;
 						}
-					}
-					foreach ($reportConfig['datagrid'] as $key => $row) {
-						if(isset($row['policy']) && strlen($row['policy'])>0) {
-							$allow=checkUserPolicy($row['policy']);
-							if(!$allow) continue;
+						if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
+							$firstCol++;
 						}
 
-						$clz="$key";$style="";$xtraAttributes=[];
-						if(isset($row['classes'])) {
-							$clz.=" {$row['classes']}";
-						}
-						if(isset($row['hidden']) && $row['hidden']==true) {
-							$clz.=" hidden";
-						}
-						if(isset($row['style'])) {
-							$style="style='{$row['style']}'";
-						}
-						if(isset($row['resizable']) && $row['resizable']) {
-							$clz.=" resizable";
+						if($firstCol>0) {
+							echo "<th class='text-center' colspan='{$firstCol}'>-</th>";
 						}
 
-						if(isset($row['calculate'])) {
-							$xtraAttributes[] = "data-calculate='{$row['calculate']}'";
+						$totalCols = 0;
+						foreach($colGroups as $k=>$row) {
+							$totalCols += $row["count"];
+							$t = $k;
+							if($t=="PRE" || $t=="POST") $t = "";
+							echo "<th class='text-center' data-colgroup='${k}' colspan='{$row["count"]}'>${t}</th>";
+						}
+						$availCols = count($reportConfig['datagrid'])- $totalCols;
 
-							if(isset($row['calculate-decimal'])) {
-								$xtraAttributes[] = "data-calculate_decimal='{$row['calculate-decimal']}'";
-							}
-							if(isset($row['calculate-prefix'])) {
-								$xtraAttributes[] = "data-calculate_prefix='{$row['calculate-prefix']}'";
-							}
-							if(isset($row['calculate-suffix'])) {
-								$xtraAttributes[] = "data-calculate_suffix='{$row['calculate-suffix']}'";
-							}
+						if($reportConfig['buttons_align']=="right") {
+							echo "<th class='text-center' colspan='1'>-</th>";
 						}
 
-						if(isset($row['colgroup'])) {
-							$xtraAttributes[] = "data-colgroup='{$row['colgroup']}'";
-						}
-
-						$xtraAttributes = implode(" ", $xtraAttributes);
-
-						echo "<th id='".md5($key)."' class='".trim($clz)."' $xtraAttributes data-key='{$key}' $style >";
-						echo _ling($row['label']);
-						if(isset($row['sortable']) && $row['sortable']) {
-							echo "<span class='colSort sorting noprint'></span>";
-						}
-            			echo "</th>";
-					}
-					if($reportConfig['buttons_align']=="right") {
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
-				            echo "<th class='actionCol hidden-print'></th>";
-				        }
+						echo "</tr>";
 					}
 				?>
-			</tr>
-		</thead>
-		<thead class='tableFilter hidden'>
-			<tr>
-				<?php
-					if($reportConfig['buttons_align']=="left") {
-						if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+			</thead>
+			<thead class='tableHead'>
+				<tr>
+					<?php
+						if($reportConfig['buttons_align']=="left") {
+							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+		            			echo "<th class='actionCol nocalculate left hidden-print'></th>";
+		          			}
+						}
+						if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn'] && $reportConfig['showExtraColumn']!="false") {
+							if(strpos($reportConfig['showExtraColumn'],"<")===0) {
+								echo "<th class='action nocalculate' width=25px>";
+								echo "</th>";
+							} else {
+								echo "<th class='action nocalculate' width=25px>";
+								echo "<input name='rowSelector' type='{$reportConfig['showExtraColumn']}' class='checkbox'  />";
+								echo "</th>";
+							}
+						}
+						foreach ($reportConfig['datagrid'] as $key => $row) {
+							if(isset($row['policy']) && strlen($row['policy'])>0) {
+								$allow=checkUserPolicy($row['policy']);
+								if(!$allow) continue;
+							}
+
+							$clz="$key";$style="";$xtraAttributes=[];
+							if(isset($row['classes'])) {
+								$clz.=" {$row['classes']}";
+							}
+							if(isset($row['hidden']) && $row['hidden']==true) {
+								$clz.=" hidden";
+							}
+							if(isset($row['style'])) {
+								$style="style='{$row['style']}'";
+							}
+							if(isset($row['resizable']) && $row['resizable']) {
+								$clz.=" resizable";
+							}
+
+							if(isset($row['calculate'])) {
+								$xtraAttributes[] = "data-calculate='{$row['calculate']}'";
+
+								if(isset($row['calculate-decimal'])) {
+									$xtraAttributes[] = "data-calculate_decimal='{$row['calculate-decimal']}'";
+								}
+								if(isset($row['calculate-prefix'])) {
+									$xtraAttributes[] = "data-calculate_prefix='{$row['calculate-prefix']}'";
+								}
+								if(isset($row['calculate-suffix'])) {
+									$xtraAttributes[] = "data-calculate_suffix='{$row['calculate-suffix']}'";
+								}
+							}
+
+							if(isset($row['colgroup'])) {
+								$xtraAttributes[] = "data-colgroup='{$row['colgroup']}'";
+							}
+
+							$xtraAttributes = implode(" ", $xtraAttributes);
+
+							echo "<th id='".md5($key)."' class='".trim($clz)."' $xtraAttributes data-key='{$key}' $style >";
+							echo _ling($row['label']);
+							if(isset($row['sortable']) && $row['sortable']) {
+								echo "<span class='colSort sorting noprint'></span>";
+							}
+	            			echo "</th>";
+						}
+						if($reportConfig['buttons_align']=="right") {
+							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+					            echo "<th class='actionCol hidden-print'></th>";
+					        }
+						}
+					?>
+				</tr>
+			</thead>
+			<thead class='tableFilter hidden'>
+				<tr>
+					<?php
+						if($reportConfig['buttons_align']=="left") {
+							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
+								echo "<th data-key='action' width=25px></th>";
+							}
+						}
+						if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
 							echo "<th data-key='action' width=25px></th>";
 						}
-					}
-					if(isset($reportConfig['showExtraColumn']) && $reportConfig['showExtraColumn']) {
-						echo "<th data-key='action' width=25px></th>";
-					}
-        			foreach ($reportConfig['datagrid'] as $colID => $column) {
-        				if(isset($column['searchable']) && $column['searchable']) {
-        					$filterConfig=[];
-	        				if(isset($column['filter']) && $column['filter']) {
-	        					$filterConfig=$column['filter'];
-	        				}
-        					if(isset($column['hidden']) && $column['hidden']) {
-	        					echo "<th class='filterCol hidden' data-key='{$colID}' >";
-	        					echo formatReportFilter($colID,$filterConfig,$reportConfig['dbkey']);
-	        					echo "</th>";
+	        			foreach ($reportConfig['datagrid'] as $colID => $column) {
+	        				if(isset($column['searchable']) && $column['searchable']) {
+	        					$filterConfig=[];
+		        				if(isset($column['filter']) && $column['filter']) {
+		        					$filterConfig=$column['filter'];
+		        				}
+	        					if(isset($column['hidden']) && $column['hidden']) {
+		        					echo "<th class='filterCol hidden' data-key='{$colID}' >";
+		        					echo formatReportFilter($colID,$filterConfig,$reportConfig['dbkey']);
+		        					echo "</th>";
+		        				} else {
+		        					echo "<th class='filterCol' data-key='{$colID}' >";
+		        					echo formatReportFilter($colID,$filterConfig,$reportConfig['dbkey']);
+		        					echo "</th>";
+	        					}
 	        				} else {
-	        					echo "<th class='filterCol' data-key='{$colID}' >";
-	        					echo formatReportFilter($colID,$filterConfig,$reportConfig['dbkey']);
+	        					echo "<th class='filterCol filterBlank' data-key='{$colID}' >";
 	        					echo "</th>";
-        					}
-        				} else {
-        					echo "<th class='filterCol filterBlank' data-key='{$colID}' >";
-        					echo "</th>";
-        				}
-        			}
-        		?>
-			</tr>
-		</thead>
-		<tbody class='tableBody'>
-			
-		</tbody>
-		<tbody class='tableSummary hidden'>
+	        				}
+	        			}
+	        		?>
+				</tr>
+			</thead>
+			<tbody class='tableBody'>
+				
+			</tbody>
+			<tbody class='tableSummary hidden'>
 
-		</tbody>
-		<tfoot class='tableFoot noprint'>
-			<tr><td colspan=100000000>
-				<div class="col-lg-6 pull-left">
-		            <select class='perPageCounter autorefreshReport' name='limit'>
-		            	<?php
-		            		foreach ($arrPager as $cntr) {
-		            			if($cntr==$reportConfig['rowsPerPage']) {
-		            				echo "<option selected>{$cntr}</option>";
-		            			} else {
-		            				echo "<option>{$cntr}</option>";
-		            			}
-		            		}
-		            	?>
-		            </select>
-					
-								<button type="button" class="btn btn-default pull-right" cmd='stayPut' style='margin-left: 10px;' title='Toggle if records get appeneded at the end or not.'><i class='glyphicon glyphicon-record'></i></button>
+			</tbody>
+			<tfoot class='tableFoot noprint'>
+				<tr><td colspan=100000000>
+					<div class="col-lg-6 pull-left">
+			            <select class='perPageCounter autorefreshReport' name='limit'>
+			            	<?php
+			            		foreach ($arrPager as $cntr) {
+			            			if($cntr==$reportConfig['rowsPerPage']) {
+			            				echo "<option selected>{$cntr}</option>";
+			            			} else {
+			            				echo "<option>{$cntr}</option>";
+			            			}
+			            		}
+			            	?>
+			            </select>
+						
+									<button type="button" class="btn btn-default pull-right" cmd='stayPut' style='margin-left: 10px;' title='Toggle if records get appeneded at the end or not.'><i class='glyphicon glyphicon-record'></i></button>
 
-                <div class="btn-group pull-right" role="group" aria-label="pagination">
-                  <button type="button" class="btn btn-default" cmd='prevPage'><i class='glyphicon glyphicon-chevron-left'></i></button>
-                  <button type="button" class="btn btn-default" cmd='firstPage'><i class='glyphicon glyphicon-retweet'></i></button>
-                  <button type="button" class="btn btn-default" cmd='nextPage'><i class='glyphicon glyphicon-chevron-right'></i></button>
-                </div>
-		        </div>
-		        <div class="col-lg-6 pull-right">
-		            <citie class='displayCounter'>Displaying <span class='recordsIndex'>0</span>-<span class='recordsUpto'>0</span> of <span class='recordsMax'>0</span> records</citie>
-		        </div>
-			</td></tr>
-		</tfoot>
-	</table>
+	                <div class="btn-group pull-right" role="group" aria-label="pagination">
+	                  <button type="button" class="btn btn-default" cmd='prevPage'><i class='glyphicon glyphicon-chevron-left'></i></button>
+	                  <button type="button" class="btn btn-default" cmd='firstPage'><i class='glyphicon glyphicon-retweet'></i></button>
+	                  <button type="button" class="btn btn-default" cmd='nextPage'><i class='glyphicon glyphicon-chevron-right'></i></button>
+	                </div>
+			        </div>
+			        <div class="col-lg-6 pull-right">
+			            <citie class='displayCounter'>Displaying <span class='recordsIndex'>0</span>-<span class='recordsUpto'>0</span> of <span class='recordsMax'>0</span> records</citie>
+			        </div>
+				</td></tr>
+			</tfoot>
+		</table>
+	</div>
 </div>
 <script>
 $(function() {
