@@ -303,6 +303,7 @@ if(!function_exists("findReport")) {
 		}
 
 		$xtraAttributes = implode(" ", $xtraAttributes);
+		if(isset($columnInfo['value'])) $value = $columnInfo['value'];
 
 		$editorHTML = getReportCellEditor($key,$value,$type, $record, $columnInfo);
 		$valueOriginal = $value;
