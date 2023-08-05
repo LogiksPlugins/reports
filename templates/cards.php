@@ -115,7 +115,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
     			echo $reportConfig['cards']['template'];
     		} else {
     			?>
-    			<article class="dataItem cards-entry grab rColor {{color}}" id="item{{id}}"  data-hash='{{hashid}}' data-refid='{{id}}'>
+    			<article class="dataItem cards-entry grab rColor {{cardColor <?=$colMap['color']?>}}" id="item{{id}}"  data-hash='{{hashid}}' data-refid='{{id}}'>
 		        <div class="cards-entry-inner">
 							{{#if <?=$colMap['avatar']?>}}
 							<figure class='avatar'>
@@ -166,8 +166,10 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 								
 								<div class='cards-icon'>
 									{{#if <?=$colMap['icons']?>}}
-										{{cardIcon '<?=$colMap['icons']?>' this}}
+										{{{cardIcon <?=$colMap['icons']?> this}}}
 									{{/if}}
+								</div>
+								<div class='card-actions'>
 									<?=$htmlButtons?>
 								</div>
 		          </div>
@@ -188,8 +190,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 			Handlebars.registerHelper('cardIcon', function(iconValue, record) {
 // 					console.log(record);
 // 					console.log(iconValue);
-					//<i class='kicon fa fa-{{this}}'><citie>45</citie></i>
-					return "";
+					return `<i class='cardIcon ${iconMap[iconValue]}'></i>`;//<citie>45</citie>
 				});
 			
 	    var rpt=new LGKSReports().init("<?=$reportKey?>","cards");
@@ -236,6 +237,7 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
+						if(v["<?=$colMap['tags']?>"]!=null) v["<?=$colMap['tags']?>"] = v["<?=$colMap['tags']?>"].split(",");
 						cardHTML=gridCardGen(v);
 						if(gridBody.find(".cards-entry[data-hash='"+v.hashid+"']").length<=0) {
 							gridBody.append(cardHTML);
