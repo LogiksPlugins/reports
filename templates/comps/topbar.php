@@ -61,21 +61,49 @@ switch($topbar['uitype']) {
     ?>
   </div>
 
-  <div class="col-lg-6 col-xs-6 pull-right" style="padding-right: 0px;">
-          <div class='input-group pull-right' style='text-align: right;margin-right: 10px;'>
-            <div class="input-group-btn">
-              <?php
-                if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
-                  echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon" style="min-width: 250px;">';
-                }
-              ?>
-              <?php
-                if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
-                  echo '<button type="button" cmd="refresh" class="btn btn-default" style="margin: 0px;"><span class="glyphicon glyphicon-refresh"></span></button>';
-                }
-              ?>
+  <div class="col-lg-6 col-xs-6 pull-right uitype_type1" style="padding-right: 0px;">
+          <div class="report-searchbar">
+            <?php
+              if(isset($reportConfig['date_filter']) && $reportConfig['date_filter']) {
+                  if(isset($reportConfig['date_filter']['type'])) $fieldType = $reportConfig['date_filter']['type'];
+                  else $fieldType = "date";
+
+                  $maxDate = "";
+                  $minDate = "";
+                  $defaultValueMin = "";
+                  $defaultValueMax = "";
+
+                  if(isset($reportConfig['date_filter']['max'])) $maxDate = date('Y-m-d', strtotime($reportConfig['date_filter']['max']));
+                  if(isset($reportConfig['date_filter']['min'])) $minDate = date('Y-m-d', strtotime($reportConfig['date_filter']['min']));
+
+                  if(isset($reportConfig['date_filter']['default_max'])) $defaultValueMax = date('Y-m-d', strtotime($reportConfig['date_filter']['default_max']));
+                  elseif(isset($reportConfig['date_filter']['default'])) $defaultValueMax = date('Y-m-d', strtotime($reportConfig['date_filter']['default']));
+                  if(isset($reportConfig['date_filter']['default_min'])) $defaultValueMin = date('Y-m-d', strtotime($reportConfig['date_filter']['default_min']));
+                  elseif(isset($reportConfig['date_filter']['default'])) $defaultValueMin = date('Y-m-d', strtotime($reportConfig['date_filter']['default']));
+                ?>
+                <div class="dateBox date_filter">
+                  <input name='start_date' type="<?=$fieldType?>" class="form-control" value="<?=$defaultValueMin?>" min="<?=$minDate?>" onchange="$(this).next().attr('min', this.value);" />
+                  <input name='end_date' type="<?=$fieldType?>" class="form-control" value="<?=$defaultValueMax?>" max="<?=$maxDate?>" onchange="$(this).prev().attr('max', this.value);" />
+                </div>
+                <?php
+              }
+            ?>
+            <div class='input-group'>
+              <div class="input-group-btn">
+                <?php
+                  if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
+                    echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon" style="min-width: 250px;">';
+                  }
+                ?>
+                <?php
+                  if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
+                    echo '<button type="button" cmd="refresh" class="btn btn-default" style="margin: 0px;"><span class="glyphicon glyphicon-refresh"></span></button>';
+                  }
+                ?>
+              </div>
             </div>
           </div>
+
           <?php
             if(strlen($topbar['XtraHtmlToolButton'])>2) {
               echo "<div class='input-group pull-left' style='text-align: right; width:70%;'>";
@@ -248,19 +276,46 @@ switch($topbar['uitype']) {
   <div class="col-lg-6 col-xs-6 pull-left">
     <h1 class='reportTitle'><?=$reportConfig['title']?></h1>
   </div>
-  <div class="col-lg-6 col-xs-6 pull-right" style="padding-right: 10px;">
-    <div class='input-group pull-right' style='text-align: right;'>
-      <div class="input-group-btn">
-        <?php
-          if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
-            echo '<button type="button" cmd="refresh" class="btn btn-default" style="margin: 0px;"><span class="glyphicon glyphicon-refresh"></span></button>';
-          }
-        ?>
-        <?php
-          if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
-            echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon" style="min-width: 250px;">';
-          }
-        ?>
+  <div class="col-lg-6 col-xs-6 pull-right uitype_type2" style="padding-right: 10px;">
+    <div class="report-searchbar">
+      <?php
+        if(isset($reportConfig['date_filter']) && $reportConfig['date_filter']) {
+            if(isset($reportConfig['date_filter']['type'])) $fieldType = $reportConfig['date_filter']['type'];
+            else $fieldType = "date";
+
+            $maxDate = "";
+            $minDate = "";
+            $defaultValueMin = "";
+            $defaultValueMax = "";
+
+            if(isset($reportConfig['date_filter']['max'])) $maxDate = date('Y-m-d', strtotime($reportConfig['date_filter']['max']));
+            if(isset($reportConfig['date_filter']['min'])) $minDate = date('Y-m-d', strtotime($reportConfig['date_filter']['min']));
+
+            if(isset($reportConfig['date_filter']['default_max'])) $defaultValueMax = date('Y-m-d', strtotime($reportConfig['date_filter']['default_max']));
+            elseif(isset($reportConfig['date_filter']['default'])) $defaultValueMax = date('Y-m-d', strtotime($reportConfig['date_filter']['default']));
+            if(isset($reportConfig['date_filter']['default_min'])) $defaultValueMin = date('Y-m-d', strtotime($reportConfig['date_filter']['default_min']));
+            elseif(isset($reportConfig['date_filter']['default'])) $defaultValueMin = date('Y-m-d', strtotime($reportConfig['date_filter']['default']));
+          ?>
+          <div class="dateBox date_filter">
+            <input name='start_date' type="<?=$fieldType?>" class="form-control" value="<?=$defaultValueMin?>" min="<?=$minDate?>" onchange="$(this).next().attr('min', this.value);" />
+            <input name='end_date' type="<?=$fieldType?>" class="form-control" value="<?=$defaultValueMax?>" max="<?=$maxDate?>" onchange="$(this).prev().attr('max', this.value);" />
+          </div>
+          <?php
+        }
+      ?>
+      <div class='input-group'>
+        <div class="input-group-btn">
+          <?php
+            if(!isset($reportConfig['toolbar']['search']) || $reportConfig['toolbar']['search']) {
+              echo '<input name="q" placeholder="'._ling("Search").' ..." type="text" class="form-control searchfield searchicon" style="min-width: 250px;">';
+            }
+          ?>
+          <?php
+            if(!isset($reportConfig['toolbar']['reload']) || $reportConfig['toolbar']['reload']) {
+              echo '<button type="button" cmd="refresh" class="btn btn-default" style="margin: 0px;"><span class="glyphicon glyphicon-refresh"></span></button>';
+            }
+          ?>
+        </div>
       </div>
     </div>
   </div>

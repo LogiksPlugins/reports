@@ -976,8 +976,25 @@ function processReportWhere($sql,$reportConfig) {
 		$sql->_whereMulti($whereFilters);
 	}
 
-	if(isset($_POST['date_filter']) && isset($_POST['date_filter']['start_date']) && isset($reportConfig['date_filter'])) {
-		$sql->_where([$reportConfig['date_filter']=>[[$_POST['date_filter']['start_date'], $_POST['date_filter']['end_date']], "RANGE"]]);
+	if(isset($_POST['date_filter']) && isset($reportConfig['date_filter']) && isset($reportConfig['date_filter']['field'])) {
+
+		if(isset($reportConfig['date_filter']['range_only']) && $reportConfig['date_filter']['range_only']) {
+			if(isset($_POST['date_filter']['start_date']) && strlen($_POST['date_filter']['start_date'])>0
+				&& isset($_POST['date_filter']['end_date']) && strlen($_POST['date_filter']['end_date'])>0) {
+
+				$sql->_where([$reportConfig['date_filter']['field']=>[[$_POST['date_filter']['start_date'], $_POST['date_filter']['end_date']], "RANGE"]]);
+			}
+		} else {
+			if(isset($_POST['date_filter']['start_date']) && strlen($_POST['date_filter']['start_date'])>0) {
+				if(isset($_POST['date_filter']['end_date']) && strlen($_POST['date_filter']['end_date'])>0) {
+					$sql->_where([$reportConfig['date_filter']['field']=>[[$_POST['date_filter']['start_date'], $_POST['date_filter']['end_date']], "RANGE"]]);
+				} else {
+					$sql->_where([$reportConfig['date_filter']['field']=>[$_POST['date_filter']['start_date'], "GTE"]]);
+				}
+			} elseif(isset($_POST['date_filter']['end_date']) && strlen($_POST['date_filter']['end_date'])>0) {
+				$sql->_where([$reportConfig['date_filter']['field']=>[$_POST['date_filter']['end_date'], "LTE"]]);
+			}
+		}
 	}
 
 	if(isset($_POST['search']) && count($_POST['search'])>0) {
@@ -990,7 +1007,8 @@ function processReportWhere($sql,$reportConfig) {
 			$sql->_whereMulti($searchArr,"AND","OR");
 		}
 	}
-
+	
+	// echo $sql->_SQL();exit();
 	return $sql;
 }
 function getColAlias($col,$reportConfig) {
@@ -1080,6 +1098,9 @@ function generateSidebar($reportConfig) {
 					$dbData->_limit(500);
 					if($dbData->_array()["groupby"]==NULL || !is_array($dbData->_array()["groupby"])) {
 						$dbData->_groupBy(current(explode(" ", current(explode(",", $field['cols'])))));
+					}
+					if($field["orderby"] && strlen($field["orderby"])>0) {
+						$dbData->_orderBy($field["orderby"]);
 					}
 					$dbData = $dbData->_GET();
 
@@ -1203,11 +1224,18 @@ function generateSmartfilter($reportConfig) {
 	if(isset($field['dbkey'])) $dbKeyForList = $field['dbkey'];
 
 	$dbData = _db($dbKeyForList)->queryBuilder()->fromJSON(json_encode($field),_db($dbKeyForList));
+
+	if(isset($reportConfig['LASTVIEW-REQUEST'])) {
+		$_POST = $reportConfig['LASTVIEW-REQUEST'];
+		$dbData=processReportWhere($dbData,$reportConfig);
+	}
+
 	if($dbData) {
 		$dbData->_limit(500);
 		if($dbData->_array()["groupby"]==NULL || !is_array($dbData->_array()["groupby"])) {
 			$dbData->_groupBy(current(explode(" ", current(explode(",", $field['cols'])))));
 		}
+		// echo $dbData->_SQL();exit();
 		$dbData = $dbData->_GET();
 
 		if($dbData && count($dbData)>0) {

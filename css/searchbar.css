@@ -1,0 +1,102 @@
+.report-searchbar{
+        display: flex;
+    flex-wrap: wrap;
+     padding: 0 15px;
+
+    padding-right: 0 !important;
+
+}
+.report-searchbar .input-group-btn {
+    /* flex-direction: row-reverse; */
+    position: relative;
+    /* justify-content: flex-end; */
+    display: block;
+    /* background: #ccc; */
+    float: left;
+    width: auto;
+       
+}
+.report-searchbar .input-group-btn .btn {
+    margin: 0px;
+    border: 0;
+    position: absolute;
+    right: 0px;
+    left: auto !important;
+    z-index: 92;
+    background: #0d68e3;
+    color: #fff;
+    /* padding-top: 2px; */
+    margin-top: 3px !important;
+    margin-right: 4px !important;
+    height: 29px !important;
+    border-radius: 5px !important;
+}
+
+.report-searchbar .input-group-btn .searchfield {
+    min-width: unset !important;
+    
+    padding: 6px 14px;
+    border-radius: 5px !important;
+    background: #f1f2f7;
+    height: 36px !important;
+    border-color: #b1b1b5;
+}
+body .reportTable .table-tools .control-primebar .col-lg-6:nth-child(2) .input-group-btn .searchfield {
+    min-width: unset !important;
+}
+body .control-primebar .pull-right .input-group {
+    margin-top: 0;
+}
+.report-searchbar .dateBox {
+    display: flex;
+    flex-wrap: wrap;
+}
+.report-searchbar .dateBox input{
+    flex: 1;
+    margin-right: 10px;
+    padding: 4px;
+    height: 37px;
+    background: #f1f2f7;
+/*    width: 117px;*/
+    border-color: #b1b1b5;
+}
+.uitype_type1 .report-searchbar .dateBox {
+    width: 55%;
+}
+.reportTable .table-tools .control-primebar .col-lg-6.uitype_type1 .input-group-btn .btn small {
+    display: none !important;
+}
+.reportTable .table-tools .control-primebar .col-lg-6.uitype_type1 .input-group-btn .btn{
+    position: static !important;
+    padding: 8px;
+}
+.reportTable .table-tools .control-primebar .col-lg-6:nth-child(2) .input-group-btn [cmd="refresh"]{
+    position: absolute !important;
+}
+body .control-primebar .col-lg-6.uitype_type1 .input-group .input-group-btn{
+    display: flex !important;
+}
+body .control-primebar .col-lg-6.uitype_type1  .report-searchbar .dateBox input{
+    width: 50%;
+    padding: 4px;
+}
+body .control-primebar .col-lg-6.uitype_type1 .report-searchbar{
+    margin-right: 5px;
+    padding-left: 0;
+    width: calc(100% - 200px);
+    justify-content: end;
+}
+body .control-primebar .col-lg-6.uitype_type1 .uiswitcher{
+    border: 0 !important;
+    margin: 0 !important;
+}
+
+
+body .control-primebar .pull-right .input-group.pull-right {
+    width: 200px;
+    text-align: right;
+}
+
+body .control-primebar .uitype_type2 .searchfield {
+    min-width: 250px !important;
+}

@@ -509,6 +509,15 @@ var LGKSReports = (function() {
 		        filterCount++;
 			}
 		});
+
+		if(grid.find(".date_filter").length>0) {
+			grid.find(".date_filter").find("input[name]").each(function() {
+				name=$(this).attr('name');
+				if(this.value!=null && this.value.length>0) {
+					q.push("date_filter["+name+"]"+"="+encodeURIComponent(this.value));
+				}
+			});
+		}
 		
 		if(filterCount>0) {
 			grid.find(".table-tools .control-primebar *[cmd=filterbar] .glyphicon").addClass("badgeIcon");

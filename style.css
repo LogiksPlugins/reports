@@ -3,6 +3,7 @@
 @import url("css/gallery.css");
 @import url("css/rcolors.css");
 @import url("css/smartfilter.css");
+@import url("css/searchbar.css");
 
 canvas, .report-sidebar {
     -moz-user-select: none;
@@ -247,14 +248,16 @@ table.dataTable thead .sorting_desc_disabled {
 table.dataTable thead .sorting:after {
     content: "\f0dc";
     float: right;
-    font-family: 'Font Awesome 5 Free', fontawesome;
+    font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: rgba(50,50,50,.5);
 }
 
 table.dataTable thead .sorting_asc:after {
     content: "\f0de";
     float: right;
-    font-family: 'Font Awesome 5 Free', fontawesome;
+    font-family: fontawesome;
+    font-family: 'Font Awesome 5 Free';
     color: black;
 }
 
@@ -501,4 +504,55 @@ table.dataTable .image-avatar {
 .sidebar-filters .filter-field label {
 	font-weight: bold;
 	color: #666;
+}
+
+
+.report-searchbar {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 15px;
+}
+.report-searchbar  .input-group-btn {
+    /* flex-direction: row-reverse; */
+    position: relative;
+    /* justify-content: flex-end; */
+    display: block;
+    /* background: #ccc; */
+    float: left;
+    width: auto;
+       
+}
+.report-searchbar  .input-group-btn .btn {
+    margin: 0px;
+    border: 0;
+    position: absolute;
+    right: 0px;
+    left: auto !important;
+    z-index: 92;
+    background: #0d68e3;
+    color: #fff;
+    /* padding-top: 2px; */
+    margin-top: 3px !important;
+    margin-right: 4px !important;
+        height: 29px !important;
+        border-radius: 5px !important;
+}
+.report-searchbar  .input-group-btn .searchfield {
+    min-width: 390px !important;
+    padding: 6px 14px;
+    border-radius: 5px !important;
+    background: #f1f2f7;
+    height: 36px !important;
+    border-color: #b1b1b5;
+}
+.report-searchbar .dateBox {
+    display: flex;
+    flex-wrap: wrap;
+}
+.report-searchbar .dateBox input{
+    flex: 1;
+    margin-right: 10px;
+    height: 37px;
+    background: #f1f2f7;
+    border-color: #b1b1b5;
 }
