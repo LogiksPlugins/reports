@@ -261,6 +261,8 @@ if(!function_exists("findReport")) {
 
 
 	function formatReportColumn($key,$value,$type="text",$hidden=false,$record=[], $ruleSet = [],$columnInfo = false) {
+		if(is_array($columnInfo) && isset($columnInfo['noshow']) && $columnInfo['noshow']) return "";
+
 		$clz="tableColumn";
 		$xtraAttributes = [];
 		if($hidden) $clz.=" hidden";

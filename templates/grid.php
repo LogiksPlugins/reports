@@ -168,6 +168,7 @@ $_SESSION['REPORT'][$reportKey]=$reportConfig;
 							}
 						}
 						foreach ($reportConfig['datagrid'] as $key => $row) {
+							if(isset($row['noshow']) && $row['noshow']===true) continue;
 							if(isset($row['policy']) && strlen($row['policy'])>0) {
 								$allow=checkUserPolicy($row['policy']);
 								if(!$allow) continue;
@@ -234,6 +235,7 @@ $_SESSION['REPORT'][$reportKey]=$reportConfig;
 							echo "<th data-key='action' width=25px></th>";
 						}
 	        			foreach ($reportConfig['datagrid'] as $colID => $column) {
+	        				if(isset($column['noshow']) && $column['noshow']===true) continue;
 	        				if(isset($column['searchable']) && $column['searchable']) {
 	        					$filterConfig=[];
 		        				if(isset($column['filter']) && $column['filter']) {

@@ -246,6 +246,10 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 						}
 					});
 
+					if(gridBody.find(".cards-entry").length<=0) {
+						gridBody.append('<div class="text-center"><br><br><h3>No Data Found</h3></div>');
+					}
+
 					limit=jsonData.INFO.limit;
 					index=jsonData.INFO.index;
 					last=jsonData.INFO.last;

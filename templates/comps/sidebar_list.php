@@ -2,7 +2,16 @@
 if(!defined('ROOT')) exit('No direct script access allowed');
 
 if($reportConfig["source"]['type']=="sql") {
-	//printArray($reportConfig['sidebar']['no_records_msg']);return;
+	if(isset($reportConfig['sidebar']['source'])) {
+		foreach($reportConfig['sidebar']['source'] as $k=>$b) {
+			if(isset($b['filter'])) {
+				$reportConfig['datagrid'][$k] = ["filter"=> $b['filter'], "noshow"=>true];
+			}
+		}
+
+		$reportKey=$reportConfig['reportkey'];
+		$_SESSION['REPORT'][$reportKey]=$reportConfig;
+	}
 	if(!isset($reportConfig['sidebar']['no_records'])) $reportConfig['sidebar']['no_records'] = "No Records";
 	?>
 <script>
