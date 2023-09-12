@@ -125,8 +125,8 @@ switch($_REQUEST["action"]) {
 						$src['columns'] = "*";
 					}
 				}
-				
-				$data=_db()->_selectQ($src['table'],$src['columns'],$src['where']);
+				if(!isset($src['dbkey'])) $src['dbkey'] = (isset($reportConfig['dbkey'])?$reportConfig['dbkey']:"app");
+				$data=_db($src['dbkey'])->_selectQ($src['table'],$src['columns'],$src['where']);
 
 				if(isset($src['orderby'])) {
 					$data=$data->_orderby($src['orderby']);
