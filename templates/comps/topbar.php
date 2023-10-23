@@ -125,7 +125,7 @@ switch($topbar['uitype']) {
               if($reportConfig['toolbar']['export'] || $reportConfig['toolbar']['print'] || $reportConfig['toolbar']['email']) {
             ?>
             <div class='btn-group'>
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button type="button" class="btn btn-default btn-print dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <span class="glyphicon glyphicon-print"></span><!-- <span class="caret"></span> --> <small class='button_label'><?=_ling("Export")?></small></button>
                       <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
                         <?php
@@ -375,7 +375,7 @@ switch($topbar['uitype']) {
               if($reportConfig['toolbar']['export'] || $reportConfig['toolbar']['print'] || $reportConfig['toolbar']['email']) {
             ?>
             <div class='btn-group'>
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <button type="button" class="btn btn-default btn-print dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <span class="glyphicon glyphicon-print"></span><!-- <span class="caret"></span> --> <small class='button_label'><?=_ling("Export")?></small></button>
                       <ul class="reportActions dropdown-menu" aria-labelledby="dropdownMenu" role='menu'>
                         <?php
