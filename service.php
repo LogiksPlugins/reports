@@ -110,81 +110,112 @@ switch($_REQUEST["action"]) {
 			if(isset($reportConfig['kanban']) && isset($reportConfig['kanban']['colkeys']) && isset($reportConfig['kanban']['colkeys'][$_REQUEST['colKey']])) {
 				$src=$reportConfig['kanban']['colkeys'][$_REQUEST['colKey']];
 
-				if(!isset($src['where'])) $src['where']=[];
+				if(!isset($src['srctype'])) $src['srctype'] = "sql";
 
-				if(is_array($src['where'])) {
-					foreach($src['where'] as $k=>$v) {
-						$src['where'][$k]=_replace($v);
-					}
-				}
-				
-				if(!isset($src['columns'])) {
-					if(isset($src['cols'])) {
-						$src['columns'] = $src['cols'];
-					} else {
-						$src['columns'] = "*";
-					}
-				}
-				if(!isset($src['dbkey'])) $src['dbkey'] = (isset($reportConfig['dbkey'])?$reportConfig['dbkey']:"app");
-				$data=_db($src['dbkey'])->_selectQ($src['table'],$src['columns'],$src['where']);
+				switch($src['srctype']) {
+					case "sql":
+						if(!isset($src['where'])) $src['where']=[];
 
-				if(isset($src['orderby'])) {
-					$data=$data->_orderby($src['orderby']);
-				} elseif(isset($src['sortby'])) {
-					$data=$data->_orderby($src['sortby']);
-				}
+						if(is_array($src['where'])) {
+							foreach($src['where'] as $k=>$v) {
+								$src['where'][$k]=_replace($v);
+							}
+						}
+						
+						if(!isset($src['columns'])) {
+							if(isset($src['cols'])) {
+								$src['columns'] = $src['cols'];
+							} else {
+								$src['columns'] = "*";
+							}
+						}
+						if(!isset($src['dbkey'])) $src['dbkey'] = (isset($reportConfig['dbkey'])?$reportConfig['dbkey']:"app");
+						$data=_db($src['dbkey'])->_selectQ($src['table'],$src['columns'],$src['where']);
 
-				if(isset($src['groupby'])) {
-					$data=$data->_groupby($src['groupby']);
-				} else {
-					if(!is_array($src['columns'])) {
-						$gCols=explode(",",$src['columns']);
-					} else {
-						$gCols=$src['columns'];
-					}
-					$gCols[0]=explode(" ",$gCols[0]);
-      				$src['groupby']=$gCols[0][0];
-					$data=$data->_groupby($gCols[0][0]);
-				}
-        //exit($data->_SQL());
-				$data=$data->_limit(20,0)->_GET();
+						if(isset($src['orderby'])) {
+							$data=$data->_orderby($src['orderby']);
+						} elseif(isset($src['sortby'])) {
+							$data=$data->_orderby($src['sortby']);
+						}
 
-				if($data) {
-			        $fData=[
-			//           ["title"=>"","value"=>""]
-			        ];
-			        if(!isset($src['type'])) $src['type']="";
-			        switch(strtolower($src['type'])) {
-			            case "csv":case "list":
-			              foreach($data as $row) {
-			                if($row['value']==null || strlen($row['value'])<=0) {
-			                  continue;
-			                }
-			                $vArr=explode(",",$row['value']);
-			                if(count($vArr)>1) {
-			                  foreach($vArr as $x1=>$y1) {
-			                    if($y1==null || strlen($y1)<=0) continue;
-			                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
-			                  }
-			                } else {
-			                  $fData[$row['value']]=$row;
-			                }
-			              }
-			              $fData=array_values($fData);
-			              break;
-			            default:
-			              foreach($data as $row) {
-			                if($row['title']==null || strlen($row['title'])<=0) {
-			                  continue;
-			                }
-			                $row['title']=_ling($row['title']);
-			                $fData[]=$row;
-		              	}
-			        }
-          
-					printServiceMsg($fData);
-				} else {
-					printServiceMsg([]);
+						if(isset($src['groupby'])) {
+							$data=$data->_groupby($src['groupby']);
+						} else {
+							if(!is_array($src['columns'])) {
+								$gCols=explode(",",$src['columns']);
+							} else {
+								$gCols=$src['columns'];
+							}
+							$gCols[0]=explode(" ",$gCols[0]);
+		      				$src['groupby']=$gCols[0][0];
+							$data=$data->_groupby($gCols[0][0]);
+						}
+		        //exit($data->_SQL());
+						$data=$data->_limit(20,0)->_GET();
+
+						if($data) {
+					        $fData=[
+					//           ["title"=>"","value"=>""]
+					        ];
+					        if(!isset($src['type'])) $src['type']="";
+					        switch(strtolower($src['type'])) {
+					            case "csv":case "list":
+					              foreach($data as $row) {
+					                if($row['value']==null || strlen($row['value'])<=0) {
+					                  continue;
+					                }
+					                $vArr=explode(",",$row['value']);
+					                if(count($vArr)>1) {
+					                  foreach($vArr as $x1=>$y1) {
+					                    if($y1==null || strlen($y1)<=0) continue;
+					                    $fData[$y1]=["title"=>_ling($y1),"value"=>$y1];
+					                  }
+					                } else {
+					                  $fData[$row['value']]=$row;
+					                }
+					              }
+					              $fData=array_values($fData);
+					              break;
+					            default:
+					              foreach($data as $row) {
+					                if($row['title']==null || strlen($row['title'])<=0) {
+					                  continue;
+					                }
+					                $row['title']=_ling($row['title']);
+					                $fData[]=$row;
+				              	}
+					        }
+		          
+							printServiceMsg($fData);
+						} else {
+							printServiceMsg([]);
+						}
+					break;
+					case "static":
+						if(!isset($src['options'])) $src['options'] = [];
+						$finalList = [];
+						foreach($src['options'] as $title=>$value) {
+							$finalList[] = [
+								"title"=>$title,
+								"value"=>$value,
+								"class"=>"",
+								"count"=>"",
+							];
+						}
+						if(isset($src['data'])) {
+							foreach($src['data'] as $row) {
+								$finalList[] = array_merge([
+									"title"=>"",
+									"value"=>"",
+									"class"=>"",
+									"count"=>"",
+								], $row);
+							}
+						}
+						printServiceMsg($finalList);
+					break;
+					default:
+						printServiceMsg([]);
 				}
 			} elseif(isset($reportConfig['pivot']) && isset($reportConfig['pivot']['colkeys'])) {// && in_array($_REQUEST['colKey'], array_values($reportConfig['pivot']['colkeys']))
 				$dbKey=$reportConfig['dbkey'];
