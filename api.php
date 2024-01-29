@@ -731,7 +731,7 @@ if(!function_exists("findReport")) {
 
 		switch($uiType) {
 			case "dropdown"://<i class='fa fa-eye profile-customers' ></i>
-				return "<li><a href='#' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'><i class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}'></i> {$button['label']}</a></li>";
+				return "<li><a href='#' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'><i class='{$button['icon']} {$button['class']}' params='{$button['params']}'></i> {$button['label']}</a></li>";
 			case "select":
 				if(strlen($button['title'])<=0) $button['title'] = $button['label'];
 				return "<option class='{$button['icon']} {$button['class']}' cmd='{$cmd}' params='{$button['params']}' title='{$button['label']}' value='{$cmd}'>{$button['title']}</option>";
