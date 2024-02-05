@@ -42,7 +42,7 @@ $colMap['date_col'] = $reportConfig['calendar']['date_col'];
 $colMap['date_col'] = explode(".", $colMap['date_col']);
 $colMap['date_col'] = end($colMap['date_col']);
 
-$vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar";
+$vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
 // echo $vpath;
 include dirname(dirname(__FILE__))."/vendors/fullcalendar/boot.php";
 //<script src='<?=$vpath?>/dist/index.global.js'></script>
