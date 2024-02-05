@@ -2,7 +2,11 @@
 <html>
 <head>
 <meta charset='utf-8' />
-<script src='../dist/index.global.js'></script>
+<link href='../packages/core/main.css' rel='stylesheet' />
+<link href='../packages/daygrid/main.css' rel='stylesheet' />
+<script src='../packages/core/main.js'></script>
+<script src='../packages/interaction/main.js'></script>
+<script src='../packages/daygrid/main.js'></script>
 <script>
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -10,18 +14,19 @@
     var destCalendarEl = document.getElementById('destination-calendar');
 
     var srcCalendar = new FullCalendar.Calendar(srcCalendarEl, {
+      plugins: [ 'interaction', 'dayGrid' ],
       editable: true,
-      initialDate: '2020-09-12',
+      defaultDate: '2019-08-12',
       events: [
         {
           title: 'event1',
-          start: '2020-09-11T10:00:00',
-          end: '2020-09-11T16:00:00'
+          start: '2019-08-11T10:00:00',
+          end: '2019-08-11T16:00:00'
         },
         {
           title: 'event2',
-          start: '2020-09-13T10:00:00',
-          end: '2020-09-13T16:00:00'
+          start: '2019-08-13T10:00:00',
+          end: '2019-08-13T16:00:00'
         }
       ],
       eventLeave: function(info) {
@@ -30,7 +35,8 @@
     });
 
     var destCalendar = new FullCalendar.Calendar(destCalendarEl, {
-      initialDate: '2020-09-12',
+      plugins: [ 'interaction', 'dayGrid' ],
+      defaultDate: '2019-08-12',
       editable: true,
       droppable: true, // will let it receive events!
       eventReceive: function(info) {

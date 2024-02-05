@@ -115,10 +115,13 @@ $_SESSION['REPORT'][$reportKey]=$reportConfig;
   	</div>
   	<div class='table-responsive'>
 		<table class="dataTable table table-hover table-striped table-condensed reportContainer">
-			<thead class='tableHeadGroups'>
+			<!-- <thead class='tableHeadGroups'>
+				
+			</thead> -->
+			<thead class='tableHead'>
 				<?php
 					if($groupEnabled) {
-						echo "<tr>";
+						echo "<tr class='tableHead_Groups'>";
 
 						$firstCol = 0;
 						if($reportConfig['buttons_align']=="left") {
@@ -148,9 +151,7 @@ $_SESSION['REPORT'][$reportKey]=$reportConfig;
 						echo "</tr>";
 					}
 				?>
-			</thead>
-			<thead class='tableHead'>
-				<tr>
+				<tr class='tableHead_normal'>
 					<?php
 						if($reportConfig['buttons_align']=="left") {
 							if(isset($reportConfig['buttons']) && is_array($reportConfig['buttons']) && count($reportConfig['buttons'])>0) {
@@ -452,7 +453,8 @@ function generateHeaderGroups(gridID, rptHandler) {
 	// $.each(colGroups, function(k, v) {
 	//     $(`thead.tableHeadGroups th[data-colgroup='${k}']`, `.reportTable[data-rptkey='${gridID}']`).attr("colspan", v);
 	// })
-	$(`thead.tableHeadGroups th[data-colgroup]`, `.reportTable[data-rptkey='${gridID}']`).each(function() {
+	// $(`thead.tableHeadGroups th[data-colgroup]`, `.reportTable[data-rptkey='${gridID}']`).each(function() {
+	$(`.tableHead tr.tableHead_Groups th[data-colgroup]`, `.reportTable[data-rptkey='${gridID}']`).each(function() {
 	    var a1 = $(this).data("colgroup")
 	    var a2 = $(`thead.tableHead th[data-colgroup='${a1}']:not(.hidden)`, `.reportTable[data-rptkey='${gridID}']`).length;
 	    if(a2<=0) {
