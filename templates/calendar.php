@@ -44,10 +44,10 @@ $colMap['date_col'] = end($colMap['date_col']);
 
 $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
 // echo $vpath;
-include dirname(dirname(__FILE__))."/vendors/fullcalendar/boot.php";
-//<script src='<?=$vpath?>/dist/index.global.js'></script>
+// include dirname(dirname(__FILE__))."/vendors/fullcalendar/boot.php";
 ?>
 <script src='<?=$vpath?>/moment.min.js'></script>
+<script src='<?=$vpath?>/dist/index.global.js'></script>
 <style>
 .fc-event {cursor: pointer;}
 .fc-toolbar-chunk button {
