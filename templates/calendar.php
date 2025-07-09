@@ -39,8 +39,10 @@ $colMap=array_merge([
 $_SESSION['REPORT'][$reportConfig['reportkey']]['date_filter'] = $reportConfig['calendar']['date_col'];
 
 $colMap['date_col'] = $reportConfig['calendar']['date_col'];
-$colMap['date_col'] = explode(".", $colMap['date_col']);
-$colMap['date_col'] = end($colMap['date_col']);
+if(!is_array($colMap['date_col'])) {
+	$colMap['date_col'] = [$colMap['date_col']=>""];
+}
+
 
 $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
 // echo $vpath;
@@ -97,6 +99,13 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
   	var rpt = null;
 	 	var calendar = null;
     $(function() {
+    	const EXTRA_USER_NOTES = "<?=isset($reportConfig['calendar']['notes_user'])?$reportConfig['calendar']['notes_user']:""?>";
+    	if($(".sidebar-filters.report-sidebar").length>0) {
+    		$(".sidebar-filters.report-sidebar").append(EXTRA_USER_NOTES);
+    	} else {
+    		$(".calendarContainer.reportContainer").append(EXTRA_USER_NOTES);
+    	}
+    	
 			rpt = new LGKSReports().init("<?=$reportKey?>","calendar");
 			rpt.addRenderer("calendar",renderCalendarUI);
 			//rpt.addListener(updateCalendarUI,"postload");
@@ -168,6 +177,8 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
 						//https://fullcalendar.io/docs/events-function
 				  	//console.log("LOADING_CALENDAR", {start: info.start.valueOf(),end: info.end.valueOf()});
 
+				  	const dateRegex1 = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+
 						rpt.fetchReportData("json",function(txt) {
 							jsonData=$.parseJSON(txt);
 			        if(jsonData==null && jsonData.Data==null) {
@@ -176,11 +187,35 @@ $vpath=getWebPath(dirname(dirname(__FILE__)))."/vendors/fullcalendar6";
 			        } else {
 			          jsonData=jsonData.Data;
 			        }
+			        let DATE_COLS = <?=json_encode($colMap["date_col"])?>;
+			        console.log(DATE_COLS);
+			        // DATE_COLS = DATE_COLS.split(",");
+			        // DATE_COLS = DATE_COLS.map(a=>a.split(".").pop());
+
+			        var eventList = [];
+
+			        $.each(DATE_COLS, function(dated, clr_clz) {
+			        	var dated1 = dated.split(".").pop();
+			        	var tempList = jsonData.RECORDS.map(row=>{//.filter(a=>((dated1!="dateofbirth")))
+			        		
+			        			if(dateRegex1.test(row[dated1])) {
+			        				row[dated1] = row[dated1].split("/").reverse().join("-");
+			        			}
+
+				        		return {
+				        				"id": ((row["hashid"]==null)?row[Object.keys(row)[0]]:row["hashid"]), 
+				        				"title": row["<?=$colMap["title"]?>"], 
+				        				"start": row[dated1], 
+				        				color: clr_clz,   // an option!
+      									//textColor: 'black', // an option!
+				        				extendedProps: row
+				        			};
+								})
+								eventList = eventList.concat(tempList);
+			        })
+
+			        var finalEventList = eventList;
 			        
-			        var finalEventList = jsonData.RECORDS.map(row=>{
-			        		return {"id": ((row["hashid"]==null)?row[Object.keys(row)[0]]:row["hashid"]), "title": row["<?=$colMap["title"]?>"], "start": row["<?=$colMap["date_col"]?>"], extendedProps: row};
-							})
-							
 			        limit=jsonData.INFO.limit;
 			        index=jsonData.INFO.index;
 			        last=jsonData.INFO.last;
