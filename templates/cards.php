@@ -16,6 +16,10 @@ if(isset($reportConfig['cards']['colmap'])) {
 	$colMap=$reportConfig['kanban']['colmap'];
 }
 
+if(!isset($reportConfig['cards']['default_avatar'])) {
+	$reportConfig['cards']['default_avatar'] = false;
+}
+
 $htmlButtons="";
 foreach ($reportConfig['buttons'] as $cmd => $button) {
 	if(!isset($button['icon'])) continue;
@@ -238,6 +242,17 @@ $reportConfig['actions']=array_merge($actions,$reportConfig['actions']);
 					//rpt.appendRecord
 					$.each(jsonData.RECORDS,function(k,v) {
 						if(v["<?=$colMap['tags']?>"]!=null) v["<?=$colMap['tags']?>"] = v["<?=$colMap['tags']?>"].split(",");
+
+						<?php
+							if($reportConfig['cards']['default_avatar']) {
+						?>
+						if(v["<?=$colMap['avatar']?>"]==null || v["<?=$colMap['avatar']?>"].length<=0) {
+							v["<?=$colMap['avatar']?>"] = "x";
+						}
+						<?php
+							}
+						?>
+						
 						cardHTML=gridCardGen(v);
 						if(gridBody.find(".cards-entry[data-hash='"+v.hashid+"']").length<=0) {
 							gridBody.append(cardHTML);
