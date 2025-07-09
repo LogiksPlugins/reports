@@ -67,6 +67,7 @@ if(isset($reportConfig['cards']['iconmap'])) {
 	if($iconMap==null || !is_array($iconMap)) $iconMap=[];
 }
 
+if(!isset($reportConfig['actions'])) $reportConfig['actions'] = [];
 $actions=[
 	"showMoreRecords"=>["label"=>"","icon"=>"fa fa-retweet","class"=>"btn btn-warning btn-notext","title"=>"Showing 0/0 records"]
 ];
