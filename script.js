@@ -134,14 +134,14 @@ var LGKSReports = (function() {
 			e.preventDefault();
 			cmd=$(this).attr('cmd');
 			gridID=$(this).closest(".reportTable").data('rptkey');
-			row=$(this).closest("tr");
+			row=$(this).closest(".dataItem");
 			LGKSReports.getInstance(gridID).datagridAction(cmd,this,row);
 		});
 		$(".reportContainer",rpt.getGrid()).delegate("button[cmd],i[cmd],a[cmd]","click",function(e) {
 			e.preventDefault();
 			cmd=$(this).attr('cmd');
 			gridID=$(this).closest(".reportTable").data('rptkey');
-			row=$(this).closest("tr");
+			row=$(this).closest(".dataItem");
 			LGKSReports.getInstance(gridID).datagridAction(cmd,this,row);
 		});
 
