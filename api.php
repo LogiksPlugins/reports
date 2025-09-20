@@ -534,13 +534,13 @@ if(!function_exists("findReport")) {
 		        }
 			default:
 				if(is_array($value)) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>".implode(", ",$value)."</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'><span>".implode(", ",$value)."</span></td>";
 				} elseif(strlen($value)>100) {
 					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'><pre>{$value}</pre></td>";
 				} elseif(strlen($value)>20) {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'>{$value}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='--'><span>{$value}</span></td>";
 				} else {
-					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$valueOriginal}'>{$editorHTML}</td>";
+					return "<td {$unilink} class='{$clz} {$keyS} {$type}' $xtraAttributes data-key='$key' data-value='{$valueOriginal}'><span>{$editorHTML}</span></td>";
 				}
 				break;
 		}

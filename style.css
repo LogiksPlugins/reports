@@ -4,6 +4,7 @@
 @import url("css/rcolors.css");
 @import url("css/smartfilter.css");
 @import url("css/searchbar.css");
+@import url("css/topbar.css");
 
 canvas, .report-sidebar {
     -moz-user-select: none;
